@@ -39,7 +39,12 @@
   onblur -> onBlur, onfocuse -> onFocus, onmousedown -> onMouseDown (카멜 표기법 사용)
   JSX 요소는 반드시 하나의 태그로 감싸야 한다. <- 주로 Fragment 태그(이름 없는 태그)사용
 
-#### 기타
+## 문법
 
-- Component : 리액트 개발의 가장 기본적인 단위
-- 수업은 ReactDOM.render() 함수 안에서 코드를 작성하는데 만약 동작하지 않으면 root.render() 함수 안에서 코드 작성
+#### JSX
+
+#### Component
+
+#### Props
+
+#### Styled Components
