@@ -52,4 +52,12 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
         // 첫번째 요소는 State 값 (현재 변수의 값)
         // 두번째 요소는 setter 함수 (이 함수를 호출할 때 파라미터로 전달하는 값으로 State값 변경)
 
+
+// 5. 참조형 State
+    // 참조형 State는 참조형 자체를 값으로 갖는게 아니라, 그 참조형을 가리키고 있는 주소값을 갖는다.
+    // 그렇기 때문에 setter 함수가 아닌 메소드를 이용해서 집어 넣더라도 해당 자료형이 가진 주소값은 변하지 않는다.
+    // State 값이 바뀌어야 화면을 새로 랜더링 하는데 바뀌지 않는 문제 발생
+
+    // 따라서 참조형 타입의 State를 바꿀 땐 전체를 새로 만든다고 생각하는 것이 좋다.
+
 root.render(<App />);
