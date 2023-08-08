@@ -28,7 +28,7 @@
 
 ##### index.html
 
-웹 브라우저에서 가장 먼저 실행되는 파일
+- 웹 브라우저에서 가장 먼저 실행되는 파일
 
 ##### index.js
 
@@ -37,6 +37,7 @@
 - JSX : JS에서 HTML 코드를 쓸 수 있음 -> 그러나 사용하지 못하는 HTML 문법도 있음  
   class 키워드 대신에 className 사용, for 키워드 대신에 htmlFor 사용  
   onblur -> onBlur, onfocuse -> onFocus, onmousedown -> onMouseDown (카멜 표기법 사용)
+  JSX 요소는 반드시 하나의 태그로 감싸야 한다. <- 주로 Fragment 태그(이름 없는 태그)사용
 
 #### 기타
 
