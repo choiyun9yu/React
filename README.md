@@ -20,7 +20,12 @@
   > npm run start
 
 - 프로젝트 종료
-  > [터미널창] ^C
+
+  > ^C
+
+- 프로젝트 빌드
+  > npm run build
+  > npx serve -s build
 
 ## 프로젝트 살펴보기
 

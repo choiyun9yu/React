@@ -105,4 +105,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
         // 이런 속성은 자식 컴포넌트 보다는 부모 컴포넌트에서 정리를 하는 것이 좋다.
         // 부모 컴포넌트의 관저멩서 자식 요소들 간의 여백을 조절할 수 있어서 더 직관적이다.
 
+
+// 10. 빌드하기
+    // JSX로 작성한 코드는 웹 브라우저가 그대로 해석할 수 없는 코드다.
+    // 그래서 순수한 JS 코드로 바꿔줘야 한다. <- 빌드
+    // [터미널] npm run build
+    // build 폴더 생성 -> 이것을 서버에 배포하면 됨
+    // 로컬에서 확인해보고 싶으면
+    // [터미널] npx serve build
+
 root.render(<App />);
