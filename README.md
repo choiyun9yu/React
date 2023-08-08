@@ -32,11 +32,13 @@
 
 ##### index.js
 
-index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 가장 먼저 실행되는 파일  
-render() : 리액트에서 HTML 태그 만들어주는 메소드
+- index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 가장 먼저 실행되는 파일
+- render(JSX문법으로 HTML 그리기, 그린 HTML 넣어줄 장소) : 리액트에서 HTML 태그 만들어주는 메소드
+- JSX : JS에서 HTML 코드를 쓸 수 있음 -> 그러나 사용하지 못하는 HTML 문법도 있음  
+  class 키워드 대신에 className 사용, for 키워드 대신에 htmlFor 사용  
+  onblur -> onBlur, onfocuse -> onFocus, onmousedown -> onMouseDown (카멜 표기법 사용)
 
 #### 기타
 
-- JSX : JS에 HTML 코드 섞어서 사용하는 것
 - Component : 리액트 개발의 가장 기본적인 단위
 - 수업은 ReactDOM.render() 함수 안에서 코드를 작성하는데 만약 동작하지 않으면 root.render() 함수 안에서 코드 작성
