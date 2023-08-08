@@ -1,5 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import App from './App';
+// js 파일에 css 파일 삽입하기 -> html head 태그안에 자동 작성됨
+import './index.css';
 
 // JSX로 작성한 코드가 나타날 위치 설정
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -90,5 +92,17 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
     // (예) <button style={backroundColor:'yellow';} onClick={onClick}>{children}</button>
 
     // Props는 스타일 변경할 때도 사용할 수 있다.
+
+
+// 9. CSS 클래스로 컴포넌트 디자인
+    // js 파일에 css 파일 삽입하기
+        // import './index.css';
+    // className을 사용할 때 꿀팁!
+        // prop 값에 className을 주면 컴포넌트 태그를 작성할 때 전달한 className이라는 prop이
+        // 마치 HTML 태그의 className 속성을 사용하는 것 처럼 사용할 수 있다.
+        
+        // margine과 같은 요소 내부보다 외부에 영향을 주는 요소들이 있다.
+        // 이런 속성은 자식 컴포넌트 보다는 부모 컴포넌트에서 정리를 하는 것이 좋다.
+        // 부모 컴포넌트의 관저멩서 자식 요소들 간의 여백을 조절할 수 있어서 더 직관적이다.
 
 root.render(<App />);
