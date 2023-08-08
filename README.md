@@ -13,8 +13,7 @@
 
 - 프로젝트 생성(create-react-app)
 
-  > npm init react-app .  
-  > (마침표는 현재 디렉토리에서 프로젝트를 만들겠다는 의미)
+  > npm init react-app .
 
 - 프로젝트 시작
 
@@ -27,11 +26,14 @@
 
 #### public 디렉토리
 
-###### index.html : 웹 브라우저에서 가장 먼저 실행되는 파일
+##### index.html
 
-###### index.js : index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 가장 먼저 실행되는 파일
+웹 브라우저에서 가장 먼저 실행되는 파일
 
-- render() : 리액트에서 HTML 태그 만들어주는 메소드
+##### index.js
+
+index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 가장 먼저 실행되는 파일  
+render() : 리액트에서 HTML 태그 만들어주는 메소드
 
 #### 기타
 
