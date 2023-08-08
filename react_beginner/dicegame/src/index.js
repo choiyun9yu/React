@@ -1,10 +1,8 @@
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-
 // JSX로 작성한 코드가 나타날 위치 설정
 const root = ReactDOM.createRoot(document.getElementById('root'));
-
 
 // 1. JSX에서 JS 사용하기 
     //중괄호로 감싸주면 된다. if문이나 for문 함수 선언 등은 안됨, 표현식만 가능
@@ -23,7 +21,6 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 // );
 
 
-
 // 2. 컴포넌트
     // 함수의 첫글자를 대문자로 써야한다.
     // JSX문법으로 만든 리액트 엘리먼트를 리턴해야 한다.
@@ -40,50 +37,19 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 // );
 
 
-
 // 3. Props : 컴포넌트에 지정한 속성 (리액트 개발자도구 컴포넌트 탭에서 확인 가능)
     // 컴포넌트에 지정한 프롭은 객체 형태로 컴포넌트 함수의 첫번째 파라미터로 전달
     // 3-1. childern
-        // 리엑트에 기본적으로 존재하는 프롭
-        // 컴포넌트의 자식들을 값으로 값는 프롭
-        // 컴포넌트 함수에서 따로 가공하지 않고, 단순히 보여주기만 할 모습은 children Prop로 표현 
+        // JSX 문법으로 컴포넌트를 작성할 때 여는 태그와 닫는 태그의 형태로 작성하면, 그 안에 작성된 코드가 바로 이 children 값에 담기게 된다.
+        // 리엑트에 기본적으로 존재하는 프롭, 컴포넌트의 자식들을 값으로 값는 프롭
+        // 컴포넌트 함수에서 따로 가공하지 않고, 단순히 보여주기만 할 모습은 children Prop로 표현
 
 
-// 주사위 게임
-// root.render(<App />);    // 컴포넌트 태그 형태로 출력
-
-
-
-
-// 가위바위보 게임
-// const WINS = {
-//     rock: 'scissor',
-//     scissor: 'paper',
-//     paper: 'rock',
-// };
-// const getResult = function (left, right) {
-//     if (WINS[left] === right) return '승리';
-//     else if (left === WINS[right]) return '패배';
-//     return '무승부';
-// }
-// const handleClick = function () { 
-//     console.log('가위바위보!');
-// }
-// const me = 'rock';
-// const other = 'scissor';
-// const element = (
-//     <>
-//         <h1 id="title">가위바위보</h1>
-//         <h2>{getResult(me, other)}</h2>
-//         <button onClick={handleClick} className="hand">가위</button>
-//         <button onClick={handleClick} className="hand">바위</button>
-//         <button onClick={handleClick} className="hand">보</button>
-//     </>
-// );
-
-
-
-
+// 4. State : 리액트에서 변수같은 것, state를 바꾸면 리액트가 알아서 화면을 새로 렌더링 한다.
+    // import { useState } from "react"; 로 모듈 삽입
+    // useState 함수는 파라미터로 초기값을 전달받고,
+    // 배열의 형태로 요수 2개를 반환한다.
+        // 첫번째 요소는 State 값 (현재 변수의 값)
+        // 두번째 요소는 setter 함수 (이 함수를 호출할 때 파라미터로 전달하는 값으로 State값 변경)
 
 root.render(<App />);
-// root.render(element);
