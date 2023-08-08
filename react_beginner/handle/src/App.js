@@ -87,9 +87,9 @@ function App() {
       </div>
       <p>승부 기록: {gameHistory.join(', ')}</p>
       <div>
-        <HandButton value="rock" onClick={handleButtonClick} />
-        <HandButton value="scissor" onClick={handleButtonClick} />
-        <HandButton value="paper" onClick={handleButtonClick} />
+        <HandButton className="HandButton" value="rock" onClick={handleButtonClick} />
+        <HandButton className="HandButton" value="scissor" onClick={handleButtonClick} />
+        <HandButton className="HandButton" value="paper" onClick={handleButtonClick} />
       </div>
     </div>
   );
