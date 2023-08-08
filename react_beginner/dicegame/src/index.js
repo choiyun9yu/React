@@ -27,7 +27,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
     // 재사용에 유리하다.
     // 이 객체는 리액트 엘리먼트라고 한다. 이것을 ReactDOM의 render 메소드로 전달하면 리액트가 이 객체를 해석해서 HTML로 렌더링 하는 것이다.
     // 리액트 엘리먼트를 함수 형태로 만들어내면 JSX 문법을 작성할 때 커스텀 태그처럼 활용할 수도 있다.
-// const Hello = () => <h1>안녕 리액트</h1>;   // 이 함수를 리액트 컴포넌트라고 한다.
+
+    // 리액트 개발은 컴포넌트 개발이라고 할 수 있는 만큼 컴포넌트는 핵심 개념이다.
+    // 재사용성이 높다. 유지보수가 쉽다. 분업하기 좋다.
+
+    // const Hello = () => <h1>안녕 리액트</h1>;   // 이 함수를 리액트 컴포넌트라고 한다.
 // const element = (
 //     <>
 //         <Hello />   // 컴포넌트 태그 형태
@@ -57,7 +61,34 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
     // 참조형 State는 참조형 자체를 값으로 갖는게 아니라, 그 참조형을 가리키고 있는 주소값을 갖는다.
     // 그렇기 때문에 setter 함수가 아닌 메소드를 이용해서 집어 넣더라도 해당 자료형이 가진 주소값은 변하지 않는다.
     // State 값이 바뀌어야 화면을 새로 랜더링 하는데 바뀌지 않는 문제 발생
-
     // 따라서 참조형 타입의 State를 바꿀 땐 전체를 새로 만든다고 생각하는 것이 좋다.
+
+
+// 6. State Lifting
+    // 자식 컴포넌트의 State를 부모 컴포넌트로 올려주는 것
+
+
+// 7. 리액트가 렌더링하는 방식
+    // 직접 요소변경이 아닌 State를 변경하고, State가 변경될 때 통째로 렌더링 한다.
+    // 단점 : 변화 없는 것도 새로 렌더링 -> 이를 위해 virtual DOM 사용
+
+    // 엘리먼트를 새로 렌더링할 때 그 모습을 실제 DOM 트리에 바로 반영하는 게 아니라
+    // 우선 virtual DOM에 적용 -> State 변경 전의 virtual DOM과 변경 후의 virtual DOM 비교
+    // 바뀐 부분만 찾아낸 다음에 실제 DOM 렌더링
+
+
+// 8. 인라인 스타일 
+    // HTML에서와 마찬가지로 태그 안에 style 속성을 지정해주면 된다.
+    // (예) <button style={style} onClick={onClick}>{children}</button>;
+    // 그러나 문자열이 아닌 객체로 스타일 값을 입력해야 한다.
+    // (예) const style = {
+    //          CSS속성명 : 'CSS속성값';
+    //      };
+    // 이때 속성명의 대시기호는 카멜표기법으로 바꿔야한다.
+
+    // 바로 속성 값 입력도 가능 <- 비추천
+    // (예) <button style={backroundColor:'yellow';} onClick={onClick}>{children}</button>
+
+    // Props는 스타일 변경할 때도 사용할 수 있다.
 
 root.render(<App />);
