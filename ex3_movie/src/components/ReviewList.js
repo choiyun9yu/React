@@ -5,7 +5,12 @@ function formatDate(value) {
   return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}`;
 }
 
-function ReviewListItem({ item }) {
+function ReviewListItem({ item, onDelete }) {
+  // 여기서 onDelete()는 onDelete prop으로 내려받은 함수를 실행 것이다.
+  // 자바스크립트에서 함수는 일급객체이기 때문에 변수에 함수를 전달할 수 있다.
+  // 이 코드에서는 타고 올라가보면 handleDelete함수를 전달받았음을 알 수 있다.
+  const handleDeleteClick = () => onDelete(item.id);
+
   return (
     <div>
       <img className="ReviewListItem-img" src={item.imgUrl} alt={item.title} />
@@ -15,12 +20,13 @@ function ReviewListItem({ item }) {
         {/*  mock.js에서 생성한 날짜를 나타내는 createdAt은 숫자형이다. */}
         <p>{formatDate(item.createdAt)}</p>
         <p>{item.content}</p>
+        <button onClick={handleDeleteClick}>삭제</button>
       </div>
     </div>
   );
 }
 
-function ReviewList({ items }) {
+function ReviewList({ items, onDelete }) {
   console.log(items);
   return (
     <ul>
@@ -29,7 +35,7 @@ function ReviewList({ items }) {
       {items.map((item) => {
         return (
           <li>
-            <ReviewListItem item={item} />
+            <ReviewListItem item={item} onDelete={onDelete} />
           </li>
         );
       })}
