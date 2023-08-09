@@ -10,6 +10,7 @@ function App() {
   const [cursor, setCursor] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setIsError] = useState(null);
+  const [search, setSearch] = useState("");
 
   // 데이터 로드
   // 버튼 클릭시 로드
@@ -37,12 +38,40 @@ function App() {
     setItems(nextItems);
   };
 
-  // 더 보기 눌렀을 떼 이 함수로 데이터 로드 함수 호출
+  // 더 보기 눌렀을 때 이 함수로 데이터 로드 함수 호출
   const handleLoadMore = () => {
     handleLoad({
       order,
       cursor,
     });
+  };
+
+  // 검색 했을 때 이 함수로 서치 함수 호출
+  const handleSearchSubmit = (e) => {
+    e.preventDefault(); // a태그나 submit 태그를 누르게 되면 href를 통해 이동하거나 창이 새로고침 되는 것을 막아준다.
+    setSearch(e.target["search"].value);
+    handleSearch({
+      order,
+      cursor,
+      search,
+    });
+  };
+
+  const handleSearch = async (options) => {
+    let result;
+    try {
+      setIsLoading(true);
+      setIsError(null);
+      result = await getFoods(options);
+    } catch (error) {
+      setIsError(error);
+      return;
+    } finally {
+      setIsLoading(false);
+    }
+    const { foods } = result;
+    const searchItem = foods.filter((item) => item.title === search);
+    setItems(searchItem);
   };
 
   // 초기 렌더링 or order상태 바뀌었을 때, 더보기눌렀을 때 호출
@@ -79,6 +108,12 @@ function App() {
 
   return (
     <div>
+      {/* 검색어 입력 폼 */}
+      <form onSubmit={handleSearchSubmit}>
+        <input name="search" />
+        <button type="submit">검색</button>
+      </form>
+
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleCalorieClick}>칼로리순</button>
       <FoodList items={sortedItems} onDelete={handleDelete} />

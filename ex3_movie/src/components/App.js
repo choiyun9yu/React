@@ -81,6 +81,8 @@ function App() {
   useEffect(() => {
     handleLoad({ order, offset: 0, limit: LIMIT });
   }, [order]);
+  // 처음 진입시에만 하려면 useEffect 두번째 아규먼트를 [] 빈배열
+  // 특정 값이 바뀔 때도 하려면 useEffect 두번째 아규먼트를 [기억할 값 배열]
 
   // 다음 페이지를 불러올 함수
   const handleLoadMore = async () => {
