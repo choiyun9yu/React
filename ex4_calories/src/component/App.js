@@ -1,5 +1,12 @@
+import FoodList from "./FoodList";
+import items from "../mock.json";
+
 function App() {
-  return <></>;
+  return (
+    <div>
+      <FoodList items={items} />
+    </div>
+  );
 }
 
 export default App;
