@@ -25,12 +25,13 @@ function App() {
   const handleCalorieClick = () => setOrder("calorie");
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
 
-  // 처음 진입, 정렬 시 이 함수로 데이터 로드 함수 호출 된다.
+  // 처음 진입[], 정렬 시[order], 검색 시[search] 이 함수로 데이터 로드 함수 호출 된다.
   useEffect(() => {
     handleLoad({
       order,
+      search, // 검색 추가
     });
-  }, [order]);
+  }, [order, search]);
 
   // 삭제는 데이터 로드 함수 호출하지 않음
   const handleDelete = (id) => {
@@ -43,38 +44,17 @@ function App() {
     handleLoad({
       order,
       cursor,
+      search, // 더 보기 버튼을 눌렀을 때도 검색어와 함께 요청되도록 수정
     });
   };
 
-  // 검색 했을 때 이 함수로 서치 함수 호출
+  // 검색 제출 이벤트 발생시 상태 변화
   const handleSearchSubmit = (e) => {
     e.preventDefault(); // a태그나 submit 태그를 누르게 되면 href를 통해 이동하거나 창이 새로고침 되는 것을 막아준다.
     setSearch(e.target["search"].value);
-    handleSearch({
-      order,
-      cursor,
-      search,
-    });
   };
 
-  const handleSearch = async (options) => {
-    let result;
-    try {
-      setIsLoading(true);
-      setIsError(null);
-      result = await getFoods(options);
-    } catch (error) {
-      setIsError(error);
-      return;
-    } finally {
-      setIsLoading(false);
-    }
-    const { foods } = result;
-    const searchItem = foods.filter((item) => item.title === search);
-    setItems(searchItem);
-  };
-
-  // 초기 렌더링 or order상태 바뀌었을 때, 더보기눌렀을 때 호출
+  // 초기 렌더링 or order상태 바뀌었을 때, 더보기눌렀을 때, 검색했을 때 호출
   const handleLoad = async (options) => {
     // try문 결과를 블록 밖으로 가져올 수 있는 더 넓은 스코프의 변수가 선언
     let result;

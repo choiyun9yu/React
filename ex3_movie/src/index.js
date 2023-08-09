@@ -81,6 +81,7 @@ import App from "./components/App";
 // 2-5. 검색기능
 //      search 쿼리(api마다 다름)에 해당하는 %EB%A7%88%ED%86%A0 이런 값은 인코딩 된 한글이다.
 //      fetch() 함수에서는 한글을 그대로 쓰면 알아서 인코딩해서 보내준다.
+//      useEffect의 디펜던시 리스트에 search를 추구하는 것을 잊지말자!!
 //      (1) 검색어 받기
 //          e.preventDefault(); a태그, submit 태그로 인해 이동하거나 새로고침 되는 것을 막음
 //      (2) 리퀘스트 보내기
