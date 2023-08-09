@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App";
 
@@ -26,6 +25,12 @@ import App from "./components/App";
 // Network탭의 Preview탭의 paging프로퍼티 : 데이터 추가 로딩에 쓸 값을 담고 있다.
 // Network탭의 Preview탭의 reviews프로퍼티 : 받아서 사용할 데이터
 // api.js 파일 : request 함수들을 모아두고 사용할 파일
+
+// 2-1. useEffect() : 초기 데이터 가져오기
+// 컴포넌트가 처음 렌더링 되었을때 리퀘스트를 보내고 싶고, 무한루프는 피하고 싶을 때 사용
+// useEffect()를 사용하지 않고 그냥 함수를 호출하면 무한루프에 빠질 수 있다.
+// useEffect(실행할 콜백함수, 빈배열[])
+// 이렇게 하면 콜백함수를 맨처음 렌더링할 때만 호출한다.
 
 // 3. 입력 폼 다루기
 
