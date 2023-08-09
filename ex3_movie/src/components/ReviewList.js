@@ -12,7 +12,7 @@ function ReviewListItem({ item }) {
       <div>
         <h1>{item.title}</h1>
         <p>{item.rating}</p>
-        {/*  생성한 날짜를 나타내는 createdAt은 숫자형 */}
+        {/*  mock.js에서 생성한 날짜를 나타내는 createdAt은 숫자형이다. */}
         <p>{formatDate(item.createdAt)}</p>
         <p>{item.content}</p>
       </div>
