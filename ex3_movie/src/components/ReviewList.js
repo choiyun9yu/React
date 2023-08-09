@@ -34,7 +34,7 @@ function ReviewList({ items, onDelete }) {
       // map 메소드 안에서 JSX를 리턴하면, JSX를 여러개 추가한 것 처럼 동작 */}
       {items.map((item) => {
         return (
-          <li>
+          <li key={item.id}>
             <ReviewListItem item={item} onDelete={onDelete} />
           </li>
         );

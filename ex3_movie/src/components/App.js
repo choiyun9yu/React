@@ -1,11 +1,12 @@
 // 프로젝트 최상위 컴포넌트
 
 import ReviewList from "./ReviewList";
-import mockItems from "../mock.json";
+// import mockItems from "../mock.json";
 import { useState } from "react";
 
 function App() {
-  const [items, setItems] = useState(mockItems);
+  // const [items, setItems] = useState(mockItems);
+  const [items, setItems] = useState([]);
 
   // 정렬기능
   const [order, setOrder] = useState("createdAt");
@@ -19,6 +20,9 @@ function App() {
     const nextItems = items.filter((item) => item.id !== id);
     setItems(nextItems);
   };
+
+  // 서버에서 데이터 가져올 버튼
+  const handleLoadClick = async () => {};
 
   return (
     <div>
