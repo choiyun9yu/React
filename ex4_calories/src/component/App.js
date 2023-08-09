@@ -8,6 +8,8 @@ function App() {
   const [order, setOrder] = useState("createdAt");
   const [items, setItems] = useState([]);
   const [cursor, setCursor] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingError, setIsError] = useState(null);
 
   // 데이터 로드
   // 버튼 클릭시 로드
@@ -45,7 +47,21 @@ function App() {
 
   // 초기 렌더링 or order상태 바뀌었을 때, 더보기눌렀을 때 호출
   const handleLoad = async (options) => {
-    const { foods, paging } = await getFoods(options);
+    // try문 결과를 블록 밖으로 가져올 수 있는 더 넓은 스코프의 변수가 선언
+    let result;
+    try {
+      setIsLoading(true);
+      setIsError(null);
+      result = await getFoods(options);
+    } catch (error) {
+      // 여기서 true가 아니라 error 넘겨줘야한다.
+      setIsError(error);
+      return;
+    } finally {
+      setIsLoading(false);
+    }
+
+    const { foods, paging } = result;
     // useEffect를 통해 들어오는 처음 진입, 정렬의 경우에는 cursor 값이 없어서
     // 초기 데이터 값만 받아오고
     if (!options.cursor) {
@@ -67,7 +83,12 @@ function App() {
       <button onClick={handleCalorieClick}>칼로리순</button>
       <FoodList items={sortedItems} onDelete={handleDelete} />
       {/* <button onClick={handleLoadClick}>불러오기</button> */}
-      {cursor && <button onClick={handleLoadMore}>더보기</button>}
+      {cursor && (
+        <button disabled={isLoading} onClick={handleLoadMore}>
+          더보기
+        </button>
+      )}
+      {loadingError?.message && <span>{loadingError.message}</span>}
     </div>
   );
 }

@@ -17,6 +17,10 @@ function App() {
   // 데이터 추가 로드 시 필요한 state
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(false); // disabled 속성과 맞추기 위해서 false 기본값
+  // 네트워크 리퀘스트 여부 확인하는 state
+  const [isLoading, setIsLoading] = useState(false);
+  // 에러처리를 위해 필요한 state
+  const [loadingError, setLoadingError] = useState(null);
 
   // 정렬기능
   const sortedItems = items.sort((a, b) => b[order] - a[order]); // rating이 내림차순 정렬
@@ -38,7 +42,22 @@ function App() {
 
   // 페이지 열었을 때 자동으로 데이터 가져오기
   const handleLoad = async (options) => {
-    const { paging, reviews } = await getReviews(options);
+    let result;
+    // 네트워크 리퀘스트 부분 try문 처리
+    try {
+      setLoadingError(null);
+      setIsLoading(true);
+      result = await getReviews(options);
+      // 에러처리
+    } catch (error) {
+      setLoadingError(error);
+      return;
+    } finally {
+      setIsLoading(false);
+    }
+
+    const { paging, reviews } = result;
+    // const { paging, reviews } = await getReviews(options);
     if (options.offset === 0) {
       // offset 값이 0일 땐 전체를 바꾼다.
       setItems(reviews);
@@ -84,7 +103,14 @@ function App() {
 
       {/* 더 불러올 데이터가 없으면 아에 버튼이 보이지 않도록 설정 */}
       {/* hasNext가 참일 땐 뒤에 사용 버튼 렌더링, 거짓일 땐 hasNext값 사용 */}
-      {hasNext && <button onClick={handleLoadMore}>더 보기</button>}
+      {/* disabled 프롭으로 네트워크 진행중일 때 더보기 못누르게 설정 */}
+      {hasNext && (
+        <button disabled={isLoading} onClick={handleLoadMore}>
+          더 보기
+        </button>
+      )}
+      {/* 옵셔널체이닝 : 앞의 객체가 있을 때만 프로피터릴 참조하겠다는 것 */}
+      {loadingError?.message && <span>{loadingError.message}</span>}
     </div>
   );
 }
