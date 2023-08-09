@@ -1,5 +1,6 @@
 // 프로젝트 최상위 컴포넌트
 
+import { getReviews } from "../api";
 import ReviewList from "./ReviewList";
 // import mockItems from "../mock.json";
 import { useState } from "react";
@@ -7,9 +8,9 @@ import { useState } from "react";
 function App() {
   // const [items, setItems] = useState(mockItems);
   const [items, setItems] = useState([]);
+  const [order, setOrder] = useState("createdAt");
 
   // 정렬기능
-  const [order, setOrder] = useState("createdAt");
   const sortedItems = items.sort((a, b) => b[order] - a[order]); // rating이 내림차순 정렬
   // 만약 오름차순 정렬하고 싶다면 a.rating - b.rating 하면 된다.
   const handleNewestClick = () => setOrder("createdAt");
@@ -22,13 +23,17 @@ function App() {
   };
 
   // 서버에서 데이터 가져올 버튼
-  const handleLoadClick = async () => {};
+  const handleLoadClick = async () => {
+    const { reviews } = await getReviews();
+    setItems(reviews);
+  };
 
   return (
     <div>
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleBestClick}>평점순</button>
       <ReviewList items={sortedItems} onDelete={handleDelete} />
+      <button onClick={handleLoadClick}>불러오기</button>
     </div>
   );
 }
