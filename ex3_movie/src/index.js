@@ -89,10 +89,51 @@ import App from "./components/App";
 //      (4) '더보기' 버튼은?
 
 // 3. 입력 폼 다루기
-//      3-1. 입력폼 만들기 : 리액트에서는 인풋의 값을 주로 state로 관리한다.
-//      두 값을 동일하게 만드는게 핵심이다. <- 제어 컴포넌트
+//      3-1. onChange : 리액트에서는 인풋의 값을 주로 state로 관리한다. 두 값을 동일하게 만드는게 핵심이다. <- 제어 컴포넌트
 //      HTML에서는 사용자가 input에 입력할 때마다 onInput이라는 이벤트 발생, onChange 이벤트는 사용자 입력이 끝났을 때 발생
 //      react에서 onChange는 HTML과 다르게 동작한다. -> onInput처럼 사용자가 값을 입력할 때마다 이벤트 발생
+
+//      3-2. onSubmit : input 태그에 입력했으면 이제 전송도 할 수 있어야 한다.
+//      type="submit"으로 지정한 버튼 태그를 클릭하면 form 태그에서 onSubmit 이벤트가 발생한다.
+//      form 태그에는 onSubmit prop으로 handleSubmit을 내려준다.
+//      HTML 폼 태그의 기본 동작은 입력 버튼을 눌렀을 때 입력 폼 내용을 GET 리퀘스트 보내는 것
+//      그래서 기본 동작을 막아줘야한다. (e.preventDefault())
+
+//      3-3. 하나의 State로 폼 구현하기
+//      input {태그의 name 속성을 활용하는 것이 핵심이다. (이벤트 객체에서 name 값을 가져올 수 있다는 점을 활용)
+//            -예시-
+//            const { name, value } = e.target;
+//            setValues((prevValues) => ({
+//              ...prevValues,
+//              [name]: value, // 대괄호 표기법으로 name의 값으로 key 설정, value로 value 설정
+//             }));
+
+//      3-4. 지우기 버튼 (인풋은 제어, 파일은 비제어 권장)
+//          제어 컴포넌트 : 리액트를 통해 input 값을 지정하고 제어 (사용자가 소문자로 입력해도 이벤트 핸들러와 value 값으로 대문자로 바꿀 수 있음)
+//              - 지우기 버튼 예제 -
+//              import { useState } from "react";
+//              function MyComponent({ value, onChange }) {
+//                  const [value, setValue] = useState("");
+//                  return <input value={value} />;
+//              }
+//              function App() {
+//                  const [value, setValue] = useState("");
+//                  // 지우기 함수
+//                  const handleClear = () => setValue("");
+//                  return (
+//                      // onChange에 곧바로 setValue 할당함에 주의
+//                      <div>
+//                          <MyComponent value={value} onChange={setValue} />
+//                          <button onClick={handleClear}>지우기</button>
+//                      </div>
+//                  );
+//              }
+
+//      3-5. 파일 인풋 : 반드시 비제어 인풋으로 만들어야 한다.
+//          비제어 컴포넌트 : value prop을 지정하지 않는 컴포넌트 -> 사용자가 input이 리액트에서 실제 이용하는 값과 다를지라도 입력한 그대로 보임
+//              파일은 여러개 선택할 수 있으니까 유사배열 형태이다.
+//              0번 인덱스에는 우리가 선택한 파일에 해당하는 객체가 있다.
+//              이 객체를 사용하면 네트워크로 파일을 전송하거나 이미지 미리보기를 만들 수 있다.
 
 // 4. 데이터 보내기
 
