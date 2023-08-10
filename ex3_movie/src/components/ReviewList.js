@@ -1,3 +1,4 @@
+import Rating from "./Rating";
 import "./ReviewList.css";
 
 function formatDate(value) {
@@ -16,7 +17,8 @@ function ReviewListItem({ item, onDelete }) {
       <img className="ReviewListItem-img" src={item.imgUrl} alt={item.title} />
       <div>
         <h1>{item.title}</h1>
-        <p>{item.rating}</p>
+        {/* <p>{item.rating}</p> 숫자로 보여주던 평점을 Rating 컴포넌트로 바꾸기 */}
+        <Rating value={item.rating} />
         {/*  mock.js에서 생성한 날짜를 나타내는 createdAt은 숫자형이다. */}
         <p>{formatDate(item.createdAt)}</p>
         <p>{item.content}</p>

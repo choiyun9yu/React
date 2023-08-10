@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./ReviewForm.css";
 import FileInput from "./FileInput";
+import RatingInput from "./RatingInput";
 
 function ReviewForm() {
   // 리액트에서 인풋과 스테이 값을 일치시키는 것이 핵심 포인트이다.
@@ -69,17 +70,12 @@ function ReviewForm() {
         value={values.imgFile}
         onChange={handleChange}
       />
-      <input
-        name="title"
-        value={values.title}
-        onChange={handleInputChange}
-      ></input>
-      <input
+      <input name="title" value={values.title} onChange={handleInputChange} />
+      <RatingInput
         name="rating"
-        type="number"
         value={values.rating}
-        onChange={handleInputChange}
-      ></input>
+        onChange={handleChange}
+      />
       <textarea
         name="content"
         value={values.content}
