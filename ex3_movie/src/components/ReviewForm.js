@@ -38,7 +38,11 @@ function ReviewForm() {
     }));
   };
 
-  // 제어 컴포넌트로 인풋 태그에서 이벤트 발생시 변화를
+  // 여기서 handleInputChange와 handleChange로 추상화 하는 이유는
+  // handleInputChange 핸들러는 인자를 e 하나만 받는다.
+  // 반면 아래로 내려보내야하는 handleCahnge 핸들러는 name, value 두개를
+  // 인자로 받아야한다. 그래서 핸들러가 두개가 된 것이다.
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     handleChange(name, value);
