@@ -2,8 +2,17 @@ import { useState } from "react";
 import "./ReviewForm.css";
 import FileInput from "./FileInput";
 import RatingInput from "./RatingInput";
+import { createReview } from "../api";
 
-function ReviewForm() {
+const INITIAL_VALUES = {
+  title: "",
+  rating: 0,
+  content: "",
+  imgFile: null,
+};
+
+// submit하고 받아온 response를 사용하기 위해서 prop 추가
+function ReviewForm({ onSubmitSuccess }) {
   // 리액트에서 인풋과 스테이 값을 일치시키는 것이 핵심 포인트이다.
   // const [title, setTitle] = useState(); // 제목
   // const [rating, setRating] = useState(); // 점수
@@ -25,12 +34,9 @@ function ReviewForm() {
   // };
 
   // 하나의 State로 입력값 관리하기
-  const [values, setValues] = useState({
-    title: "",
-    rating: 0,
-    content: "",
-    imgFile: null,
-  });
+  const [values, setValues] = useState(INITIAL_VALUES);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittingError, setSubmittingError] = useState(null);
 
   const handleChange = (name, value) => {
     setValues((prevValues) => ({
@@ -49,22 +55,60 @@ function ReviewForm() {
     handleChange(name, value);
   };
 
-  const handleSubmit = (e) => {
-    // 네트워크 연동은 나중에
+  // 비동기 함수로 바꾸기
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({
-      // title,
-      // rating,
-      // content,
-      values,
-    });
+    // 네트워크 연동
+    const formData = new FormData(); // 새 FormData 인스턴스 생성
+    formData.append("title", values.title); // 각 필드 값 지정
+    formData.append("rating", values.rating);
+    formData.append("content", values.content);
+    formData.append("imgFile", values.imgFile);
+
+    let result;
+    try {
+      setSubmittingError(null);
+      setIsSubmitting(true);
+      result = await createReview(formData); // api.js에 있는 createReview 함수로 전달
+    } catch (error) {
+      setSubmittingError(error);
+      return;
+    } finally {
+      setIsSubmitting(false);
+    }
+    const { review } = result;
+    setValues(INITIAL_VALUES); // 리퀘스트가 끝나면 폼 초기화
+    onSubmitSuccess(review); // submit 성공 결과를 onSubmitSuccess에 넘겨준다.
   };
 
+  //   return (
+  //     <form onSubmit={handleSubmit}>
+  //       {/* <input value={title} onChange={handleTitleChange}></input>
+  //       <input type="number" value={rating} onChange={handleRatingChange}></input>
+  //       <textarea value={content} onChange={handleContentChange}></textarea> */}
+  //       <FileInput
+  //         name="imgFile"
+  //         value={values.imgFile}
+  //         onChange={handleChange}
+  //       />
+  //       <input name="title" value={values.title} onChange={handleInputChange} />
+  //       <RatingInput
+  //         name="rating"
+  //         value={values.rating}
+  //         onChange={handleChange}
+  //       />
+  //       <textarea
+  //         name="content"
+  //         value={values.content}
+  //         onChange={handleInputChange}
+  //       ></textarea>
+  //       <button type="submit">확인</button>
+  //     </form>
+  //   );
+  // }
+
   return (
-    <form onSubmit={handleSubmit}>
-      {/* <input value={title} onChange={handleTitleChange}></input>
-      <input type="number" value={rating} onChange={handleRatingChange}></input>
-      <textarea value={content} onChange={handleContentChange}></textarea> */}
+    <form className="ReviewForm" onSubmit={handleSubmit}>
       <FileInput
         name="imgFile"
         value={values.imgFile}
@@ -80,8 +124,11 @@ function ReviewForm() {
         name="content"
         value={values.content}
         onChange={handleInputChange}
-      ></textarea>
-      <button type="submit">확인</button>
+      />
+      <button disabled={isSubmitting} type="submit">
+        확인
+      </button>
+      {submittingError && <div>{submittingError.message}</div>}
     </form>
   );
 }

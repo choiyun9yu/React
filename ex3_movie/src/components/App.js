@@ -14,6 +14,8 @@ function App() {
   // 정렬할 때 필요한 state
   const [order, setOrder] = useState("createdAt");
   // 데이터 로드 시 필요한 state
+  // 화면에 나오는 목록은 items라는 State로 관리되고 있음,
+  // submit하고 받은 response를 items에 추가해주면 별도로 request를 하지 않아도 리뷰 목록 업데이트 가능
   const [items, setItems] = useState([]);
   // 데이터 추가 로드 시 필요한 state
   const [offset, setOffset] = useState(0);
@@ -90,13 +92,19 @@ function App() {
     await handleLoad({ order, offset, limit: LIMIT });
   };
 
+  // 리퀘스트 이후에 비동기로 실행되는 함수
+  const handleSubmitSuccess = (review) => {
+    // 비동기로 일어나는 작업의 이전 스테이트 값을 참고하기 위해 콜백형태로 사용
+    setItems((prevItems) => [review, ...prevItems]);
+  };
+
   return (
     <div>
       <div>
         <button onClick={handleNewestClick}>최신순</button>
         <button onClick={handleBestClick}>베스트순</button>
       </div>
-      <ReviewForm />
+      <ReviewForm onSubmitSuccess={handleSubmitSuccess} />
       <ReviewList items={sortedItems} onDelete={handleDelete} />
       {/* <button onClick={handleLoadClick}>불러오기</button> */}
 

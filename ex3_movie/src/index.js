@@ -165,9 +165,13 @@ import App from "./components/App";
 //          useEfeect 에서 리턴 값으로 함수를 리턴하면 된다.
 //          useEffect의 리턴은 다시 콜백할 때 그전 콜백의 리턴 값을 실행한다.
 
-//      3-10. 별점 입력 컴포넌트 만들기
-
 // 4. 데이터 보내기
+//      4-1. 글 작성하기 : onSubmit 함수 - 리뷰생성API 연동(실습에서 연동하는 API는 FormData형식 )
+
+//      4-2. submit하고 받은 response 데이터 반영하기
+//          api에 따라 submit이 성공하면 성공한 데이터를 response해준다. 이것을 활용하면 새로고침없이 반영할 수 있다.
+//          화면에 나오는 목록은 관리하는 State에 submit하고 받은 response를 items에 추가해주면
+//          별도로 request를 하지 않아도 리뷰 목록 업데이트 가능
 
 // 5. 전역 데이터 다루기
 
