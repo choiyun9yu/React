@@ -138,6 +138,7 @@ import App from "./components/App";
 //          ref : 원하는 시점에 실제 DOM 노드에 접근하고 싶을 때 사용할 수 있는 prop
 //          (1) ref 객체 만들기 const inputRef = useRef();
 //          (2) ref 라는 prop으로 내려주기 ref={inputRef}
+//              ref prop으로 속성을 넣어두면 나중에 이 태그 선택할 수 있다.
 //          (3) useEffect 함수를 써서 처음 렌더링 됬을 때만 inputRef를 콘솔로 출력
 //          (4) ref를 쓰면 실제 DOM 노드를 직접 참조할 수 있다.
 //          !주의 DOM 노드는 렌더링이 끝나야 생김, ref 객체의 current 값도 화면에 컴포넌트가 렌더링 됐을 때만 존재
@@ -149,6 +150,8 @@ import App from "./components/App";
 //              FileInput의 value 속성은 사용자만 직접 바꿀 수 있고 JS는 빈문자열로만 바꿀 수 있다.
 //              value 속성을 빈 문자열로 바꿔주면 선택한 파일이 초기화 된다.
 //              value prop으로 값을 수정할 수 없으니까 refDOM을 사용한다.
+
+//      3-8. 이미지 파일 미리보기
 
 // 4. 데이터 보내기
 

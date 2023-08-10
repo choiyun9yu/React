@@ -22,7 +22,7 @@ function FoodForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(values);
+    // console.log(values);
     // 네트워크 연동은 아직 X
   };
 

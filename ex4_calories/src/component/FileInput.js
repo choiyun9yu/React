@@ -23,12 +23,8 @@ function FileInput({ name, value, onChange }) {
 
   return (
     <div>
-      <input type="file" onChange={handleChange2} />
-      {value && (
-        <button type="button" onClick={handleClearClick}>
-          X
-        </button>
-      )}
+      <input type="file" onChange={handleChange2} ref={inputRef} />
+      {value && <button onClick={handleClearClick}>X</button>}
     </div>
   );
 }
