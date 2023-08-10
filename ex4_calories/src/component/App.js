@@ -1,4 +1,5 @@
 import FoodList from "./FoodList";
+import FoodForm from "./FoodForm";
 // import mockItems from "../mock.json";
 import { useEffect, useState } from "react";
 import { getFoods } from "../api";
@@ -93,9 +94,9 @@ function App() {
         <input name="search" />
         <button type="submit">검색</button>
       </form>
-
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleCalorieClick}>칼로리순</button>
+      <FoodForm />
       <FoodList items={sortedItems} onDelete={handleDelete} />
       {/* <button onClick={handleLoadClick}>불러오기</button> */}
       {cursor && (
