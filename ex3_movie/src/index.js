@@ -167,6 +167,10 @@ import App from "./components/App";
 
 // 4. 데이터 보내기
 //      4-1. 글 작성하기 : onSubmit 함수 - 리뷰생성API 연동(실습에서 연동하는 API는 FormData형식 )
+//          api.js에 post방식으로 소통하는 패치함수를 만든다.
+//          함수 안에는 api서버에서 전달받는 형식의 객체 데이터를 담아서 전달한다.
+//          handleSubmit()함수에 formData 객체를 생성하는 코드도 작생해준다.
+//          formData안에 필드는 서버에 보낼 데이터키와 밸류다.
 
 //      4-2. submit하고 받은 response 데이터 반영하기
 //          api에 따라 submit이 성공하면 성공한 데이터를 response해준다. 이것을 활용하면 새로고침없이 반영할 수 있다.

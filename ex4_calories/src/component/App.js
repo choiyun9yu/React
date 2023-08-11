@@ -41,12 +41,13 @@ function App() {
   };
 
   // 더 보기 눌렀을 때 이 함수로 데이터 로드 함수 호출
-  const handleLoadMore = () => {
-    handleLoad({
-      order,
-      cursor,
-      search, // 더 보기 버튼을 눌렀을 때도 검색어와 함께 요청되도록 수정
-    });
+  const handleLoadMore = async () => {
+    // handleLoad({
+    //   order,
+    //   cursor,
+    //   search, // 더 보기 버튼을 눌렀을 때도 검색어와 함께 요청되도록 수정
+    // });
+    await handleLoad({ order, cursor, search });
   };
 
   // 검색 제출 이벤트 발생시 상태 변화
@@ -87,6 +88,10 @@ function App() {
 
   // const nextItems = setItems((prevItems) => [...prevItems, ...nextItems]);
 
+  const handleSubmitSuccess = (newItem) => {
+    setItems((prevItems) => [newItem, ...prevItems]);
+  };
+
   return (
     <div>
       {/* 검색어 입력 폼 */}
@@ -96,7 +101,7 @@ function App() {
       </form>
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleCalorieClick}>칼로리순</button>
-      <FoodForm />
+      <FoodForm onSubmitSuccess={handleSubmitSuccess} />
       <FoodList items={sortedItems} onDelete={handleDelete} />
       {/* <button onClick={handleLoadClick}>불러오기</button> */}
       {cursor && (

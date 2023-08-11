@@ -1,15 +1,16 @@
 import "./FoodList.css";
 
 function FoodListItem({ item, onDelete }) {
-  const { imgUrl, title, calorie, content, id } = item;
-  const deleteClick = () => onDelete(id);
+  // const { imgUrl, title, calorie, content, id } = item;
+  const deleteClick = () => onDelete(item.id);
+  console.log(`이게 아이디다 : ${item.id}`);
 
   return (
     <div>
-      <img src={imgUrl} alt={title} />
-      <div>{title}</div>
-      <div>{calorie}</div>
-      <div>{content}</div>
+      <img src={item.imgUrl} alt={item.title} />
+      <div>{item.title}</div>
+      <div>{item.calorie}</div>
+      <div>{item.content}</div>
       <button onClick={deleteClick}>삭제</button>
     </div>
   );
