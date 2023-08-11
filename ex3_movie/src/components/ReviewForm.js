@@ -11,8 +11,15 @@ const INITIAL_VALUES = {
   imgFile: null,
 };
 
-// submit하고 받아온 response를 사용하기 위해서 prop 추가
-function ReviewForm({ onSubmitSuccess }) {
+// submit하고 받아온 response를 사용하기 위해서 onSubmitSucees prop 추가
+// 리뷰를 수정할 때 입력 폼에 값이 들어 있어야하니까 initalValues prop추가, 기존에 사용하던 INITIAL_VALUES prop의 default로 설정
+// 취소 버튼을 위해서 onCancel prop 추가
+function ReviewForm({
+  initialValues = INITIAL_VALUES,
+  initialPreview,
+  onSubmitSuccess,
+  onCancel,
+}) {
   // 리액트에서 인풋과 스테이 값을 일치시키는 것이 핵심 포인트이다.
   // const [title, setTitle] = useState(); // 제목
   // const [rating, setRating] = useState(); // 점수
@@ -34,7 +41,7 @@ function ReviewForm({ onSubmitSuccess }) {
   // };
 
   // 하나의 State로 입력값 관리하기
-  const [values, setValues] = useState(INITIAL_VALUES);
+  const [values, setValues] = useState(initialValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittingError, setSubmittingError] = useState(null);
 
@@ -112,6 +119,7 @@ function ReviewForm({ onSubmitSuccess }) {
       <FileInput
         name="imgFile"
         value={values.imgFile}
+        initialPreview={initialPreview}
         onChange={handleChange}
       />
       <input name="title" value={values.title} onChange={handleInputChange} />
@@ -125,9 +133,11 @@ function ReviewForm({ onSubmitSuccess }) {
         value={values.content}
         onChange={handleInputChange}
       />
+      {onCancel && <button onClick={onCancel}>취소</button>}
       <button disabled={isSubmitting} type="submit">
         확인
       </button>
+
       {submittingError && <div>{submittingError.message}</div>}
     </form>
   );

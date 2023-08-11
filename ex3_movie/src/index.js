@@ -177,6 +177,11 @@ import App from "./components/App";
 //          화면에 나오는 목록은 관리하는 State에 submit하고 받은 response를 items에 추가해주면
 //          별도로 request를 하지 않아도 리뷰 목록 업데이트 가능
 
+//      4-3. 글 수정하기
+//          4-3-1. 수정 버튼을 눌렀을 때 입력 폼을 보여주기
+//          핵심: ReveiwList 컴포넌트에서 현재 수정 중인 요소 기억 -> 렌더링할 때 해당요소만 랜더링하는 것
+//
+
 // 5. 전역 데이터 다루기
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

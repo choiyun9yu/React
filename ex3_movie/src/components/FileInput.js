@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-function FileInput({ name, value, onChange }) {
+function FileInput({ name, value, initialPreview, onChange }) {
   // 파일 미리보기 주소를 문자열로 저장할 상태값
-  const [preview, setPreview] = useState();
+  const [preview, setPreview] = useState(initialPreview);
 
   //   const [value, setValue] = useState();
   // FileInput 컴포넌트에 있는 State를 Prop으로 바꾸고 상위 컴포넌트에 있는 State를 props로 내려준다.
