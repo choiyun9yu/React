@@ -208,6 +208,12 @@ import App from "./components/App";
 //      5-1. Context : Props와 State만으로 다루기 힘들 때 사용, 상황에 대한 정보,
 //          전역 데이터를 다룰 때 Props와 State만을 사용하면 Props를 여러번 여러곳으로 내려줘야한다는 문제 발생 <- 프롭 드릴링
 //          데이터 공유 범위를 정해야한다. <Context.Provider />라는 컴포넌트로 범위를 정해줄 수 있다.
+//          Provider의 자손 컴포넌트에서는 Props를 거치지 않고 자유롭게 데이터를 사용할 수 있다.
+
+//      5-2. 다국어 기능
+//          createContext라는 함수로 Context를 만든다.
+//          Context객체에서 Provider라는 컴포넌트로 컨텍스트 범위를 지정하고, 공유할 데이터를 value= 프롭으로 내려준다.
+//          사용할 곳에서 useContext()를 사용해서 그 값을 리턴으로 받아온다.
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

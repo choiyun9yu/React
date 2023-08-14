@@ -2,6 +2,8 @@ import Rating from "./Rating";
 import "./ReviewList.css";
 import { useState } from "react";
 import ReviewForm from "./ReviewForm";
+// import { useLocale } from "../contexts/LocaleContext";
+import useTranslate from "../hooks/useTranslate";
 
 function formatDate(value) {
   const date = new Date(value);
@@ -9,6 +11,11 @@ function formatDate(value) {
 }
 
 function ReviewListItem({ item, onDelete, onEdit }) {
+  // context 값 가져오기
+  // const locale = useContext(LocaleContext);
+  // const locale = useLocale();   // 내가 만든 컴포넌트로 값 가져오기
+  const t = useTranslate();
+
   // 여기서 onDelete()는 onDelete prop으로 내려받은 함수를 실행 것이다.
   // 자바스크립트에서 함수는 일급객체이기 때문에 변수에 함수를 전달할 수 있다.
   // 이 코드에서는 타고 올라가보면 handleDelete함수를 전달받았음을 알 수 있다.
@@ -29,8 +36,9 @@ function ReviewListItem({ item, onDelete, onEdit }) {
         {/*  mock.js에서 생성한 날짜를 나타내는 createdAt은 숫자형이다. */}
         <p>{formatDate(item.createdAt)}</p>
         <p>{item.content}</p>
-        <button onClick={handleEditClick}>수정</button>
-        <button onClick={handleDeleteClick}>삭제</button>
+        {/* <p>현재 언어 : {locale}</p> */}
+        <button onClick={handleEditClick}>{t('edit button')}</button>
+        <button onClick={handleDeleteClick}>{t('delete button')}</button>
       </div>
     </div>
   );

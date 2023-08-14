@@ -3,6 +3,7 @@ import "./ReviewForm.css";
 import FileInput from "./FileInput";
 import RatingInput from "./RatingInput";
 import useAsync from "../hooks/useAsync";
+import useTranslate from "../hooks/useTranslate";
 
 const INITIAL_VALUES = {
   title: "",
@@ -21,6 +22,8 @@ function ReviewForm({
   onCancel,
   onSubmit, // reviewForm 컴포넌트 입장에서는 입력인지 수정인지 알 길이 없음 (상위 컴포넌트에서 프롭으로 전달해야 알 수 있음)
 }) {
+  const t = useTranslate();
+
   // 리액트에서 인풋과 스테이 값을 일치시키는 것이 핵심 포인트이다.
   // const [title, setTitle] = useState(); // 제목
   // const [rating, setRating] = useState(); // 점수
@@ -143,9 +146,9 @@ function ReviewForm({
         value={values.content}
         onChange={handleInputChange}
       />
-      {onCancel && <button onClick={onCancel}>취소</button>}
+      {onCancel && <button onClick={onCancel}>{t('cancel button')}</button>}
       <button disabled={isSubmitting} type="submit">
-        확인
+        {t('confirm button')}
       </button>
 
       {submittingError && <div>{submittingError.message}</div>}

@@ -1,7 +1,9 @@
 // 프로젝트 최상위 컴포넌트
 
 import { createReview, deleteReview, getReviews, updateReview } from "../api";
+import { LocaleProvider } from "../contexts/LocaleContext";
 import useAsync from "../hooks/useAsync";
+import LocaleSelect from "./LocaleSelect";
 import ReviewForm from "./ReviewForm";
 import ReviewList from "./ReviewList";
 // import mockItems from "../mock.json";
@@ -12,6 +14,8 @@ const LIMIT = 6;
 function App() {
   // 상태 값
   // const [items, setItems] = useState(mockItems);
+  // 다국어 기능 State
+  // const [locale, setLocale] = useState('ko');  // constext 코드 분리하면 이 코드를 LocaleContext.js로 옮겨야한다.
   // 정렬할 때 필요한 state
   const [order, setOrder] = useState("createdAt");
   // 데이터 로드 시 필요한 state
@@ -129,31 +133,36 @@ function App() {
   }
 
   return (
-    <div>
+    // <LocaleContext.Provider value={locale}>
+    <LocaleProvider defaultValue={"ko"} >
       <div>
-        <button onClick={handleNewestClick}>최신순</button>
-        <button onClick={handleBestClick}>베스트순</button>
-      </div>
-      <ReviewForm onSubmit={createReview} onSubmitSuccess={handleCreateSuccess} />
-      <ReviewList items={sortedItems} onDelete={handleDelete} onUpdate={updateReview} onUpdateSuccess={handleUpdateSuccess}/>
-      {/* <button onClick={handleLoadClick}>불러오기</button> */}
+        <div>
+          <LocaleSelect />
+          <button onClick={handleNewestClick}>최신순</button>
+          <button onClick={handleBestClick}>베스트순</button>
+        </div>
+        <ReviewForm onSubmit={createReview} onSubmitSuccess={handleCreateSuccess} />
+        <ReviewList items={sortedItems} onDelete={handleDelete} onUpdate={updateReview} onUpdateSuccess={handleUpdateSuccess}/>
+        {/* <button onClick={handleLoadClick}>불러오기</button> */}
 
-      {/* disabled는 기능 비활성화니까 반대로 해야함 */}
-      {/* <button disabled={!hasNext} onClick={handleLoadMore}>
-        더 보기
-      </button> */}
-
-      {/* 더 불러올 데이터가 없으면 아에 버튼이 보이지 않도록 설정 */}
-      {/* hasNext가 참일 땐 뒤에 사용 버튼 렌더링, 거짓일 땐 hasNext값 사용 */}
-      {/* disabled 프롭으로 네트워크 진행중일 때 더보기 못누르게 설정 */}
-      {hasNext && (
-        <button disabled={isLoading} onClick={handleLoadMore}>
+        {/* disabled는 기능 비활성화니까 반대로 해야함 */}
+        {/* <button disabled={!hasNext} onClick={handleLoadMore}>
           더 보기
-        </button>
-      )}
-      {/* 옵셔널체이닝 : 앞의 객체가 있을 때만 프로피터릴 참조하겠다는 것 */}
-      {loadingError?.message && <span>{loadingError.message}</span>}
-    </div>
+        </button> */}
+
+        {/* 더 불러올 데이터가 없으면 아에 버튼이 보이지 않도록 설정 */}
+        {/* hasNext가 참일 땐 뒤에 사용 버튼 렌더링, 거짓일 땐 hasNext값 사용 */}
+        {/* disabled 프롭으로 네트워크 진행중일 때 더보기 못누르게 설정 */}
+        {hasNext && (
+          <button disabled={isLoading} onClick={handleLoadMore}>
+            더 보기
+          </button>
+        )}
+        {/* 옵셔널체이닝 : 앞의 객체가 있을 때만 프로피터릴 참조하겠다는 것 */}
+        {loadingError?.message && <span>{loadingError.message}</span>}
+      </div>
+    {/* </LocaleContext.Provider> */}
+    </LocaleProvider>
   );
 }
 
