@@ -55,3 +55,27 @@ export async function createReview(formData) {
   const body = await response.json();
   return body;
 }
+
+
+export async function updateReview(id, formData) {  // 파라미터로 수정할 게시글의 id값을 받아야한다.
+  const response = await fetch(`${BASEURL}/${id}`, {
+    method: "PUT",
+    body: formData,
+  });
+  if (!response.ok) {
+    throw new Error("리뷰를 수정하는데 실패했습니다.");
+  }
+  const body = await response.json();
+  return body;
+}
+
+export async function deleteReview(id) {  // 파라미터로 수정할 게시글의 id값을 받아야한다.
+  const response = await fetch(`${BASEURL}/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("리뷰를 삭제하는데 실패했습니다.");
+  }
+  const body = await response.json();
+  return body;
+}

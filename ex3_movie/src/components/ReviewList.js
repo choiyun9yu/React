@@ -36,7 +36,7 @@ function ReviewListItem({ item, onDelete, onEdit }) {
   );
 }
 
-function ReviewList({ items, onDelete }) {
+function ReviewList({ items, onDelete, onUpdate, onUpdateSuccess}) {
   // 글 수정 시 사용, 현재 수정중인 요소의 id를 저장할 값
   const [editingId, setEditingId] = useState(null);
 
@@ -50,14 +50,21 @@ function ReviewList({ items, onDelete }) {
         // 요소 렌더링 하는 부분에서 id가 editingId인 경우에만 reviewForm 렌더링
         if (item.id === editingId) {
           // 내려줄 initial value값 생성
-          const { imgUrl, title, rating, content } = item;
+          const { id, imgUrl, title, rating, content } = item;
           const initialValues = { title, rating, content, imgFile: null };
+          const handleSubmit = (formData) => onUpdate(id, formData);
+          const handleSubmitSuccess = (review) => {
+            onUpdateSuccess(review);
+            setEditingId(null);
+          }
           return (
             <li key={item.id}>
               <ReviewForm
                 initialValues={initialValues}
                 initialPreview={imgUrl}
                 onCancel={handleCancel}
+                onSubmit={handleSubmit}
+                onSubmitSuccess={handleSubmitSuccess}
               />
             </li>
           );

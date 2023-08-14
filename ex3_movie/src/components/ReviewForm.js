@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./ReviewForm.css";
 import FileInput from "./FileInput";
 import RatingInput from "./RatingInput";
-import { createReview } from "../api";
+import useAsync from "../hooks/useAsync";
 
 const INITIAL_VALUES = {
   title: "",
@@ -19,6 +19,7 @@ function ReviewForm({
   initialPreview,
   onSubmitSuccess,
   onCancel,
+  onSubmit, // reviewForm 컴포넌트 입장에서는 입력인지 수정인지 알 길이 없음 (상위 컴포넌트에서 프롭으로 전달해야 알 수 있음)
 }) {
   // 리액트에서 인풋과 스테이 값을 일치시키는 것이 핵심 포인트이다.
   // const [title, setTitle] = useState(); // 제목
@@ -42,8 +43,12 @@ function ReviewForm({
 
   // 하나의 State로 입력값 관리하기
   const [values, setValues] = useState(initialValues);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittingError, setSubmittingError] = useState(null);
+
+  // Custrom Hook 으로 코드 정리
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [submittingError, setSubmittingError] = useState(null);
+  const [isSubmitting, submittingError, onSubmitAsync] = useAsync(onSubmit); 
+
 
   const handleChange = (name, value) => {
     setValues((prevValues) => ({
@@ -72,21 +77,26 @@ function ReviewForm({
     formData.append("content", values.content);
     formData.append("imgFile", values.imgFile);
 
-    let result;
-    try {
-      setSubmittingError(null);
-      setIsSubmitting(true);
-      result = await createReview(formData); // api.js에 있는 createReview 함수로 전달
-    } catch (error) {
-      setSubmittingError(error);
-      return;
-    } finally {
-      setIsSubmitting(false);
-    }
+  //   let result;
+  //   try {
+  //     setSubmittingError(null);
+  //     setIsSubmitting(true);
+  //     result = await onSubmit(formData); // api.js에 있는 createReview 함수로 전달/ 글 수정위해 createReview 대신 onSubmit 사용 (프롭만 다르게 내려주면 생성과 수정 모두 가능)
+  //   } catch (error) {
+  //     setSubmittingError(error);
+  //     return;
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+    let result = await onSubmitAsync(formData);
+    if (!result) return;
+    
     const { review } = result;
     setValues(INITIAL_VALUES); // 리퀘스트가 끝나면 폼 초기화
     onSubmitSuccess(review); // submit 성공 결과를 onSubmitSuccess에 넘겨준다.
   };
+
+  
 
   //   return (
   //     <form onSubmit={handleSubmit}>
