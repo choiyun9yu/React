@@ -210,10 +210,12 @@ import App from "./components/App";
 //          데이터 공유 범위를 정해야한다. <Context.Provider />라는 컴포넌트로 범위를 정해줄 수 있다.
 //          Provider의 자손 컴포넌트에서는 Props를 거치지 않고 자유롭게 데이터를 사용할 수 있다.
 
-//      5-2. 다국어 기능
+//      5-2. Context 사용하기
 //          createContext라는 함수로 Context를 만든다.
 //          Context객체에서 Provider라는 컴포넌트로 컨텍스트 범위를 지정하고, 공유할 데이터를 value= 프롭으로 내려준다.
 //          사용할 곳에서 useContext()를 사용해서 그 값을 리턴으로 받아온다.
+
+//      5-3. Context 값에 State 사용하기
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

@@ -71,3 +71,28 @@
 - VScod Extention : Prettier 설치 -> 좌화단 톱니바퀴 설정버튼 -> Settings  
   -> formatt 검색 -> Default Formatter : Prettier  
   -> Format On Save 검색 -> 체크
+
+## React Router
+리액트 컴포넌트로 페이지를 나누고 이동하는 라이브러리  
+
+- 페이지 나누기  
+<Routes>
+  <Route path="/" element={<HomePage />} />
+  <Route path="courses" element={<CourseListPage />} />
+  <Route path="courses/1" element={<CoursePage />}/>
+  <Route patrh="*" element={<NotFoundPage />} />
+</Routes>
+
+- 페이지 이동
+<Link to="/">홈페이지</Link>
+<Link to="/course">수업 탐색</Link>
+<Link to="/questions">커뮤니티</Link>
+
+#### 핵심 컴포넌트
+- Router : React Router에서 사용하는 데이터를 모두 갖고 있는 녀석, 현재 주소, 페이지 기록 등 보통 최상위 컴포넌트에서 감싸서 사용한다.
+- Routes, Route :  Routes 컴포넌트 아래에서 Route 컴포넌트로 페이지의 경로랑 보여줄 컴포넌트를 지정한다. 
+- Link : 리액트 라우터에서 a태그 대신에 사용한다.
+
+#### 리액트 라우터 설치
+- package.json이 있는 폴더에서 터미널을 열고 npm install <패키지이름>
+- 리액트 라우터의 패키지 이름은 react-router-dom@6 (@6의 의미는 버전을 6전대로 설치하겠다는 의미이다.)
