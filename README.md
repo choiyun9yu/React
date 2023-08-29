@@ -15,12 +15,15 @@
     $ npm init react-app .
 
 **프로젝트 시작**
+
     $ npm run start
 
 **프로젝트 종료**
+
     ^C
 
 **프로젝트 빌드**
+
     $ npm run build
     $ npx serve -s build
 
