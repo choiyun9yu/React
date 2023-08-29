@@ -85,17 +85,36 @@ index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 �
     import { useState } from "react";
     const [stateName, stateSetter] = useState([init value]);
 
-#### 참조형 State
-참조형 State는 참조형 자체를 값으로 갖는게 아니라, 그 참조형을 가리키고 있는 주소값을 가짐  
-
+#### (?) 참조형 State
+- 참조형 State는 참조형 자체를 값으로 갖는게 아니라, 그 참조형을 가리키고 있는 주소값을 가짐  
+- 그렇기 때문에 setter 함수가 아닌 메소드를 이용해서 집어 넣더라도 해당 자료형이 가진 주소 값은 변하지 않음
+- State 값이 바뀌어야 화면을 새로 랜더링 하는데 바뀌지 않는 문제 발생
+- 따라서 참조형 타입의 State를 바꿀 땐 전체를 새로 만든다고 생각하는 것이 좋다.
 
 #### State Lifting
+자식 컴포넌트의 State를 부모 컴포넌트로 올려주는 것  
+(prop으로 내리고 state lifting으로 올리고 하는 듯)  
+
+#### 리액트 렌더링 방식
+- 직접 요소 변경이 아닌 State를 변경하고, State가 변경될 때 통째로 렌더링
+- 그런데 변화가 없는 것도 새로 렌더링 -> 그래서 virtual DOM 사용
+- 엘리먼트를 새로 렌더링 할 때 그 모습을 실제 DOM 트리에 바로 반영하는게 아니라
+- 우선 virtual DOM에 적용 -> State 변경 전/후의 virtual DOM 비교
+- 바뀐 부분만 찾아낸 다음에 실제 DOM 렌더링
 
 ### 3-5. 스타일
+#### 인라인 스타일 (Tailwindvss, bootstrap에서 className으로 사용)
 
-#### 인라인 스타일
+    // HTML에서와 마찬가지로 태그 안에 style 속성을 지정  
+    <button style={style} onClick={onClick}>{children}</button>;
 
-#### CSS 클래스로 컴포넌트 디자인
+    // 그러나 문자열이 아닌 객체 스타일 값을 입력해야함
+    const style = {
+        CSS속성명 : 'CSS속성값';
+    };    
+    
+    // 바로 속성 값 입력도 가능
+    <button style={backroundColor:'yellow';} onClick={onClick}>{children}</button>
 
 
 ## 4. 
