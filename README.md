@@ -1,43 +1,52 @@
 # React
 
-## 환경 설정
+## 0. 환경 설정
 
 - node.js 설치  
-  버전확인 : node -v / npm -v
-
+- 버전확인 : node -v / npm -v
 - 리액트 개발자 도구(react developer tools) 설치 <- 크롬 확장 도구  
   Component Tap : 이페이지에 존재하는 리액트 컴포넌트 보여준다.  
   Profiler Tap :
 
-## 리액트 시작하기
+## 1. 리액트 시작하기
 
-- 프로젝트 생성(create-react-app)
+**프로젝트 생성(create-react-app)**
 
-  > npm init react-app .
+    $ npm init react-app .
 
-- 프로젝트 시작
+**프로젝트 시작**
+    $ npm run start
 
-  > npm run start
+**프로젝트 종료**
+    ^C
 
-- 프로젝트 종료
+**프로젝트 빌드**
+    $ npm run build
+    $ npx serve -s build
 
-  > ^C
+## 2. 프로젝트 살펴보기
 
-- 프로젝트 빌드
-  > npm run build
-  > npx serve -s build
+### 1. public 디렉토리
+#### 1-1. projectName/public/index.html
+웹 브라우저에서 가장 먼저 실행되는 파일
 
-## 프로젝트 살펴보기
+    <!DOCTYPE html>
+    <html lang="ko">
+      <head>
+        <meta charset="utf-8" />
+        <title>[Page Name]</title>
+      </head>
+      <body>
+        <div id="root"></div>
+      </body>
+    </html>
 
-#### public 디렉토리
+#### 1-2. projectname/src/index.js
 
-##### index.html
 
-- 웹 브라우저에서 가장 먼저 실행되는 파일
+index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 가장 먼저 실행되는 파일
 
-##### index.js
 
-- index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 가장 먼저 실행되는 파일
 - render(JSX문법으로 HTML 그리기, 그린 HTML 넣어줄 장소) : 리액트에서 HTML 태그 만들어주는 메소드
 - JSX : JS에서 HTML 코드를 쓸 수 있음 -> 그러나 사용하지 못하는 HTML 문법도 있음  
   class 키워드 대신에 className 사용, for 키워드 대신에 htmlFor 사용  
