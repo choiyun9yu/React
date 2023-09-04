@@ -18,7 +18,7 @@ motion.div와 같이 HTML태그 앞에 motion 카워드를 붙인다.
 #### 디렉토리 구조
 
 -   projectName/src/tempalte : Footer.js, Logo.js, Refresh.js 들어 있는 디렉토리
--   projectName/src/App.js : import { module } from "framer-motion" 으로 모션 컴포넌트 구현
+-   projectName/src/App.js : import { module } from "framer-motion", 모션 컴포넌트 구현
 -   index.js : 모션 컴포넌트가 보여지는 장소
 -   projectName/src/style.css : css 코드 구현
 
