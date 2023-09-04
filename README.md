@@ -5,8 +5,7 @@
 -   node.js 설치
 -   버전확인 : node -v / npm -v
 -   리액트 개발자 도구(react developer tools) 설치 <- 크롬 확장 도구  
-    Component Tap : 이페이지에 존재하는 리액트 컴포넌트 보여준다.  
-    Profiler Tap :
+    Component Tap : 이페이지에 존재하는 리액트 컴포넌트 보여준다.
 
 ## 1. 리액트 시작하기
 
