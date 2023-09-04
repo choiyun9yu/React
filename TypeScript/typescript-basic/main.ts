@@ -1,7 +1,7 @@
-
-{ // 1. 변수 이름 뒤에 콜론을 써서 타입 지정 (타입은 코드 검사에만 쓰이고 실제 동작에는 활용 X)
-    let size: number;          // 타입 초기화
-    let size2: number = 100;    // 타입 초기화 및 할당
+{
+    // 1. 변수 이름 뒤에 콜론을 써서 타입 지정 (타입은 코드 검사에만 쓰이고 실제 동작에는 활용 X)
+    let size: number; // 타입 초기화
+    let size2: number = 100; // 타입 초기화 및 할당
 
     // 기본 자료형
     let itemName: string = '코드잇 블랙 후드';
@@ -10,28 +10,25 @@
     let owner: undefined = undefined;
     let seller: null = null;
 
-    let num = 2/0;      // Inf <- 숫자형
-    let num2 = 0/0;     // NaN <- 숫자형
+    let num = 2 / 0; // Inf <- 숫자형
+    let num2 = 0 / 0; // NaN <- 숫자형
 }
 
-
-{ // 2. 배열 
+{
+    // 2. 배열
     const cart: string[] = [];
     cart.push('c001');
     cart.push('c002');
     // cart.push(003); 타입 오류
 
     // 2차 문자 배열
-    const carts: string[][] = [
-        ['c001', 'c002'],
-        ['c003'],
-    ];
+    const carts: string[][] = [['c001', 'c002'], ['c003']];
 
     // 배열에는 사이즈 제한이 없어서 빈 배열을 해도 타입 오류가 나지 않음
     let mySize: number[] = [167, 28];
     mySize = [167, 28, 255];
     mySize = [255];
-    mySize = []
+    mySize = [];
 
     // 배열이지만 개수를 명확히 정하고 싶으면 튜플 타입을 쓴다.
     // ! 배열 안에 모든 자료형이 같을 필요는 없다.
@@ -41,25 +38,25 @@
     // mySize = []                  // 타입 오류
 }
 
-
-{ // 3. 객체타입
+{
+    // 3. 객체타입
     let product: {
         id: string;
         name: string;
         price: number;
-        membersOnly?: boolean;  // ?로 옵셔널 프로퍼티 만듬
+        membersOnly?: boolean; // ?로 옵셔널 프로퍼티 만듬
         sizes: string[];
-    }
+    };
 
-    // 객체의 프로퍼티 이름에 변수를 쓰고 싶으면 JS에서는 
+    // 객체의 프로퍼티 이름에 변수를 쓰고 싶으면 JS에서는 대괄호를 사용한다.
     let field = 'field name';
     let obj = {
-        [field] : 'filed value'
+        [field]: 'filed value',
     };
 
     // 타입스크립트 에서는 프로퍼티 개수를 알 수 없거나 갯수를 정하고 싶지 않은 경우에 프로퍼티의 타입만 지정 가능
     let stock: {
-        [id: string] : number;  // 프로퍼티 이름으로 아무 문자열이나 쓸 수 있고, id라는 건 아무렇게나 적어도 상관없는 이름, 프로퍼티의 밸류는 숫자형
+        [id: string]: number; // 프로퍼티 이름으로 아무 문자열이나 쓸 수 있고, id라는 건 아무렇게나 적어도 상관없는 이름, 프로퍼티의 밸류는 숫자형
     } = {
         c001: 3,
         c002: 0,
@@ -68,15 +65,15 @@
     };
 }
 
-
-{ // 4. any
+{
+    // 4. any
     const product2 = {
         id: 'c001',
         name: '코드잇 블랙 후디',
         price: 129000,
         size: ['M', 'L', 'XL'],
     };
-    // console.log(product2.revivews[2]); 타입 오류
+    // console.log(product2.revivews[2]); // 타입 오류
 
     const product3: any = {
         id: 'c001',
@@ -87,35 +84,28 @@
     console.log(product3.revivews[2]);
 
     // as 키워드로 프로퍼티의 타입 정의
-    const parsedProduct = JSON.parse(
-        '{"name": "코드잇 토트백", "price":12000}'
-    ) as {
+    const parsedProduct = JSON.parse('{"name": "코드잇 토트백", "price":12000}') as {
         name: string;
         price: number;
-    }
+    };
 
     // (:) 콜론으로 타입 명시해주기
     const parsedProduct2: {
         name: string;
         price: number;
-    } = JSON.parse(
-        '{"name": "코드잇 토트백", "price":12000}'
-    ) as {
-        name: string;
-        price: number;
-    }
+    } = JSON.parse('{"name": "코드잇 토트백", "price":12000}');
 
     // 꺽쇠로 타입 정의하는 건 요즘 JS에서 꺽쇠를 많이 써서 사용하지 않음
-    const parsedProduct3 = <{
-        name: string;
-        price: number;
-    }>JSON.parse(
-        '{"name": "코드잇 토트백", "price": 12000}'
-    );
+    const parsedProduct3 = <
+        {
+            name: string;
+            price: number;
+        }
+    >JSON.parse('{"name": "코드잇 토트백", "price": 12000}');
 }
 
-
-{ // 5. 함수에 타입 정하기
+{
+    // 5. 함수에 타입 정하기
     // 재고 객체
     const stock: { [id: string]: number } = {
         c001: 3,
@@ -157,7 +147,14 @@
         return true;
     }
 
-    // 앞에서 정의한 함수를 객체 내부 프로퍼티로 넣어줌, 
+    // rest parameter 문법을 쓰는 경우 타입 정의 -> 배열로 지정
+    function addManyToCart(...ids: string[]) {
+        for (const id of ids) {
+            addToCart2(id);
+        }
+    }
+
+    // 사용자 정의한 함수를 객체 내부 프로퍼티로 넣어줌?,
     // 객체 내부 메소드의 리턴값 정의는 => 를 사용해준다.
     const codeitmall: {
         stock: { [id: string]: number };
@@ -171,14 +168,6 @@
         },
         cart: [],
         addToCart2,
-        addManyToCart
+        addManyToCart,
     };
-
-    // rest parameter 문법을 쓰는 경우 타입 정의
-    // rest parameter이기 때문에 배열로 지정
-    function addManyToCart(...ids: string[]) {
-        for (const id of ids) {
-            addToCart2(id);
-        }
-    }    
 }
