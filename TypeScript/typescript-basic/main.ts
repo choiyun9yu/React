@@ -487,3 +487,61 @@
         console.log(`${key} | ${product[key]}`);
     }
 }
+
+{
+    // 13. 제네릭
+    // 특정한 타입으로 정의해두는게 아니라 <>안에 임의의 타입으로 정의해 놓고
+    // 그때그때 다른 타입을 넣어서 쓸수있도록하는 문법을 제네릭이라한다.
+
+    const shoeSizes: number[] = [230, 250, 280];
+    shoeSizes.map((num) => {});
+
+    const clothingSizes: string[] = ['M', 'L', 'XL'];
+    clothingSizes.map((names) => {});
+
+    // <T> 와 같은 것을 타입파라미터라고 한다.
+    // 대문자 T, U, V 등으로 임의의 타입을 표현한다.
+
+    function printArray<T>(items: T[]) {
+        for (const item of items) {
+            console.log(item);
+        }
+    }
+
+    printArray(shoeSizes);
+    printArray(clothingSizes);
+
+    // 함수를 호출할 때 직접 타입 파라미터를 정의할 수도 있다.
+    // printArray<boolearn>(shoeSizes); // shoeSizes가 boolean이 아니니까 오류
+
+    // 인터페이스에서도 제네릭 사용 가능
+    interface Product {
+        id: string;
+        name: string;
+        price: number;
+        membersOnly?: boolean;
+    }
+
+    interface SizeProduct<T> extends Product {
+        sizes: T[];
+    }
+
+    enum ClothingSize {
+        S = 'S',
+        M = 'M',
+        L = 'L',
+        XL = 'XL',
+    }
+
+    type ClothingProduct = SizeProduct<ClothingSize>;
+
+    // 타입 별칭에서 제네릭 사용 가능
+    // 주로 T, U, V를 쓰지만 제네릭 아무이름이나 사용은 가능
+    // 앞에 대문자 T 붙여주면 제네릭인지 알 수 있다.
+    type Pair<T, U, V> = [T, T];
+    const point: Pair<number> = [1, 2];
+    const fullname: Pair<string> = ['김', '코드잇'];
+
+    // Map 함수도 제네릭으로 정의되어 있어서 아래와 같이 가능
+    const map = new Map<string, Product>();
+}
