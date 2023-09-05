@@ -65,7 +65,7 @@ React와 같은 모던 자바스크립트 라이브러리 인기로 재활용이
     import Button from "./Button";
     <Button>Default Button</Button>;
 
-### 2-3. 가변 스타일링1
+### 2-3. 가변 스타일링 1
 
 Styled Components는 React 컴포넌트에 넘어온 props에 따라 다른 스타일을 적용하는 기능 제공  
 Tagged Template Literals을 사용하기 때문에 함수도 문자열 안에 포함시킬 수 있는 것을 이용?  
@@ -96,9 +96,40 @@ Tagged Template Literals을 사용하기 때문에 함수도 문자열 안에 �
 주의사항! < Button / >에 넘어온, color와 background prop을 < StyleddButton / > 컴포넌트로 넘겨줘야 한다.  
 (그렇지 않을 경우, < StyledButon /> 컴포넌트가 해당 prop을 인식할리 없다.)
 
-    // 실제 사용
+    // 실제 사용 시
     import Button from "./Button";
 
     <Button color="green" background="pink">
     Green Button
     </Button>;
+
+### 2-4. 가변 스타일링 2
+
+prop에 따라 바꾸고 싶은 CSS 속성이 하나가 아니라 여러개인 경우,  
+css 함수를 사용해서 여러 개의 CSS속성을 묶음 정의 할 수 있다.  
+예를 들어 primary prop이 넘어온 경우, 글자색은 흰색, 배경과 경계는 남색으로 변경하는 코드 아래 작성
+
+    import React from "react";
+    import styled, { css } from "styled-components";
+
+    const StyledButton = styled.button`
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    line-height: 1.5;
+    border: 1px solid lightgray;
+
+    ${(props) =>
+        props.primary &&
+        // 이 부분에서 css함수로 묶어서 CSS 속성 정의
+        css`
+        color: white;
+        background: navy;
+        border-color: navy;
+        `}
+    `;
+
+    // 넘겨야할 prop 값이 많아질 경우, 위와 같이 ...props 구문을 사용해서 children 외에 모든 prop을 간편하게 전달 가능
+    function Button({ children, ...props }) {
+    return <StyledButton {...props}>{children}</StyledButton>;
+    }
