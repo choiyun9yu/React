@@ -5,7 +5,8 @@ Framer가 제공하는 리액트용 애니메이션 라이브러리
 #### 기본 사용 방법
 
     # 프로젝트 생성
-    $ npm init react-app .
+    $ npm init react-app .  // 프로젝트 루트 디렉토리에서
+    $ npm create-react-app [projectName]
 
     # 모듈 설치
     $ npm install framer-motion
