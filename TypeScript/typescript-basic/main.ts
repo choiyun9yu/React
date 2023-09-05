@@ -538,10 +538,13 @@
     // 타입 별칭에서 제네릭 사용 가능
     // 주로 T, U, V를 쓰지만 제네릭 아무이름이나 사용은 가능
     // 앞에 대문자 T 붙여주면 제네릭인지 알 수 있다.
-    type Pair<T, U, V> = [T, T];
+    type Pair<T> = [T, T];
     const point: Pair<number> = [1, 2];
     const fullname: Pair<string> = ['김', '코드잇'];
 
     // Map 함수도 제네릭으로 정의되어 있어서 아래와 같이 가능
     const map = new Map<string, Product>();
+
+    // 제네릭 여러개 설정 가능
+    type Pair2<T, U, V> = [T, T];
 }
