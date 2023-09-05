@@ -1,51 +1,52 @@
-import React from 'react';
-import { useState } from 'react';
-import { motion, AnimateSharedLayout, AnimatePresence } from 'framer-motion';
 import './styles.css';
+import { useState, useEffect } from 'react';
+import { useAnimate, stagger } from 'framer-motion';
+import { MenuToggle } from './MenuToggle';
+import { Menu } from './Menu';
 
-/**
- * This is an example of animating shared layouts in Framer Motion 2.
- *
- * The open state of each panel is contained locally to that component. Wrapping
- * them all in the same AnimateSharedLayout component allows them all to animate
- * in response to state changes that affect each other's layout.
- *
- * Try removing AnimateSharedLayout to see how that affects the animation.
- */
+function useMenuAnimation(isOpen) {
+    const [scope, animate] = useAnimate();
+
+    useEffect(() => {
+        // 여기서 translateY가 메뉴바 위에서 아래로 내리는 것
+        const menuAnimations = isOpen
+            ? [
+                  ['nav', { transform: 'translateY(0%)' }, { ease: [0.08, 0.65, 0.53, 0.96], duration: 0.6 }],
+                  [
+                      'li',
+                      { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
+                      { delay: stagger(0.05), at: '-0.1' },
+                  ],
+              ]
+            : [
+                  [
+                      'li',
+                      { transform: 'scale(0.5)', opacity: 0, filter: 'blur(10px)' },
+                      { delay: stagger(0.05, { from: 'last' }), at: '<' },
+                  ],
+                  ['nav', { transform: 'translateY(-100%)' }, { at: '-0.1' }],
+              ];
+
+        animate([
+            // ['path.top', { d: isOpen ? 'M 3 16.5 L 17 2.5' : 'M 2 2.5 L 20 2.5' }, { at: '<' }],
+            // ['path.middle', { opacity: isOpen ? 0 : 1 }, { at: '<' }],
+            // ['path.bottom', { d: isOpen ? 'M 3 2.5 L 17 16.346' : 'M 2 16.346 L 20 16.346' }, { at: '<' }],
+            ...menuAnimations,
+        ]);
+    }, [isOpen]);
+
+    return scope;
+}
 
 export default function App() {
-    return (
-        <AnimateSharedLayout>
-            <motion.ul layout initial={{ borderRadius: 25 }}>
-                {items.map((item) => (
-                    <Item key={item} />
-                ))}
-            </motion.ul>
-        </AnimateSharedLayout>
-    );
-}
-
-function Item() {
     const [isOpen, setIsOpen] = useState(false);
 
-    const toggleOpen = () => setIsOpen(!isOpen);
+    const scope = useMenuAnimation(isOpen);
 
     return (
-        <motion.li layout onClick={toggleOpen} initial={{ borderRadius: 10 }}>
-            <motion.div className="avatar" layout />
-            <AnimatePresence>{isOpen && <Content />}</AnimatePresence>
-        </motion.li>
+        <div ref={scope}>
+            <Menu />
+            <MenuToggle toggle={() => setIsOpen(!isOpen)} />
+        </div>
     );
 }
-
-function Content() {
-    return (
-        <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="row" />
-            <div className="row" />
-            <div className="row" />
-        </motion.div>
-    );
-}
-
-const items = [0, 1, 2];

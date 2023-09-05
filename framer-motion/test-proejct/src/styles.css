@@ -1,67 +1,59 @@
-html,
 body {
-    min-height: 100vh;
-    padding: 0;
-    margin: 0;
-}
+    --black: #000000;
+    --white: #fafafa;
+    --dusk: #6600ff;
+    --purple: #9900ff;
 
-* {
-    box-sizing: border-box;
-}
+    --background: var(--white);
+    --accent: var(--dusk);
 
-body {
-    background: linear-gradient(250deg, #7b2ff7, #f107a3);
-    background-repeat: no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.App {
-    font-family: sans-serif;
-    text-align: center;
-}
-
-ul,
-li {
-    list-style: none;
     margin: 0;
     padding: 0;
-}
-
-ul {
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    padding: 20px;
-    border-radius: 25px;
-}
-
-li {
-    background-color: rgba(214, 214, 214, 0.5);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
+    background-color: var(--background);
+    color: var(--accent);
+    padding-bottom: 100px;
     overflow: hidden;
+    min-height: 100vh;
+}
+
+/* 메뉴 내용 디자인 */
+li {
+    color: var(--background);
+    display: block;
+    transform-origin: -20px 50%;
+    font-weight: bold;
+    font-size: 48px;
+    padding: 10px;
+    will-change: transform, opacity, filter;
+}
+
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 400px;
+    background: var(--accent);
+    padding-top: 100px;
+    /* Menu contents 위에서 아래로 */
+    transform: translateY(-100%);
+    will-change: transform;
+}
+
+/* 버튼 디자인 */
+button {
+    outline: none;
+    border: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     cursor: pointer;
-}
-
-li:last-child {
-    margin-bottom: 0px;
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    background-color: #666;
-    border-radius: 20px;
-}
-
-.row {
-    width: 100%;
-    height: 8px;
-    background-color: #999;
-    border-radius: 10px;
-    margin-top: 12px;
+    position: absolute;
+    top: 18px;
+    left: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--accent);
+    padding: 10px;
 }
