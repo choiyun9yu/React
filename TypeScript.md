@@ -381,7 +381,7 @@
         cart,
     };
 
-### 4-3. Union 타입
+### 4-3. Union 타입 (|)
 
     // 10. Union 타입
     // 타입으로 연산도 할 수 있다.
@@ -437,6 +437,108 @@
         if ('handmade' in product) {
             console.log(product.handmade ? '이 상품은 장인이 직접 만듭니다.' : '이 상품은 공장에서 만들어졌습니다.');
         }
+    }
+
+### 4-4. Intersection 타입 (&)
+
+       // 11. Intersection 타입 (여러 객체 타입을 합치는 방법)
+        // 물론 상속으로 구현할 수도 있다.
+        interface Id {
+            id: string;
+        }
+
+        interface Timestamp {
+            createdAt: Date;
+            updatedAt: Date;
+        }
+
+        // & 로 Id 인터페이스의 프로퍼티와 Product 타입의 프로퍼티를 합치는 것
+        type Product = Id & {
+            name: string;
+            price: number;
+            membersOnly?: boolean;
+        };
+
+        type User = Id &
+            Timestamp & {
+                username: string;
+                email: string;
+            };
+
+        type Review = Id &
+            Timestamp & {
+                productId: string;
+                userId: string;
+                content: string;
+            };
+
+        const product: Product = {
+            id: 'c001',
+            name: '코드잇 블랙 후드티',
+            price: 129000,
+        };
+
+        const user: User = {
+            id: 'user0001',
+            username: 'codeit',
+            email: 'typescript@codeit.kr',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        const review: Review = {
+            id: 'review001',
+            userId: user.id,
+            productId: product.id,
+            content: '아주 좋음',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+### 4-5. keyof와 typeof 연산자
+
+        // 12. keyof와 typeof 연산자
+
+    // Product 인터페이스 타입
+    // 타입 별칭 ProductProperty, Product 인터페이스의 필드명에 해당하는 타입모음
+    // 사용자에게 노출시킬 프로퍼티 모음을 ProductProperty 변수에 담음
+
+    interface Product {
+        id: string;
+        name: string;
+        price: number;
+        // 프로퍼티가 새로 추가!
+        salePrice: number;
+        membersOnly?: boolean;
+    }
+
+    // 프로퍼티가 추가되면 여기도 수정해줘야함.
+    // type ProductProperty = 'id' | 'name' | 'price' | 'salePrice' | 'membersOnly';
+
+    // 이럴 때 keyof 사용
+    // keyof [객체 이름] -> 객체의 프로퍼티명에 해당하는 타입을 만들 수 있음
+    // type ProductProperty = keyof Product;
+
+    // 바로 위 처럼 타입 별칭을 사용하지 않더라도 아래 코드에서 바로 명시할 수도 있다.
+    const productTableKeys: (keyof Product)[] = ['name', 'price', 'salePrice', 'membersOnly'];
+
+    const product: Product = {
+        id: 'c001',
+        name: '코드잇 블랙 후드 집업',
+        price: 129000,
+        salePrice: 98000,
+        membersOnly: true,
+    };
+
+    // typeof : JS에서는 어떤 값의 타입을 문자열로 만들어주는 연산자
+    // TS 에서는 리턴값이 문자열이 아니라 타입스크립트 타입이다.
+    console.log(typeof product); // 이건 자바스크립트 코드니까 자바스크립트
+
+    // 이렇게 작성하고 마우스를 product2에 호버해보면 product 객체의 타입임을 알 수 있다.
+    let product2: typeof product; // 이렇게 콜론뒤에 쓰면 타입스크립트
+
+    for (let key of productTableKeys) {
+        console.log(`${key} | ${product[key]}`);
     }
 
 ## 5. Generic
