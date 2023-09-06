@@ -1,59 +1,12 @@
-body {
-    --black: #000000;
-    --white: #fafafa;
-    --dusk: #6600ff;
-    --purple: #9900ff;
-
-    --background: var(--white);
-    --accent: var(--dusk);
-
-    margin: 0;
-    padding: 0;
-    background-color: var(--background);
-    color: var(--accent);
-    padding-bottom: 100px;
-    overflow: hidden;
-    min-height: 100vh;
-}
-
-/* 메뉴 내용 디자인 */
-li {
-    color: var(--background);
-    display: block;
-    transform-origin: -20px 50%;
-    font-weight: bold;
-    font-size: 48px;
-    padding: 10px;
-    will-change: transform, opacity, filter;
-}
-
-.menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 400px;
-    background: var(--accent);
-    padding-top: 100px;
-    /* Menu contents 위에서 아래로 */
-    transform: translateY(-100%);
-    will-change: transform;
-}
-
-/* 버튼 디자인 */
-button {
-    outline: none;
-    border: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    cursor: pointer;
-    position: absolute;
-    top: 18px;
-    left: 15px;
-    width: 50px;
-    height: 50px;
+.circle {
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
-    background: var(--accent);
-    padding: 10px;
+    background: blue;
+}
+
+.box {
+    width: 200px;
+    height: 200px;
+    background: red;
 }

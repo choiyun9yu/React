@@ -1,52 +1,60 @@
+import React from 'react';
+import { useState } from 'react';
+
+import { motion } from 'framer-motion';
 import './styles.css';
-import { useState, useEffect } from 'react';
-import { useAnimate, stagger } from 'framer-motion';
-import { MenuToggle } from './MenuToggle';
-import { Menu } from './Menu';
-
-function useMenuAnimation(isOpen) {
-    const [scope, animate] = useAnimate();
-
-    useEffect(() => {
-        // 여기서 translateY가 메뉴바 위에서 아래로 내리는 것
-        const menuAnimations = isOpen
-            ? [
-                  ['nav', { transform: 'translateY(0%)' }, { ease: [0.08, 0.65, 0.53, 0.96], duration: 0.6 }],
-                  [
-                      'li',
-                      { transform: 'scale(1)', opacity: 1, filter: 'blur(0px)' },
-                      { delay: stagger(0.05), at: '-0.1' },
-                  ],
-              ]
-            : [
-                  [
-                      'li',
-                      { transform: 'scale(0.5)', opacity: 0, filter: 'blur(10px)' },
-                      { delay: stagger(0.05, { from: 'last' }), at: '<' },
-                  ],
-                  ['nav', { transform: 'translateY(-100%)' }, { at: '-0.1' }],
-              ];
-
-        animate([
-            // ['path.top', { d: isOpen ? 'M 3 16.5 L 17 2.5' : 'M 2 2.5 L 20 2.5' }, { at: '<' }],
-            // ['path.middle', { opacity: isOpen ? 0 : 1 }, { at: '<' }],
-            // ['path.bottom', { d: isOpen ? 'M 3 2.5 L 17 16.346' : 'M 2 16.346 L 20 16.346' }, { at: '<' }],
-            ...menuAnimations,
-        ]);
-    }, [isOpen]);
-
-    return scope;
-}
 
 export default function App() {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const scope = useMenuAnimation(isOpen);
+    // 2. transition 관련 useState
+    // x : 가로 이동
+    // y : 세로 이동
+    // rotate : 회전
+    const [rotate, setRotate] = useState(0);
 
     return (
-        <div ref={scope}>
-            <Menu />
-            <MenuToggle toggle={() => setIsOpen(!isOpen)} />
-        </div>
+        <>
+            <h1>Framer-Motion</h1>
+            <hr />
+            <div>
+                <h2> Motion Compoents </h2>
+                <p>html 태그 앞에 motion. 붙이면 motion 컴포넌트가 된다.</p>
+                <p>motion.div</p>
+                <h2> Animate </h2>
+                <p>initial = 초기값, animate = 에니메이션 적용값</p>
+                <p>animate는 (렌더링 될 때?) initail에서 animate 값으로 변동</p>
+                <p>motion.div className="circle" initial=opacity: 0 animate=opacity: 1</p>
+                <motion.div className="circle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
+            </div>
+            <hr />
+            <div>
+                <h2> Transition </h2>
+                <p>값이 한 상태에서 다른 상태로 애니메이션되는 방식을 정의</p>
+                <p>기본적으로 제공하는 transition type이 존재, spring 같은 </p>
+                <p>motion.div className="box" animate=rotate transition=type: 'spring'</p>
+                <div>
+                    <button onClick={(e) => setRotate(360)}> Click! </button>
+                    <motion.div className="box" animate={{ rotate }} transition={{ type: 'spring' }} />
+                </div>
+                <p>motion.div className="box" animate=rotate transition=ease:'easeOut', duration: 2</p>
+                <div>
+                    <motion.div className="box" animate={{ rotate }} transition={{ ease: 'easeIn', duration: 2 }} />
+                </div>
+            </div>
+            <hr />
+            <div>
+                <h2> layout </h2>
+                <p>CSS layout : </p>
+            </div>
+            <hr />
+            <div>
+                <h2> keyframe</h2>
+            </div>
+            <hr />
+            <div>
+                <h2>Gesture</h2>
+                <p>브라우저 이벤트인 Hover, Tap, Pan, Drag 감지</p>
+                <div></div>
+            </div>
+        </>
     );
 }

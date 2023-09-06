@@ -31,7 +31,7 @@ motion.div와 같이 HTML태그 앞에 motion 카워드를 붙인다.
 
 ## API 둘러보기
 
-### 1. animation : 간단하게 애니메이션 설정갑을 바로 사용할 수 있다.
+### 1. animation : 간단하게 애니메이션 설정값을 바로 사용할 수 있다.
 
     <motion.div animate= />
 
@@ -57,7 +57,7 @@ motion.div와 같이 HTML태그 앞에 motion 카워드를 붙인다.
 
     <motion.div animate= transition= />
 
-#### 3-3. Dealy between repetitions
+#### 3-3. Delay between repetitions
 
 [example](https://csb-7zw1d.netlify.app/)
 
@@ -125,7 +125,7 @@ tap이 컴포넌트 외부에서 종료되면 tapCancel 이벤트가 발생
     console.log(info.point.x, info.point.y);
     }
 
-<motion.a onPan={onPan} onPanStart={(event, info) => {}} onPanEnd={(event, info) => {}} />;
+    <motion.a onPan={onPan} onPanStart={(event, info) => {}} onPanEnd={(event, info) => {}} />;
 
 #### 4-4. Drag : drag는 pan의 규칙을 따르지만 컴포넌트의 x축/y축 포인터 이동을 적용
 
@@ -310,8 +310,10 @@ props 전달을 통해 다양한 일을 할 수 있다.
 
 ### 3. AnimatePresence : React 트리에서 컴포넌트가 제거될 때의 애니메이션을 처리
 
-컴포넌트가 언마운트될 때를 알리고, 애니메이션이 끝날때까지 컴포넌트의 언마운트 시점을 미룰 수 있다.
+AnimatePresence 컴포넌트 내부에서 나타나거나 사라지는 게 있다면 애니메이션 효과를 적용할 수 있도록 해준다.  
+exit : 현재 element가 사라질 때 어떤 애니메이션을 발생시킬지 정할 수 있다.
 
     import { motion, AnimatePresence } from "framer-motion";
 
-    export const MyComponent = ({ isVisible }) => <AnimatePresence>{isVisible && <motion.div initial= animate= exit= />}</AnimatePresence>;
+    // 애니메이션 효과가 끝나면 함수 실행 방법
+    <AnimatePresence initial={false} onExitComplete={함수}>
