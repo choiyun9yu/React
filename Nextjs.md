@@ -241,6 +241,97 @@ localhost:3000/search?q=티셔츠
 [Codeitmall API DOC](https://www.codeit.kr/tutorials/53/codeitmall-api-documentation)
 [Watchit API DOC](https://www.codeit.kr/tutorials/55/watchit-api-documentation)
 
+인스턴스를 만들어서 실행할 때 베이스 URL을 일일이 설정할 필요없이 경로만 설정하면 된다.
+
+    // axios install
+    $ npm install axios
+
+    # @/lib/axios.js
+    import axios from 'axios';
+
+    const instance = axios.create({
+        baseURL: 'https://learn.codeit.kr/api/codeitmall',
+    })
+
+    export default instance;
+
+상품 상세페이지에서 router로 받은 id를 이용해서 request 보내기
+
+    # @/pages/products/[ id ].js
+    import { useRouter } from 'next/router';
+    import { useState } from 'react';
+    import '@/lib/axios';
+
+    export default function Product() {
+        const [product, setProduct] = useState();
+        // useRouter를 사용해서 router 객체를 만들고
+        const router = useRouter();
+        // .qurey을 사용해서 id 값으로 받아온다.
+        const { id } = router.query;
+
+        async function getProduct(targetId) {
+            const res = await axios.get(`/products/${targetId}`);
+            const nextProduct = res.data;
+            setProduct(nextProduct);
+        }
+
+        useEffect(() => {
+            if (!id) return;
+
+            getProduct(id);
+        }, [id]);
+
+        // 맨처음 product 값이 없을 때
+        if (!product) return null;
+
+        return (
+            <div>
+                <h1>{product.name}</h1>
+                <img src={product.imgUrl} alt={product.name} />
+            </div>
+        );
+    }
+
+    # @/components/SizeReviewList.js
+    // 사이즈 리뷰를 받아서 map 함수로 보여주는 컴포넌트
+    function formatDate(date) {
+        const MM = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const dd = String(date.getUTCDate()).padStart(2, '0');
+        const YYYY = String(date.getUTCFullYear());
+
+        return `${YYYY}. ${MM}. ${dd}.`;
+    }
+
+    const labels = {
+        sex: {
+            male: '남자',
+            female: '여자',
+        },
+        fit: {
+            small: '작음',
+            good: '적당함',
+            big: '큼',
+        },
+    };
+
+    export default function SizeReviewList({ sizeReviews }) {
+        return (
+            <ul>
+                {sizeReviews.map((sizeReview) => (
+                    <li key={sizeReview.id}>
+                        <div>
+                            <div>{formatDate(new Date(sizeReview.createdAt))}</div>
+                            <div>
+                                ({labels.sex[sizeReview.sex]} {sizeReview.height}cm 기준) {sizeReview.size}
+                            </div>
+                        </div>
+                        <div>{labels.fit[sizeReview.fit]}</div>
+                    </li>
+                ))}
+            </ul>
+        );
+    }
+
 ### 2-6. 리다이렉트
 
 ### 2-7. 커스텀 404 페이지
