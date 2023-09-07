@@ -1,9 +1,9 @@
-import React from 'react';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
 import './styles.css';
 
-// Miscellaneous
+// Miscellaneous animate state
 const show = {
     opacity: 1,
     display: 'block',
@@ -12,7 +12,7 @@ const show = {
 
 const hide = {
     opacity: 0,
-    y: '-110%',
+    y: '-100%',
     // transitionEnds는 애니메이션이 종료 될 때 설정할 값을 지정
     transitionEnd: {
         display: 'none',
@@ -20,7 +20,7 @@ const hide = {
 };
 
 export default function App() {
-    // 2. transition 관련 useState
+    // Transition e
     // x : 가로 이동
     // y : 세로 이동
     // rotate : 회전
@@ -28,6 +28,12 @@ export default function App() {
 
     // Miscellaneous
     const [isVisible, setIsVisible] = useState(true);
+
+    // AnimatePresence
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
+    };
 
     // CSS로 값 넘겨주기
     const [isTrue, setIsTrue] = useState(false);
@@ -63,14 +69,42 @@ export default function App() {
             </div>
             <div>
                 <h2>Miscellaneous</h2>
+                <p>motion.div className="box" animate=isVisible ? show : hide</p>
                 <div>
-                    <div className="controls"></div>
-                    <div className="Miscellaneous">
-                        <motion.button whileTap={{ scale: 0.95 }} onClick={() => setIsVisible(!isVisible)}>
-                            {isVisible ? 'Hide' : 'Show'}
-                        </motion.button>
+                    <motion.button onClick={() => setIsVisible(!isVisible)}>
+                        {isVisible ? 'Hide' : 'Show'}
+                    </motion.button>
+                    <div className="miscellaneousDiv">
                         <motion.div className="box" animate={isVisible ? show : hide} />
                     </div>
+                </div>
+            </div>
+            <div>
+                <h2>AnimatePresence</h2>
+                <p>자식요소 관리 : 내부에 포함된 자식 요소들의 등장 및 퇴장은 관리, 자식요소가 추가되거나 삭제될 때</p>
+                <p>
+                    애니메이션 트리거 : 자식요소가 추가될 때 애니메이션을 시작하거나, 제거될 때 애니메이션을 완료하는
+                    역할
+                </p>
+                <p>이를 위해 initail, animate, exit등의 속성을 설정하여 애니메이션 효과 정의</p>
+                <p>isModalOpen && ( motion.div initial=opacity: 0, scale: 0.8 </p>
+                <p>animate= opacity: 1, scale: 1</p>
+                <p>exit= opacity: 0, scale: 0.8 </p>
+                <p>motion.div className="box"</p>
+                <p>motion.div )</p>
+                <div>
+                    <button onClick={toggleModal}>Toggle Modal</button>
+                    <AnimatePresence>
+                        {isModalOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                            >
+                                <motion.div className="box" />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
             <hr />
