@@ -39,52 +39,26 @@ motion.div와 같이 HTML태그 앞에 motion 카워드를 붙인다.
 
     <motion.div initial= animate= />
 
-### 3. transition : Motion은 애니메이션을 적용할 속성에 따라 적절한 트랜지션 기본값을 미리 제공한다.
-
-예를 들어 x 또는 scale과 같은 프로퍼티는 spring을 사용한다. opacity나 color와 같은 프로퍼티는 tween을 사용한다.
+### 3. transition : 값이 한 상태에서 다른 상태로 애니메이션 되는 방식 정의
 
     <motion.div animate= transition= />
 
-#### 3-1. Srping
+-   [Srping](https://csb-b3yhc.netlify.app/)
+-   [Repeat and delay](https://csb-gp4b9.netlify.app/)
+-   [Delay between repetitions](https://csb-7zw1d.netlify.app/)
+-   [Repeat type and Bezier curves](https://csb-tz3ht.netlify.app/)
+-   [Repeating spring animations](https://csb-vedl9.netlify.app/)
 
-[example](https://csb-b3yhc.netlify.app/)
+#### 4-?. Miscellaneous
 
-    <motion.div animate= transition= />
+TargetAndTransition
 
-#### 3-2. Repeat and delay
-
-[example](https://csb-gp4b9.netlify.app/)
-
-    <motion.div animate= transition= />
-
-#### 3-3. Delay between repetitions
-
-[example](https://csb-7zw1d.netlify.app/)
-
-    <motion.div
-    animate=
-    transition=
-    />
-
-#### 3-4. Repeat type and Bezier curves
-
-[example](https://csb-tz3ht.netlify.app/)
-
-    <motion.div
-    y={-90}
-    animate=
-    transition=
-    />
-
-#### 3-5. Repeating spring animations
-
-[example](https://csb-vedl9.netlify.app/)
-
-    <motion.div
-    initial=
-    animate=
-    transition=
-    />
+    const target = {
+    x: "0%",
+    opacity: 0,
+    transition: { duration: 1 },
+    transitionEnd: { display: "none" }
+    }
 
 ### 4. Gestures
 
