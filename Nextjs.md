@@ -122,6 +122,133 @@ Node.js, npm가 설치되어 있어야 한다.
 
 파일시스템 기반 라우팅 : 파일의 경로가 주소에 매칭되는 라우팅 방식
 
+### 2-1. 페이지 나누기
+
+프로젝트를 처음 만들면 pages라는 디렉토리가 있다. 여기에 JS파일을 만들면 그게 곧 페이지이다.  
+JS파일에서 JSX를 반환하는 함수를 만들고 default export로 내보내면 된다.  
+index.js는 Homepage(최상위 경로)에 해당하고 domain/[ js파일명 ]이 해당 페이지의 경로가 된다.
+
+### 2-2. 다이나믹 라우팅
+
+여러 주소를 하나의 페이지에서 처리하는 것  
+pages/products/[ id ].js 처럼 대괄호로 폴더나 파일명을 묶어주면 파일명을 변수처럼 쓸 수 있게 된다. (param이라고 부름)
+
+### 2-3. Link 컴포넌트
+
+풀 리로드 하는 a태그 대신 필요한 데이터만 불러오는 Link 컴포넌트 사용
+
+    // 사이트 내부 링크
+    import Link from 'next/link';
+    <Link href="경로">링크 이름</Link>
+
+    // 사이트 외부 링크
+    (a태그와 Link 컴포넌트 작동방식 차이 없음, 그냥 Link 쓰면 됨)
+
+### 2-4. useRouter
+
+사이트 주소에서 원하는 값 가져오고 싶을 때 사용
+
+#### param값 가져오기
+
+    # ~/pages/product/[id].js
+    import { useRouter } from 'next/router';
+
+    export default function Product() {
+        // useRouter를 사용해서 router 객체를 만들고
+        const router = useRouter();
+        // .qurey을 사용해서 파일명에 있는 변수 값으로 받아온다.
+        const { id } = router.query;
+
+        return <div>Product {id} page</div>;
+    }
+
+#### query string 가져오기
+
+localhost:3000/search?q=후디  
+localhost:3000/search?q=티셔츠
+
+    # ~/pages/search.js
+    import { useRouter } from 'next/router';
+
+    export default function Search() {
+        const router = useRouter();
+        const { q } = router.query;
+
+        return (
+            <div>
+                <h1>Search Page</h1>
+                <h2>{q} 검색결과 </h2>
+            </div>
+        );
+    }
+
+#### 페이지 이동하기
+
+검색어를 입력하면 페이지 이동하는 기능
+
+    # ~/components/SearchForm.js (검색 컴포넌트)
+    import { useState } from 'react';
+    import { useRouter } from 'next/router';
+
+    export default function SearchForm() {
+        const router = useRouter();
+        const [value, setValue] = useState('');
+
+        function handleChange(e) {
+            setValue(e.target.value);
+        }
+
+        function handleSubmit(e) {
+            // handleSubmit 함수에서는 preventDefault로 기본동작을 막고
+            e.preventDefault();
+            // router객체의 .push함수 사용
+            if (!value) {
+                // 검색어가 없을 때 Home으로 이동
+                router.push('/');
+                return;
+            }
+            router.push(`/search?q=${value}`);
+        }
+
+        return (
+            // form 태그에서 검색 버튼을 누르면 onSumit 이벤트 발생 -> handleSumit 함수 실행
+            <form onSubmit={handleSubmit}>
+                <input name="q" value={value} onChange={handleChange} />
+                <button>검색</button>
+            </form>
+        );
+    }
+
+    # ~/pages/search.js
+    import SearchForm from '@/components/SearchForm';
+    import { useRouter } from 'next/router';
+
+    export default function Search() {
+        const router = useRouter();
+        const { q } = router.query;
+
+        return (
+            <div>
+                <h1>Search Page</h1>
+                <SearchForm />
+                <h2>{q} 검색결과 </h2>
+            </div>
+        );
+    }
+
+### 2-5. API 연동하기
+
+[Codeitmall API DOC](https://www.codeit.kr/tutorials/53/codeitmall-api-documentation)
+[Watchit API DOC](https://www.codeit.kr/tutorials/55/watchit-api-documentation)
+
+### 2-6. 리다이렉트
+
+### 2-7. 커스텀 404 페이지
+
+### 2-8. Context 활용하기
+
+### 2-9. API 라우팅
+
 ## 3. 사이트 완성
 
 ## 4. 프리렌더링
