@@ -110,7 +110,8 @@ export default function App() {
             <hr />
             <div>
                 <h2> layout </h2>
-                <p>framer-motion에서 layout 속성을 사용하면 요소의 레이아웃 변화에 대한 애니메이션 적용 가능</p>
+                <p>요소의 레이아웃 변화를 애니메이션화하는데 사용되는 옵션 중 하나</p>
+                <p>요소가 추가되거나 제거될때, 또는 크기와 위치가 변경될 때 애니메이션을 적용하는데 도움을 준다.</p>
                 <div></div>
             </div>
             <hr />
