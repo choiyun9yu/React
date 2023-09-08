@@ -1,12 +1,10 @@
-.e130_603 {
-    overflow: hidden;
-}
-.e130_603 {
+.padContainer {
     width: 280px;
     height: 280px;
     position: absolute;
+    overflow: hidden;
 }
-.e130_604 {
+.padCircle {
     box-shadow: 2px 2px 8px rgba(8.742498680949211, 12.516228184103966, 45.82400970160961, 1);
     background-image: linear-gradient(
         0deg,
@@ -23,52 +21,22 @@
     border-bottom-left-radius: 140px;
     border-bottom-right-radius: 140px;
 }
-.e130_605 {
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
-    background-image: linear-gradient(
-        0deg,
-        rgba(83.76044064760208, 83.76044064760208, 152.29170888662338, 1) 0%,
-        rgba(43.99047128856182, 43.99047128856182, 95.97920939326286, 1) 100%
-    );
-    width: 228px;
-    height: 228px;
-    position: absolute;
-    left: 26px;
-    top: 26px;
-    border-radius: 16px;
-}
-.e130_606 {
-    background-color: rgba(29.000000171363354, 29.000000171363354, 65.0000037252903, 1);
-    width: 76px;
-    height: 228px;
-    position: absolute;
-    left: 76.00016784667969px;
-    top: 1.1368683772161603e-13px;
-}
-.e130_607 {
-    transform: rotate(90.00000250447808deg);
-    background-color: rgba(29.000000171363354, 29.000000171363354, 65.0000037252903, 1);
-    width: 76px;
-    height: 228px;
-    position: absolute;
-    left: 228px;
-    top: 75.9999771118164px;
-}
-.e130_621 {
+
+.e68_269 {
     width: 204px;
     height: 204.00006103515625px;
     position: absolute;
     left: 38px;
     top: 37.99993896484375px;
 }
-.e130_622 {
+.e68_270 {
     width: 45px;
     height: 45px;
     position: absolute;
     left: 159px;
     top: 79px;
 }
-.e130_623 {
+.e68_271 {
     border-radius: 500px;
     background-image: linear-gradient(
         0deg,
@@ -81,9 +49,9 @@
     left: 0px;
     top: 0px;
 }
-.e130_624 {
+.e68_272 {
     transform: rotate(89.99999931675467deg);
-    background-color: rgba(100.00000163912773, 207.00000286102295, 246.0000005364418, 1);
+    background-color: rgba(255, 255, 255, 0.800000011920929);
     width: 24px;
     height: 20px;
     position: absolute;
@@ -91,14 +59,14 @@
     top: 10.5px;
     border-radius: 1px;
 }
-.e130_625 {
+.e68_273 {
     width: 45px;
     height: 45px;
     position: absolute;
     left: 0px;
     top: 79px;
 }
-.e130_626 {
+.e68_274 {
     border-radius: 500px;
     background-image: linear-gradient(
         0deg,
@@ -111,9 +79,9 @@
     left: 0px;
     top: 0px;
 }
-.e130_627 {
+.e68_275 {
     transform: rotate(90.00000068324535deg);
-    background-color: rgba(100.00000163912773, 207.00000286102295, 246.0000005364418, 1);
+    background-color: rgba(255, 255, 255, 0.800000011920929);
     width: 24px;
     height: 20px;
     position: absolute;
@@ -121,7 +89,7 @@
     top: 11px;
     border-radius: 1px;
 }
-.e130_628 {
+.e68_276 {
     transform: rotate(-90.00000250447808deg);
     width: 45px;
     height: 45px;
@@ -129,7 +97,7 @@
     left: 79.5px;
     top: 45.000003814697266px;
 }
-.e130_629 {
+.e68_277 {
     border-radius: 500px;
     background-image: linear-gradient(
         0deg,
@@ -142,9 +110,9 @@
     left: 0px;
     top: 0px;
 }
-.e130_630 {
+.e68_278 {
     transform: rotate(89.99999931675457deg);
-    background-color: rgba(100.00000163912773, 207.00000286102295, 246.0000005364418, 1);
+    background-color: rgba(255, 255, 255, 0.800000011920929);
     width: 24px;
     height: 20px;
     position: absolute;
@@ -152,7 +120,7 @@
     top: 10.500001907348633px;
     border-radius: 1px;
 }
-.e130_631 {
+.e68_279 {
     transform: rotate(90.00000250447808deg);
     width: 45px;
     height: 45px;
@@ -160,7 +128,7 @@
     left: 80px;
     top: 159.00006103515625px;
 }
-.e130_632 {
+.e68_280 {
     border-radius: 500px;
     background-image: linear-gradient(
         0deg,
@@ -173,9 +141,9 @@
     left: 0px;
     top: 0px;
 }
-.e130_633 {
+.e68_281 {
     transform: rotate(89.99999931675457deg);
-    background-color: rgba(100.00000163912773, 207.00000286102295, 246.0000005364418, 1);
+    background-color: rgba(255, 255, 255, 0.800000011920929);
     width: 24px;
     height: 20px;
     position: absolute;

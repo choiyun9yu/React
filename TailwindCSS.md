@@ -1,6 +1,6 @@
 # Tailwind CSS
 
-[document](https://tailwindcss.com/docs/utility-first)
+[document](https://tailwindcss.com/docs/utility-first) [icon](https://heroicons.com/)
 
 CSS Framework,  
 HTML 태그의 class, react의 className으로 디자인하는 방법(?)
