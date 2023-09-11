@@ -5,7 +5,7 @@ import SizeReviewList from '@/components/SizeReviewList';
 
 export default function Product() {
     const [product, setProduct] = useState();
-    const [sizeReviews, setSizeReviews] = useState();
+    const [sizeReviews, setSizeReviews] = useState([]);
     // useRouter를 사용해서 router 객체를 만들고
     const router = useRouter();
     // .qurey을 사용해서 id 값으로 받아온다.
@@ -20,8 +20,8 @@ export default function Product() {
 
     async function getSizeReviews(targetId) {
         const res = await axios.get(`/size_reviews/?product_id/${targetId}`);
-        const nextSizeReivews = res.data.results;
-        setProduct(nextSizeReivews);
+        const nextSizeReivews = res.data.results ?? []; // 값이 없을 수 있어서 빈배열처리
+        setSizeReviews(nextSizeReivews);
     }
 
     // 렌더링이 끝난 후 그리고 id값이 바뀔 때 비동기적으로 실행
@@ -30,7 +30,7 @@ export default function Product() {
 
         // 렌더링이 끝난 후 실행
         getProduct(id);
-        getSizeReveiws(id);
+        getSizeReviews(id);
     }, [id]); // id 값이 바뀔때마다 실행
 
     // 맨처음 product 값이 없을 때, 아무것도 렌더링하지 않음
