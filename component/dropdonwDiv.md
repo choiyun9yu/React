@@ -1,22 +1,8 @@
 # Dropdown 2
 
-#### App.js
+#### App.js (요약)
 
-    import React, { useState } from 'react';
     import { motion, AnimatePresence } from 'framer-motion';
-
-    import Contents from './components/Contents';
-    import './styles.css';
-
-    // js에서 css style 적용
-    const container = {
-        background: 'yellow',
-        width: '1200px',
-        height: 'auto',
-        border: '1px solid black',
-        display: 'inline-block',
-        overflow: 'hidden',
-    };
 
     const dropdownVariants = {
         open: {
@@ -37,7 +23,7 @@
         },
     };
 
-    const App = () => {
+     const App = () => {
         const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
         const toggleDropdown = () => {
@@ -45,12 +31,12 @@
         };
 
         return (
-            <motion.div layout style={container}>
+            <motion.div layout style={container}>   // 가장 밖에 motion.div layout
                 <div>
                     <button onClick={toggleDropdown}>{!isDropdownOpen ? 'open' : 'close'}</button>
-                    <AnimatePresence>
+                    <AnimatePresence>               // && 연산 밖에 AnimatePresence
                         {isDropdownOpen && (
-                            <motion.div
+                            <motion.div             // && 연산 안에 motion.div
                                 className="dropdown"
                                 variants={dropdownVariants}
                                 initial="closed"
@@ -58,7 +44,7 @@
                                 exit="closed"
                                 style={{ overflow: 'hidden' }}
                             >
-                                <Contents />
+                                <보여줄 컴포넌트 />
                             </motion.div>
                         )}
                     </AnimatePresence>
