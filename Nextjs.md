@@ -465,10 +465,174 @@ localhost:3000/search?q=티셔츠
 
 ### 2-7. 커스텀 404 페이지
 
-### 2-8. Context 활용하기
+**@/pages/404.js** 여기에 보여주고 싶은 커스텀 페이지 만들면 된다.
 
-### 2-9. API 라우팅
+### 2-8. App과 Document
+
+#### @/pages/\_app.js
+
+우리가 만든 모든 컴포넌트를 감싸고 있는 컴포넌트, 여기에 코드 작성하면 모든 페이지에 적용
+
+    import Container from '@/components/Container';
+    import '@/styles/global.css';
+
+    // Component라는 prop은 Next.js 페이지라고 생각하면 된다
+    export default function App({ Component, pageProps }) {
+        return (
+            <>
+                <Header />
+                <Container>
+                    <Component {...pageProps} />
+                </Container>
+            </>
+        );
+    }
+
+#### @/pages/\_document.js
+
+HTML의 뼈대를 만드는 컴포넌트, 서버에서 렌더링할 때만 이 컴포넌트 실행  
+사이트 전체에 적용할 HTML 코드 작성하는 곳
+
+### 2-8. Context 활용하기 (라이트모드 다크모드)
+
+Context : 사용자가 한국어를 사용하는 상황, 영어를 사용하는 상황, 라이트모드, 다크모드 등  
+여러 컴포넌트에 공유하고 싶을 때 사용한다.  
+Props만으로 리액트 개발을 하다 보면 여러 곳에 쓰이는 데이터를 내려주고 싶을 때가 있다.  
+이때 컴포넌트의 단계가 많다면 여러 번 반복해서 Prop을 내려야한다.  
+이런 문제를 프롭 드릴링이라고 하는데 Context는 이를 해결해 준다.
+
+    # Context 만들기
+    import { createContext } from 'react';
+    const LocaleContext = createContext();  // 이때 useState처럼 기본값 설정 가능
+
+    # Context 사용하기
+    function Board() {
+    const locale = useContext(LocaleContext);
+    return <div>언어: {locale}</div>;
+    }
+
+    function App() {
+    return (
+        <div>
+        ... 바깥의 컴포넌트에서는 LocaleContext 사용불가
+
+        <LocaleContext.Provider value="en">
+            ... Provider 안의 컴포넌트에서는 LocaleContext 사용가능
+        </LocaleContext.Provider>
+        </div>
+    );
+    }
+
+#### State, Hook과 함께 사용하기
+
+Provider 역할을 하는 컴포넌트를 하나 만들고, 여기서 State를 만들어서 value로 넘겨줄 수 있다.  
+그리고 아래 useLocale 같이 useContext를 사용해서 값을 가져오는 커스텀 Hook을 만들 수 있다.  
+이렇게 하면 Context에서 사용하는 State값은 반드시 우리가 만든 함수를 통해서만 쓸 수 있기 때문에 안전하다.
+
+    import { createContext, useContext, useState } from 'react';
+    const LocaleContext = createContext({});
+
+    export function LocaleProvider({ children }) {
+    const [locale, setLocale] = useState();
+    return (
+        <LocaleContext.Provider value={{ locale, setLocale }}>
+        {children}
+        </LocaleContext.Provider>
+    );
+    }
+
+    export function useLocale() {
+    const context = useContext(LocaleContext);
+
+    if (!context) {
+        throw new Error('반드시 LocaleProvider 안에서 사용해야 합니다');
+    }
+
+    const { locale } = context;
+    return locale;
+    }
+
+    export function useSetLocale() {
+    const context = useContext(LocaleContext);
+
+    if (!context) {
+        throw new Error('반드시 LocaleProvider 안에서 사용해야 합니다');
+    }
+
+    const { setLocale } = context;
+    return setLocale;
+    }
+
+#### 실습코드
+
+사이트 전체에 Context 적용할 때 app컴포넌트에 작성해 테마 적용 가능하다.
+
+    # @/lib/ThemeContext.js
+
+    import { createContext, useContext, useEffect, useState } from 'react';
+
+    export const ThemeContext = createContext();
+
+    export function ThemeProvider({ children }) {
+        const [theme, setTheme] = useState('dark');
+
+        // theme 값이 바뀔 때마다 바디태그의 classList 수정
+        useEffect(() => {
+            //
+            document.body.classList.add(theme);
+
+            return () => {
+                document.body.classList.remove(theme);
+            };
+        }, [theme]);
+
+        return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
+    }
+
+    export function useTheme() {
+        const themeContext = useContext(ThemeContext);
+        if (!themeContext) {
+            throw new Error('ThemeContext 안에서 써야 합니다');
+        }
+
+        return themeContext;
+    }
+
+    # @/pages.js/setting.js
+
+    import Dropdown from '@/components/Dropdown';
+    import { useTheme } from '@/lib/ThemeContext';
+    import styles from '@/styles/Setting.module.css';
+
+    export default function Setting() {
+    const { theme, setTheme } = useTheme();
+
+    return (
+        <div>
+        <h1 className={styles.title}>설정</h1>
+        <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>테마 설정</h2>
+            <Dropdown
+            className={styles.input}
+            name="theme"
+            value={theme}
+            onChange={(name, value) => setTheme(value)}
+            options={[
+                { label: '라이트', value: 'light' },
+                { label: '다크', value: 'dark' },
+            ]}
+            />
+        </section>
+        </div>
+    );
+    }
+
+#### @/pages/\_app.js
 
 ## 3. 사이트 완성
+
+### 3-1. Image 컴포넌트
+
+### 3-2. Head 컴포넌트
 
 ## 4. 프리렌더링
