@@ -529,6 +529,8 @@ Provider 역할을 하는 컴포넌트를 하나 만들고, 여기서 State를 �
 그리고 아래 useLocale 같이 useContext를 사용해서 값을 가져오는 커스텀 Hook을 만들 수 있다.  
 이렇게 하면 Context에서 사용하는 State값은 반드시 우리가 만든 함수를 통해서만 쓸 수 있기 때문에 안전하다.
 
+#### @/pages/\_app.js
+
     import { createContext, useContext, useState } from 'react';
     const LocaleContext = createContext({});
 
@@ -627,11 +629,80 @@ Provider 역할을 하는 컴포넌트를 하나 만들고, 여기서 State를 �
     );
     }
 
-#### @/pages/\_app.js
-
 ## 3. 사이트 완성
 
-### 3-1. Image 컴포넌트
+**@/public/** 디렉토리 안에 있는 파일은 **host/파일명** 으로 접근할 수 있다.
+
+### 3-1. Image 컴포넌트 (이미지 최적화 컴포넌트)
+
+-   원본 이미지가 Next.js 서버를 거쳐서 최적화된다.
+-   레이지 로딩 지원(이미지가 필요할 때 로딩, 초기 렌더링 속도 줄여줌) 한다.
+
+#### @/pages/test.js
+
+    import Image from 'next/image';
+
+    export default function Test() {
+        return (
+            <>
+                {/* html 태그 */}
+                <img src="/images/product.png" width="400" height="400" alt="상품 이미지" />
+                {/* image 컴포넌트, 주소를 바꿔주고 이미지 원본을 최적화해서 가져옴 */}
+                <Image src="/images/product.png" width="400" height="400" alt="상품 이미지" />
+            </>
+        );
+    }
+
+-   반드시 width와 heigth로 이미지 사이즈 지정해야 한다.
+-   fill이라는 속성은 조상 요소에 꽉차게 이미지 사이즈를 조정해 준다.
+-   이때 조상요소는 포지셔닝된 요소여야한다. (Image 컴포넌트를 div로 감싸고 div 포지션을 잡아주면 된다.)
+-   이미지 비율이 망가지는 것을 방지하기 위해 objectFit 을 사용할 수 있다.
+
+#### @/pages/test.js
+
+    import Image from 'next/image';
+
+    export default function Test() {
+        return (
+            <>
+                <div
+                    style={{
+                        position: 'relative',
+                        width: '50%',
+                        height: '200px',
+                    }}
+                >
+                    <Image
+                        fill
+                        src="/images/product.png"
+                        alt="상품 이미지"
+                        style={{
+                            objectFit: 'cover', //
+                        }}
+                    />
+                </div>
+            </>
+        );
+    }
+
+-   public 폴더 안에 있는 이미지는 그냥 사용할 수 있다.
+-   하지만 외부 이미지는 next.config.js에서 따로 설정을 해야한다.  
+    (외부 이미지 주소를 미리 Next.js에게 알려주는 것)
+
+#### @/next.config.js
+
+    module.exports = {
+        images: {
+            remotePatterns: [
+                {
+                    protocol: 'https',
+                    hostname: 'example.com',
+                    port: '',
+                    pathname: '/account123/**', // 별 2개 쓰면 뒤쪽에 있는 모든 경로를 포함한다.
+                },
+            ],
+        },
+    }
 
 ### 3-2. Head 컴포넌트
 
