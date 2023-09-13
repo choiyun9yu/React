@@ -77,7 +77,7 @@ Node.js, npm가 설치되어 있어야 한다.
 
 ### 1-3. CSS 적용
 
-#### ~/styles/Home.module.css
+#### @/styles/Home.module.css
 
 모듈 CSS 파일 만들기
 
@@ -86,7 +86,7 @@ Node.js, npm가 설치되어 있어야 한다.
         font-size: 120px;
     }
 
-#### ~/pages/index.js
+#### @/pages/index.js
 
     # CSS 파일에서 정리한 클래스 이름이 styles의 프로퍼티로 들어가 있다.
     import styles from '../styles/Home.module.css';
@@ -101,7 +101,7 @@ Node.js, npm가 설치되어 있어야 한다.
 
 ### 1-4. 사이트 전체에 CSS 적용
 
-#### ~/styles/global.css
+#### @/styles/global.css
 
     body {
         background-color: #121212;
@@ -112,7 +112,7 @@ Node.js, npm가 설치되어 있어야 한다.
         color: #f9f9f9;
     }
 
-#### ~/pages/\_app.js
+#### @/pages/\_app.js
 
     # 사이트 전체에 적용할 땐 이곳에서 정의 (상대경로)
     import '../styles/global.css'
@@ -822,7 +822,8 @@ Next.js에서는 기본적으로 모든 페이지를 정적 생성한다.
 
 getStaticProps()함수에서는 context 파라미터를 사용해서 필요한 Params(context.params) 값이나 쿼리스트링(context.query) 값을 참조 가능
 
-그리고 fallback: true로 지정하면, 필요한 데이터가 존재하지 않을 수 있기 때문에 적절한 예외 처리를 해야한다. { notFound: true }를 리턴하면 데이터를 찾을 수 없을 때 404페이지로 이동
+그리고 fallback: true로 지정하면, 필요한 데이터가 존재하지 않을 수 있기 때문에 적절한 예외 처리를 해야한다.  
+{ notFound: true }를 리턴하면 데이터를 찾을 수 없을 때 404페이지로 이동
 
     export async function getStaticProps(context) {
     const productId = context.params['id'];
@@ -847,7 +848,8 @@ getStaticProps()함수에서는 context 파라미터를 사용해서 필요한 P
 
 ######
 
-만약 fallback:true를 설정했다면 getStaticProps()를 실행하는 동안 보여줄 로딩 페이지를 구현해야 하는데, 페이지 컴포넌트에서 필요한 데이터가 존재하지 않을 때를 처리해 주면 된다.
+만약 fallback:true를 설정했다면 getStaticProps()를 실행하는 동안 보여줄 로딩 페이지를 구현해야 하는데,  
+페이지 컴포넌트에서 필요한 데이터가 존재하지 않을 때를 처리해 주면 된다.
 
     export default function Product({ product }) {
     if (!product) {
