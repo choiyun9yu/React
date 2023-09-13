@@ -1,6 +1,6 @@
 # React
 
-## 0. 환경 설정
+## 환경 설정
 
 -   node.js 설치
 -   버전확인 : node -v / npm -v
@@ -77,30 +77,119 @@ index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 �
 -   컴포넌트에 지정한 속성
 -   컴포넌트에 지정한 프롭은 객체 형태로 컴포넌트 함수의 첫번째 파리미터로 전달
 
-#### children
+#### children 프롭
 
--   JSX 문법으로 컴포넌트를 작성할 때 여는 태그와 닫는 태그의 형태로 작성하면 그안에 작성된 코드가 children 값에 대입된다.
--   리액트에 기본적으로 존재하는 프롭, 컴포넌트의 자식들을 값으로 갖는 프롭
--   컴포넌트 함수에서 따로 가공하지 않고, 단순히 보여주기만 할 모습은 child Prop으로 표현
+어떤 자식 엘리먼트가 들어올지 미리 예상할 수 없는 경우 사용
 
-### 3-4. State
+    // 부모 컴포넌트
+    const Category = ({ children }) => {
+        return <ul>{children}</ul>;
+        };
+
+    const App = () => (
+        <Category>
+            // 자식 요소들
+            <li>First item.</li>
+            <li>Second item.</li>
+            <li>Another item.</li>
+        </Category>
+        );
+
+### 3-4. useState
 
 리액트에서 변수 같은것, state를 바꾸면 리액트가 알아서 화면을 새로 렌더링
 
     import { useState } from "react";
-    const [stateName, stateSetter] = useState([init value]);
 
-#### (?) 참조형 State
+    // 초기 값 지정하기
+    const [stateName, stateSetter] = useState(initialState);
 
--   참조형 State는 참조형 자체를 값으로 갖는게 아니라, 그 참조형을 가리키고 있는 주소값을 가짐
+    // callback으로 State 초기 값 지정하기
+    const [state, setState] = useState(() => {
+        // 초기값을 계산 (단점) 콜백함수 실행이 오래 걸릴 수록 렌더링이 늦어짐
+    return initialState;
+    });
+
+#### Setter 함수 사용하기
+
+!주의! 배열이나 객체 같은 참조형은 반드시 새로운 값을 만들어서 전달해야 한다.
+
+    // 참조형 State 사용의 잘못된 예
+    const [state, setState] = useState({ count: 0 });
+
+    const handleAddClick = () => {
+    state.count += 1; // 참조형 변수의 프로퍼티를 수정
+    setState(state); // 참조형이기 때문에 변수의 값(레퍼런스)는 변하지 않음
+    }
+
+    // 참조형 State 사용의 올바른 예
+    const [state, setState] = useState({ count: 0 });
+
+    const handleAddClick = () => {
+    setState({ ...state, count: state.count + 1 }); // 새로운 객체 생성
+    }
+
+#### 참조형 State
+
+-   자료형이 참조형인 State는 참조형 자체를 값으로 갖는게 아니라, 그 참조형을 가리키고 있는 주소값을 가짐
 -   그렇기 때문에 setter 함수가 아닌 메소드를 이용해서 집어 넣더라도 해당 자료형이 가진 주소 값은 변하지 않음
 -   State 값이 바뀌어야 화면을 새로 랜더링 하는데 바뀌지 않는 문제 발생
 -   따라서 참조형 타입의 State를 바꿀 땐 전체를 새로 만든다고 생각하는 것이 좋다.
 
+#### (?) 콜백으로 State 변경
+
+    setState((prevState) => {
+        // 다음 State 값을 계산
+    return nextState;
+    });
+
+만약 이전 State 값을 참조하면서 State를 변경하는 경우,  
+비동기 함수에서 State를 변경하게 되면 최신 값이 아닌 State 값을 참조하는 문제 발생  
+이럴 땐 콜백을 사용해서 처리 가능
+
+이전 State값으로 새로운 State를 만드는 경우엔 항상 콜백 형태를 사용하는 습관을 들이면 좋다.
+
+    const [count, setCount] = useState(0);
+
+    const handleAddClick = async () => {
+        await addCount();
+        setCount((prevCount) => prevCount + 1);
+    }
+
 #### State Lifting
 
-자식 컴포넌트의 State를 부모 컴포넌트로 올려주는 것  
-(prop으로 내리고 state lifting으로 올리고 하는 듯)
+자식 컴포넌트에서 State를 부모 컴포넌트로 올려주는 것  
+(우선 prop으로 state와 setter를 내리고 state lifting으로 올린다.)
+
+        // 부모 컴포넌트
+        const ParentComponent = () => {
+        // 부모 컴포넌트의 상태
+        const [count, setCount] = useState(0);
+
+        // 자식 컴포넌트로 상태와 상태를 업데이트하는 함수를 전달
+        return (
+            <div>
+            <h1>부모 컴포넌트</h1>
+            <p>카운트: {count}</p>
+            <ChildComponent count={count} setCount={setCount} />
+            </div>
+        );
+        };
+
+        // 자식 컴포넌트
+        const ChildComponent = ({ count, setCount }) => {
+        // 자식 컴포넌트에서 상태를 업데이트하는 함수를 호출
+        const increment = () => {
+            setCount(count + 1);
+        };
+
+        return (
+            <div>
+            <h2>자식 컴포넌트</h2>
+            <button onClick={increment}>증가</button>
+            </div>
+        );
+        };
 
 #### 리액트 렌더링 방식
 
@@ -274,7 +363,7 @@ useEffect를 사용하면 처음 렌더링하고 난 다음에 비동기로 콜�
 그 다음 렌더링 때부터는 의존성 배열(dependency list)의 값이 바뀔 때마다 콜백 함수가 실행된다.  
 (useEffect()를 사용하지 않고 그냥 함수를 호출하면 무한루프에 빠질 수 있다.)
 
-    # 처은 한 번만 실행하기
+    # 처음 한 번만 실행하기
     useEffect(() => {
         // 실행할 코드
     }, []);
@@ -318,25 +407,28 @@ useEffect를 사용하면 처음 렌더링하고 난 다음에 비동기로 콜�
 
 #### 네트워크 로딩 처리하기
 
-// 네트워크가 로딩중인 경우 다른 작업을 하지 못하도록 처리
-// 현재 네트워크가 리퀘스트중이면 true, 아니면 false값을 갖는 State로 작업 가능
-// try catch finally 문으로 리퀘스트를 try로 감싸고 시작할때 true값 설정, finally에서 false로 설정
-// try문 결과를 블록 밖으로 가져올 수 있는 더 넓은 스코프의 변수가 선언 필요!
+네트워크가 로딩중인 경우 다른 작업을 하지 못하도록 처리  
+현재 네트워크가 리퀘스트중이면 true, 아니면 false값을 갖는 State로 작업 가능  
+try catch finally 문으로 리퀘스트를 try로 감싸고 시작할때 true값 설정, finally에서 false로 설정  
+try문 결과를 블록 밖으로 가져올 수 있는 더 넓은 스코프의 변수가 선언 필요!
 
-// 2-4. 네트워크 오류 처리하기
-// 마찬가지로 오류를 감지하는 State를 하나 만들고
-// 시작할 때 false 값을 주다가 오류 감지하면 catch문에서 state에 erro 객체를 할당한다.
-// 그리고 state에 오류 객체가 잡히면 오류 처리 하면 된다.
+#### 네트워크 오류 처리하기
 
-// 2-5. 검색기능
-// search 쿼리(api마다 다름)에 해당하는 %EB%A7%88%ED%86%A0 이런 값은 인코딩 된 한글이다.
-// fetch() 함수에서는 한글을 그대로 쓰면 알아서 인코딩해서 보내준다.
-// useEffect의 디펜던시 리스트에 search를 추구하는 것을 잊지말자!!
-// (1) 검색어 받기
-// e.preventDefault(); a태그, submit 태그로 인해 이동하거나 새로고침 되는 것을 막음
-// (2) 리퀘스트 보내기
-// (3) 리스폰스 적용하기
-// (4) '더보기' 버튼은?
+마찬가지로 오류를 감지하는 State를 하나 만들고  
+시작할 때 false 값을 주다가 오류 감지하면 catch문에서 state에 erro 객체를 할당한다.  
+그리고 state에 오류 객체가 잡히면 오류 처리 하면 된다.
+
+#### 검색기능
+
+search 쿼리(api마다 다름)에 해당하는 %EB%A7%88%ED%86%A0 이런 값은 인코딩 된 한글이다.  
+fetch() 함수에서는 한글을 그대로 쓰면 알아서 인코딩해서 보내준다.  
+useEffect의 디펜던시 리스트에 search를 추구하는 것을 잊지말자!!
+
+-   (1) 검색어 받기  
+    (e.preventDefault(); a태그, submit 태그로 인해 이동하거나 새로고침 되는 것을 막음)
+-   (2) 리퀘스트 보내기
+-   (3) 리스폰스 적용하기
+-   (4) '더보기' 버튼은?
 
 ### 4-3. 입력 폼 다루기
 
