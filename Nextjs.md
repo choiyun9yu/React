@@ -42,6 +42,23 @@ Node.js, npm가 설치되어 있어야 한다.
     # 도커환경에서 실행하는 예시 보고싶은 경우
     $ npx create-next-app [app-name]--example with-docker
 
+    # 개발서버 켜기
+    $ npm run dev
+
+    # 빌드하기
+    $ npm run build // 실행 가능한 형태로 코드 변환하는 과정
+
+    # 실행하기
+    $ npm run start
+
+#### 배포하기 : Vercel 서비스 이용하면 간편하게 배포 가능
+
+-   [Vercel](https://vercel.com/) 회원가입,
+-   Github와 연동해서 사용하려는 경우 반드시 GitHub로 가입
+-   Github에서 Vercel 앱 설치 팝업이 뜨면 설치
+-   그럼 내 리포지토리 목록이 Vercel에서 보인다. 배포할 리포지토리 import
+-   Domains에 적혀있는 주소로 접속하면 배포된 앱 확인 가능
+
 #### 타입스크립트 지원
 
 프로젝트의 최상위 디렉터리 안에 tsconfig.json이라는 타입스크립트 설정 파일만들면 된다.
@@ -706,4 +723,159 @@ Provider 역할을 하는 컴포넌트를 하나 만들고, 여기서 State를 �
 
 ### 3-2. Head 컴포넌트
 
-## 4. 프리렌더링
+Next.js에서 웹페이지는 리액트의 컴포넌트이다. 그럼 페이지 제목은 어떻게 설정?
+
+    import Head from 'next/head';
+
+    export default function App() {
+        ...
+    return (
+            <>
+                <Head>
+                    <title> 페이지 제목 </title>
+                    <link rel="icon" href="아이콘 경로" />
+                </Head>
+            </>
+        )
+
+}
+
+### 3-3. 구글 폰트 적용하기
+
+#### @/pages/\_app.js
+
+    import { Noto_Sans_KR } from '@next/font/google';
+
+    // 폰트 로드
+    const notoSansKR = Noto_Sans_KR({
+    weight: ['400', '700'],     // 문자열임에 주의
+    subsets: [],                // 영문만 사용하는 폰트는 ['latin'] // 한글만 사용하는 폰트는?
+    });
+
+    // 폰트 적용 방법 1
+    <main className={notoSansKR.className}>
+    ...
+    </main>
+
+    // 폰트 적용 방법 2
+    <Head>
+    <style>{`
+        html {
+        font-family: ${notoSansKR.style.fontFamily}, sans-serif;
+        }
+    `}</style>
+    </Head>
+
+## 4. 프리렌더링(Pre-rendering)
+
+웹 브라우저가 페이지를 로딩하기 이전에 렌더링하는 것  
+크게 정적 생성과 서버사이드 렌더링으로 나뉜다.  
+Next.js에서는 기본적으로 모든 페이지를 정적 생성한다.
+
+### 4-1. 정적생성(Static Generation)
+
+프로젝트를 빌드하는 시점에 미리 HTML을 렌더링하는 것
+
+#### getStaticProps()
+
+정적 생성할 때 필요한 데이터를 받아와서 렌더링하고 싶을 때 사용  
+객체의 props 프로퍼티로 넘겨줄 Props 객체를 지정하고, 이것을 페이지 컴포넌트에서 사용
+
+    export async function getStaticProps() {
+    const res = await axios('/products/');
+    const products = res.data;
+
+    return {
+        props: {
+        products,
+        },
+    };
+    }
+
+    export default function Home({ products }) {
+    return (
+        <ProductList products={products} />
+    );
+    }
+
+#### getStaticPatchs()
+
+@/pages/products/[ id ].js와 같이 다이나믹 라우팅을 하는 페이지를 정적 생성할 때  
+어떤 페이지를 정적 생성할지 지정해야할 때 사용
+
+리턴 값으로 객체를 리턴하는데, paths 라는 배열에서 각 페이지에 해당하는 정보를 넘겨줄 수 있다.  
+예를 들어 id값이 1인 페이지를 정적 생성하려면 { params: {id : '1'}}
+
+그리고 fallback이라는 속성을 사용해서 정적 생성되지 않은 페이지를 처리해줄 것인지 지정 가능
+
+    export async function getStaticPaths() {
+    return {
+        paths: [
+        { params: { id: '1' }},
+        { params: { id: '2' }},
+        ],
+        fallback: true,
+    };
+    }
+
+######
+
+getStaticProps()함수에서는 context 파라미터를 사용해서 필요한 Params(context.params) 값이나 쿼리스트링(context.query) 값을 참조 가능
+
+그리고 fallback: true로 지정하면, 필요한 데이터가 존재하지 않을 수 있기 때문에 적절한 예외 처리를 해야한다. { notFound: true }를 리턴하면 데이터를 찾을 수 없을 때 404페이지로 이동
+
+    export async function getStaticProps(context) {
+    const productId = context.params['id'];
+
+    let product;
+
+    try {
+        const res = await axios(`/products/${productId}`);
+        product = res.data;
+    } catch {
+        return {
+        notFound: true,
+        };
+    }
+
+    return {
+        props: {
+        product,
+        },
+    };
+    }
+
+######
+
+만약 fallback:true를 설정했다면 getStaticProps()를 실행하는 동안 보여줄 로딩 페이지를 구현해야 하는데, 페이지 컴포넌트에서 필요한 데이터가 존재하지 않을 때를 처리해 주면 된다.
+
+    export default function Product({ product }) {
+    if (!product) {
+        return <>로딩 중 ...</>
+    }
+    return <>상품 이름: {product.name}</>;
+    }
+
+### 4-2. 서버사이드 렌더링
+
+Next.js 서버에 리퀘스트가 도착할 때마다 페이지를 렌더링해서 보여주는 방식  
+getServerSideProps()함수를 구현하고 export하면 된다.
+
+이때 리턴 값으로는 객체를 리턴하는데 정적 생성 때와 마찬가지로 props 프로퍼티로 Props 객체를 넘겨주면 페이지 컴포넌트에서 받아서 사용 가능
+
+    export async function getServerSideProps() {
+    const res = await axios('/products/');
+    const products = res.data;
+
+    return {
+        props: {
+        products,
+        },
+    };
+    }
+
+    export default function Home({ products }) {
+    return (
+        <ProductList products={products} />
+    );
+    }
