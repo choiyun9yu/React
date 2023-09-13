@@ -1,0 +1,30 @@
+GET http://localhost:3001/api/short-links
+
+###
+
+GET http://localhost:3001/api/short-links/123?q=codeit
+
+###
+
+POST http://localhost:3001/api/short-links/123
+Content-Type: application/json
+
+{
+    "title": "codeit"
+}
+
+###
+
+GET http://localhost:3001/api/short-links/123
+Cookie: session-id=codeit1234
+
+###
+
+PATCH  http://localhost:3001/api/short-links/123
+Cookie: session-id=codeit1234
+
+###
+
+
+GET  http://localhost:3001/api/short-links
+Cookie: session-id=codeit1234
