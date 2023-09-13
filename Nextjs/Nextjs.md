@@ -881,3 +881,13 @@ getServerSideProps()함수를 구현하고 export하면 된다.
         <ProductList products={products} />
     );
     }
+
+# Next.js API server 만들기
+
+### 1. API 라우팅
+
+### 2. MongoDB
+
+### 3. 주소 단축 서비스
+
+### 4. 배포포
