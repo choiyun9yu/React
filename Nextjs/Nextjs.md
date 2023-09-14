@@ -768,34 +768,68 @@ Next.js에서 웹페이지는 리액트의 컴포넌트이다. 그럼 페이지 
 
 ## 4. 프리렌더링(Pre-rendering)
 
-웹 브라우저가 페이지를 로딩하기 이전에 렌더링하는 것  
-크게 정적 생성과 서버사이드 렌더링으로 나뉜다.  
-Next.js에서는 기본적으로 모든 페이지를 정적 생성한다.
+웹 브라우저가 페이지를 로딩하기 이전에 렌더링하는 것
+
+-   정적 생성 : 빌드시 기본적으로 렌더링
+-   서버 사이드 렌더링 : 리퀘스트 받을 시 렌더링
+
+\*Hydration : 프리렌더링된 HTML과 React가 서로 연동되어 동작하는 것
+
+#### 프리랜더링 장점
+
+-   초기 로딩이 빨라진다.
+-   검색엔진 최적화가 된다.
 
 ### 4-1. 정적생성(Static Generation)
 
-프로젝트를 빌드하는 시점에 미리 HTML을 렌더링하는 것
+프로젝트를 빌드하는 시점에 미리 HTML을 렌더링하는 것  
+Next.js에서는 기본적으로 모든 페이지를 정적 생성한다.
+데이터가 자주 바뀌지 않을 때 정적 생성이 좋다.
+
+!주의! useEffect에서 실행하는 코드는 프리렌더링할 때 서버에서는 실행되지 않는다.  
+웹 브라우저가 다 로딩되고 나서 웹 브라우저에서 실행된다.
 
 #### getStaticProps()
 
 정적 생성할 때 필요한 데이터를 받아와서 렌더링하고 싶을 때 사용  
-객체의 props 프로퍼티로 넘겨줄 Props 객체를 지정하고, 이것을 페이지 컴포넌트에서 사용
+객체의 props 프로퍼티로 넘겨줄 Props 객체를 지정하고, 이것을 페이지 컴포넌트에서 사용  
+(이 함수안에서는 리액트 HOOK은 사용할 수 없다)
 
     export async function getStaticProps() {
-    const res = await axios('/products/');
-    const products = res.data;
+        // 데이터 가져오는 코드 ...
+    }
 
-    return {
-        props: {
-        products,
-        },
-    };
+####
+
+    # @/pages/index.js
+    import Link from 'next/link';
+    import styles from '@/styles/Home.module.css';
+    import SearchForm from '@/components/SearchForm';
+    import { useState, useEffect } from 'react';
+    import axios from '@/lib/axios';
+    import ProductList from '@/components/ProductList';
+
+    // 정적 생성할 때 Next.js가 실행할 함수 구현
+    export async function getStaticProps() {
+        // 데이터 가져오는 코드
+        const res = await axios.get('/products');
+        const products = res.data.results;
+
+        return {
+            props: {
+                products,
+            },
+        };
     }
 
     export default function Home({ products }) {
-    return (
-        <ProductList products={products} />
-    );
+        return (
+            <>
+                <h1>Codeitmall</h1>
+                <SearchForm />
+                <ProductList className={styles.productList} products={products} />
+            </>
+        );
     }
 
 #### getStaticPatchs()
@@ -858,9 +892,10 @@ getStaticProps()함수에서는 context 파라미터를 사용해서 필요한 P
     return <>상품 이름: {product.name}</>;
     }
 
-### 4-2. 서버사이드 렌더링
+### 4-2. 서버 사이드 렌더링
 
 Next.js 서버에 리퀘스트가 도착할 때마다 페이지를 렌더링해서 보여주는 방식  
+데이터가 자주 바뀌는 경우 서버 사이드 렌더링하면 좋다.
 getServerSideProps()함수를 구현하고 export하면 된다.
 
 이때 리턴 값으로는 객체를 리턴하는데 정적 생성 때와 마찬가지로 props 프로퍼티로 Props 객체를 넘겨주면 페이지 컴포넌트에서 받아서 사용 가능
