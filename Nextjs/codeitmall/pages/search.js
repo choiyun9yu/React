@@ -1,24 +1,22 @@
 import ProductList from '@/components/ProductList';
 import SearchForm from '@/components/SearchForm';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 import axios from '@/lib/axios';
 
-export default function Search() {
-    const [products, setProducts] = useState([]);
-    const router = useRouter();
-    const { q } = router.query;
+// 서버 사이드 렌더링
+export async function getServerSideProps(context) {
+    const q = context.quey['q'];
 
-    async function getProducts(query) {
-        const res = await axios.get(`/products/?q=${query}`);
-        const nextProducts = res.data.results;
-        setProducts(nextProducts);
-    }
+    const res = await axios.get(`/products/?q=${q}`);
+    const products = res.data.results ?? [];
 
-    useEffect(() => {
-        getProducts(q);
-    }, [q]);
+    return {
+        props: {
+            products,
+        },
+    };
+}
 
+export default function Search({ q, products }) {
     return (
         <div>
             <h1>Search Page</h1>

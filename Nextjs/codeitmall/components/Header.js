@@ -1,18 +1,18 @@
 import Link from 'next/link';
-import styles from '@/styles/Header.module.css';
+import styles from './Header.module.css';
 import Container from './Container';
 
 export default function Header() {
-    return (
-        <header className={styles.header}>
-            <Container className={styles.container}>
-                <Link className={styles.logo} href="/">
-                    codietmall
-                </Link>
-                <Link className={styles.setting} href="/setting">
-                    설정
-                </Link>
-            </Container>
-        </header>
-    );
+  return (
+    <header className={styles.header}>
+      <Container className={styles.container}>
+        <Link className={styles.logo} href="/">
+          CodietMall
+        </Link>
+        <Link className={styles.setting} href="/setting">
+          Setting
+        </Link>
+      </Container>
+    </header>
+  );
 }

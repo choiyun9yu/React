@@ -958,9 +958,10 @@ getStaticProps()함수에서는 context 파라미터를 사용해서 필요한 P
 ### 4-2. 서버 사이드 렌더링
 
 Next.js 서버에 리퀘스트가 도착할 때마다 페이지를 렌더링해서 보여주는 방식  
-데이터가 자주 바뀌는 경우 서버 사이드 렌더링하면 좋다.
-getServerSideProps()함수를 구현하고 export하면 된다.
+데이터가 자주 바뀌는 경우 서버 사이드 렌더링하면 좋다.  
+(쿼리 값은 들어오기전엔 알 수 없으니 쿼리 값에 따라 다른 페이지 보여주는 경우 사용)
 
+getServerSideProps()함수를 구현하고 export하면 된다.
 이때 리턴 값으로는 객체를 리턴하는데 정적 생성 때와 마찬가지로 props 프로퍼티로 Props 객체를 넘겨주면 페이지 컴포넌트에서 받아서 사용 가능
 
     export async function getServerSideProps() {
@@ -980,4 +981,186 @@ getServerSideProps()함수를 구현하고 export하면 된다.
     );
     }
 
+#### @/pages/search.js
+
+    import ProductList from '@/components/ProductList';
+    import SearchForm from '@/components/SearchForm';
+    import axios from '@/lib/axios';
+
+    // 서버 사이드 렌더링
+    export async function getServerSideProps(context) {
+        const q = context.quey['q'];
+
+        const res = await axios.get(`/products/?q=${q}`);
+        const products = res.data.results ?? [];
+
+        return {
+            props: {
+                products,
+            },
+        };
+    }
+
+    export default function Search({ q, products }) {
+        return (
+            <div>
+                <h1>Search Page</h1>
+                <SearchForm />
+                <h2>{q} 검색결과 </h2>
+                <ProductList products={products} />
+            </div>
+        );
+    }
+
 ####
+
+페이지에 자주 바뀌는 부분과 자주 바뀌지 않는 부분이 있을 때,
+자주 바뀌지 않는 부분은 정적 생서하고, 자주 바뀌는 부분은 useEffect로 렌더링될 때 불러왔다.  
+그러나 자주 바뀌는 부분도 프리렌더링하고 싶다면 서버사이드렌더링으로 처리하면 된다.
+(리액트는 정적생성과 서바사이드렌더링을 동시에 할 수 없다.)
+
+#### @/pages/items/[ id ].js
+
+    import axios from '@/lib/axios';
+    import styles from '@/styles/Product.module.css';
+    import SizeReviewList from '@/components/SizeReviewList';
+    import StarRating from '@/components/StarRating';
+    import Image from 'next/image';
+    import Spinner from '@/components/Spinner';
+
+    export async function getServerSideProps(context) {
+        const productId = context.params['id'];
+        let product;
+        try {
+            const res = await axios.get(`/products/${productId}`);
+            product = res.data;
+        } catch {
+            return {
+                notFound: true,
+            };
+        }
+
+        const res = await axios.get(`/size_reviews/?product_id=${productId}`);
+        const sizeReviews = res.data.results ?? [];
+
+        return {
+            props: {
+                product,
+                sizeReviews,
+            },
+        };
+    }
+
+    export default function Product({ product, sizeReviews }) {
+        if (!product)
+            return (
+                <div className={styles.loading}>
+                    <Spinner />
+                </div>
+            );
+
+        return (
+            <>
+                <h1 className={styles.name}>
+                    {product.name}
+                    <span className={styles.englishName}>{product.englishName}</span>
+                </h1>
+                <div className={styles.content}>
+                    <div className={styles.image}>
+                        <Image fill src={product.imgUrl} alt={product.name} />
+                    </div>
+                    <div>
+                        <section className={styles.section}>
+                            <h2 className={styles.sectionTitle}>제품 정보</h2>
+                            <div className={styles.info}>
+                                <table className={styles.infoTable}>
+                                    <tbody>
+                                        <tr>
+                                            <th>브랜드 / 품번</th>
+                                            <td>
+                                                {product.brand} / {product.productCode}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>제품명</th>
+                                            <td>{product.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>가격</th>
+                                            <td>
+                                                <span className={styles.salePrice}>{product.price.toLocaleString()}원</span>{' '}
+                                                {product.salePrice.toLocaleString()}원
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>포인트 적립</th>
+                                            <td>{product.point.toLocaleString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>구매 후기</th>
+                                            <td className={styles.starRating}>
+                                                <StarRating value={product.starRating} />{' '}
+                                                {product.starRatingCount.toLocaleString()}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>좋아요</th>
+                                            <td className={styles.like}>♥{product.likeCount.toLocaleString()}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section className={styles.section}>
+                            <h2 className={styles.sectionTitle}>사이즈 추천</h2>
+                            <SizeReviewList sizeReviews={sizeReviews ?? []} />
+                        </section>
+                        <section className={styles.section}>
+                            <h2 className={styles.sectionTitle}>사이즈 추천하기</h2>
+                        </section>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+### 4-3 클라이언트에서 데이터 주고받기
+
+## App Router
+
+#### App Router란?
+
+지금까지 라우팅과 프리렌더링에 대해서 배워봤습니다. 그런데 Next.js 13.4 이후 버전부터는 새로운 방식의 라우팅을 지원하기 시작했는데요. 바로 App Router라는 것입니다. 우리가 이번 챕터에서 배웠던 것은 Pages Router라고 부르는데요. 이번 레슨에서는 새롭게 도입된 App Router에 대해서 간단하게 알아보도록 하겠습니다.
+
+######
+
+App Router의 가장 큰 차이는 /pages 폴더가 아닌 /app 폴더에 페이지 컴포넌트들을 추가한다는 겁니다. 그리고 이 페이지 컴포넌트들은 기본적으로 리액트 서버 컴포넌트(React Server Component)입니다. 기존에 우리가 사용하던 리액트 컴포넌트와는 조금 다른 컴포넌트인데요. 간단히 설명해서 서버에서만 렌더링되는 컴포넌트이죠. 그 밖에도 라우팅의 여러 기능들이 달라졌습니다. 공통된 레이아웃을 적용하는 방식이나, 메타데이터를 사용하는 방식, 그리고 데이터를 받아오는 방식 등이 달라졌습니다. 혹시 궁금하신 분들은 Next.js 공식문서나 아래 참고자료의 유튜브 영상을 참고해 보세요.
+
+#### React Server Component(RSC)란?
+
+리액트 서버 컴포넌트는 서버에서만 렌더링하는 컴포넌트입니다. 2023년 5월을 기준으로 리액트에서 아직까지는 실험적인 기능인데요. 곧 리액트의 정식 기능이 될 것으로 보입니다. 기존에 사용하던 컴포넌트 방식은 서버 컴포넌트와 구분하기 위해서 리액트 클라이언트 컴포넌트라고 부르기도 합니다.
+
+######
+
+리액트 서버 컴포넌트와 리액트 클라이언트 컴포넌트의 문법에서 가장 큰 차이는 데이터를 가져오는 방식입니다. 클라이언트에서 리퀘스트를 보내서 데이터를 받아오거나, Next.js에서 프리렌더링을 한다면 데이터를 Props로 내려받았는데요. 리액트 서버 컴포넌트를 사용하면 컴포넌트를 async/await 함수로 만들 수 있고, 함수 최상위(top-level)에서 await 로 데이터를 가져올 수 있습니다.
+
+######
+
+async/await를 사용해서 컴포넌트 함수를 작성하기 때문에 훨씬 직관적인 문법으로 컴포넌트를 개발할 수 있고요, 서버에서 모든 데이터를 가져온 다음 렌더링까지 해서 보내주기 때문에 서버와 클라이언트가 여러 번 리퀘스트를 주고받을 때보다 빠르게 페이지를 보여줄 수 있습니다. 게다가 서버 컴포넌트 렌더링에 필요한 자바스크립트는 서버에서만 실행하기 때문에 클라이언트가 다운로드해야 할 자바스크립트 코드의 양도 줄어들죠.
+
+####
+
+    async function getData() {
+    const res = await fetch('https://api.example.com/...');
+    return res.json();
+    }
+
+    export default async function Page() {
+    const data = await getData();
+
+    return <main> ... </main>;
+    }
+
+######
+
+Next.js 팀에서는 새롭게 시작하는 프로젝트에는 App Router 사용을 권장하고 있는데요. 정적 생성, 서버사이드 렌더링뿐만 아니라, 이제 서버 컴포넌트까지 활용해서 최적화된 웹사이트를 만들 수 있게 되었습니다. 혹시 App Router와 리액트 서버 컴포넌트에 대해서 더 궁금하신 분들은 아래 참고 자료를 한번 살펴보세요!
