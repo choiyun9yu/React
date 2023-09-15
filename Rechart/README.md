@@ -51,7 +51,8 @@
 
 #### 너비 맞추기
 
--   < ResponsiveContainer width='100%' height={150} >컴포넌트를 임포트해서 감싸준다.
+-   < ResponsiveContainer width='99%' height={150} >컴포넌트를 임포트해서 감싸준다.  
+    (99%로 하는 이유는 100%로하면 큰사이즈에서 작은사이즈로 바뀔 때 사이즈가 유지되는 버그 때문)
 
 ## Line
 
