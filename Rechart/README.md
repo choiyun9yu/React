@@ -47,6 +47,12 @@
 
     export default LineGraph;
 
+## 공통
+
+#### 너비 맞추기
+
+-   < ResponsiveContainer width='100%' height={150} >컴포넌트를 임포트해서 감싸준다.
+
 ## Line
 
 #### LineChart : 선 그래프
