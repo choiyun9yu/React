@@ -832,52 +832,115 @@ Next.js에서는 기본적으로 모든 페이지를 정적 생성한다.
         );
     }
 
+### 다이나믹한 페이지 경로에서 정적생성
+
 #### getStaticPatchs()
 
 @/pages/products/[ id ].js와 같이 다이나믹 라우팅을 하는 페이지를 정적 생성할 때  
 어떤 페이지를 정적 생성할지 지정해야할 때 사용
+
+    export async function getStaticPaths() {
+        return {
+            paths: [
+            { params: { id: '1' }},
+            { params: { id: '2' }},
+            ],
+            fallback: true,
+        };
+        }
 
 리턴 값으로 객체를 리턴하는데, paths 라는 배열에서 각 페이지에 해당하는 정보를 넘겨줄 수 있다.  
 예를 들어 id값이 1인 페이지를 정적 생성하려면 { params: {id : '1'}}
 
 그리고 fallback이라는 속성을 사용해서 정적 생성되지 않은 페이지를 처리해줄 것인지 지정 가능
 
-    export async function getStaticPaths() {
-    return {
-        paths: [
-        { params: { id: '1' }},
-        { params: { id: '2' }},
-        ],
-        fallback: true,
-    };
-    }
-
-######
-
 getStaticProps()함수에서는 context 파라미터를 사용해서 필요한 Params(context.params) 값이나 쿼리스트링(context.query) 값을 참조 가능
 
 그리고 fallback: true로 지정하면, 필요한 데이터가 존재하지 않을 수 있기 때문에 적절한 예외 처리를 해야한다.  
 { notFound: true }를 리턴하면 데이터를 찾을 수 없을 때 404페이지로 이동
 
-    export async function getStaticProps(context) {
-    const productId = context.params['id'];
+#### @/pages/items/[ id ].js
 
-    let product;
+    import { useRouter } from 'next/router';
+    import { useEffect, useState } from 'react';
+    import axios from '@/lib/axios';
+    import SizeReviewList from '@/components/SizeReviewList';
+    import Spinner from '@/components/Spinner';
+    import styles from '@/styles/Product.module.css';
 
-    try {
-        const res = await axios(`/products/${productId}`);
-        product = res.data;
-    } catch {
+    // Next.js가 어떤 페이지를 미리 만들어야 하는지 알려주는 함수
+    // 다이나믹한 페이지를 정적 생성할 때 어떤 페이지를 정적 생성할지 알려주는 함수
+    export async function getStaticPaths() {
+        const res = await axios.get('/products/');
+        const products = res.data.results;
+        const paths = products.map((product) => ({
+            params: { id: String(product.id) },
+        }));
         return {
-        notFound: true,
+            paths,
+            fallback: true, // true로 설정하면 정적생해놓지 않은 페이지를 그때그때 생성해서 보여주는데 우선 로딩화면을 구현해줘야한다./ 데이터가 없는 경우 notFound: true를 리턴해서 404 페이지 보여주면 된다.
         };
     }
 
-    return {
-        props: {
-        product,
-        },
-    };
+    // getStaticProps는 리액트 컴포넌트가 아니라서 Hook 사용 불가
+    export async function getStaticProps(context) {
+        // useRouter로 id param을 가져올 수 없어서 context로 가져온다.
+        const productId = context.params['id'];
+        let product;
+        try {
+            const res = await axios.get(`/products/${productId}`);
+            product = res.data;
+        } catch {
+            return {
+                notFound: true,
+            };
+        }
+
+        return {
+            props: {
+                product,
+            },
+        };
+    }
+
+    // 컴포넌트에서는 프롭스를 기반으로 실행
+    export default function Product({ product }) {
+        const [sizeReviews, setSizeReviews] = useState([]);
+        // useRouter를 사용해서 router 객체를 만들고
+        const router = useRouter();
+        // .qurey을 사용해서 id 값으로 받아온다.
+        const { id } = router.query;
+
+        async function getSizeReviews(targetId) {
+            const res = await axios.get(`/size_reviews/?product_id/${targetId}`);
+            const nextSizeReivews = res.data.results ?? []; // 값이 없을 수 있어서 빈배열처리
+            setSizeReviews(nextSizeReivews);
+        }
+
+        // 렌더링이 끝난 후 그리고 id값이 바뀔 때 비동기적으로 실행
+        useEffect(() => {
+            if (!id) return;
+
+            // 렌더링이 끝난 후 실행
+
+            getSizeReviews(id);
+        }, [id]); // id 값이 바뀔때마다 실행
+
+        // 맨처음 product 값이 없을 때, 아무것도 렌더링하지 않음
+        if (!product)
+            return (
+                <div className={styles.loading}>
+                    <Spinner />
+                </div>
+            );
+
+        return (
+            <div>
+                <h1>{product.name}</h1>
+                <img src={product.imgUrl} alt={product.name} />
+                <SizeReviewList sizeReviews={sizeReviews} />
+            </div>
+        );
     }
 
 ######
@@ -916,3 +979,5 @@ getServerSideProps()함수를 구현하고 export하면 된다.
         <ProductList products={products} />
     );
     }
+
+####
