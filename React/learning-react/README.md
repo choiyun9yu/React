@@ -749,7 +749,8 @@ Array.concat은 그 객체를 원래의 배열을 복사한 새로운 배열 뒤
     // Array.join : 배열의 모든 원소를 인자로 받아서 구분자로 연결한 문자열 반환 (inplace=flase)
     console.log( schools.join(",") );   // "Yorktown, Washington & Lee, Wakefield"
 
-    // Array.filter : 조건문 결과 true인 것만으로 배열 구성
+    // Array.filter : 인자로 받은 조건문 결과가 true인 것만으로 배열 구성
+    // 배열에서 원소를 제거해야한다면 Array.pop이나 Array.slice보다 Array.filter 사용 권장
     const wSchools = schools.filter(school => school[0] === 'W');
     console.log( wSchools );            // ["Washington & Lee", "Wakefield"]
 
