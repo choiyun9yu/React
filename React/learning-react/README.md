@@ -532,6 +532,106 @@ race 메소드 : race 메소드 내 배열 중 가장 먼저 fulfilled 상태 �
 
 ### 2-6. 클래스
 
+자바스크립트는 프로토타입을 사용한 상속이라 불리는 방법을 사용한다.  
+이 기법은 객체지향처럼 느껴지는 구조를 만들어내기 위한 기법이다.
+
+    function Vacation(destination, length) {
+        this.destination = destination;
+        this.length = length;
+    }
+
+    Vacation.prototype.print = function() {
+        console.log(this.destination + "은(는) " + this.length +" 일 걸립니다.");
+    };
+
+    const maui = new Vacation("마우이", 7);
+
+    maui.print();   // 마우이은(는) 7 일 걸립니다.
+
+######
+
+ES2015에는 클래스 선언이 추가되었다. (하지만 작동 방식은 위와 같다.)
+
+    class Vacation {
+        constructor(destination, length) {
+            this.destination = destination;
+            this.length = length;
+        }
+
+        print() {
+            console.log(this.destination + "은(는) " + this.length +" 일 걸립니다.");
+        }
+    }
+
+    const trip = new Vacation("칠레 산티아고", 7);
+
+    console.log(trip.print());  // 칠레 산티아고은(는) 7 일 걸립니다.
+
+#### 추상 클래스
+
+    # Expedition은 Vaction 클래스를 상속받는다.
+    class Expedition expends Vacation {
+        constructor(destination, length, gear) {
+            super(destination, length);
+            this.gear = gear;
+        }
+
+        print() {
+            super.print();
+            console.log(`당신의 ${this.gear.join("와(과) 당신의 ")}를(을) 가져오십시오.`)
+        }
+    }
+
+    const trip2 = new Expedition("한라산", 3,
+                        ["선글라스", "오색 깃발", "카메라"]);
+    tirp2.print();
+
+### 2-7. ES6 모듈
+
+#### export와 import
+
+선언문 앞에 export 키워드로 다른 파일에서도 사용가능하게 할 수 있다.
+
+    export const 변수명 = 'value';
+
+    // 단, 사용하고자 하는 js 파일에서 import도 해줘야한다.
+    import { 변수명, 함수명 } from '경로.js';
+
+    # 이름 바꾸기 : 임포트한 함수나 변수의 이름을 변경하기
+    import { 변수명 as 변경할이름, 함수명 } from '경로.js';
+
+    # 한꺼번에 다루기
+    export { 변수명, 함수명 }; // export 할 때 as 키워드로 이름 미리 바꿀 수 있다.
+
+    import * as 모듈이름 from '경로.js';
+    모듈이름.변수명
+    모듈이름.함수명
+
+#### export default
+
+export 키워드 뒤에 default를 붙이면 반드시 하나의 대상만 내보낼 수 있게 된다.  
+주의할점은 default 키워드는 js파일 내부에서 단 한번만 사용가능하다는 것이다.
+
+    export default 'codeit';
+
+#### 커먼 JS
+
+커먼JS(CommonJS)는 모든 버전의 노드에서 지원하는 일반적인 모듈 패턴이다.  
+커먼JS를 사용하면 module.exports를 사용해 자바스크립트 객체를 익스포트할 수 있다.
+
+    const print(message) => log(message, new Data());
+
+    const log(message, timestamp) =>
+        console.log(`${timestamp.toString(): ${message}}`);
+
+    module.exports = {print, log};
+
+######
+
+커먼JS는 import 문을 지원하지 않는다. 대신 require 함수를 통해 모듈을 임포트 할 수 있다.
+
+    const { log, print } = require('./txt-helpers')
+
 ## 3. JS를 활용한 함수형 프로그래밍
 
 ### 3-1. 함수형 프로그래밍이란?
