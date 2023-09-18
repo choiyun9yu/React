@@ -365,7 +365,170 @@ function 키워드 없이 함수 표현식을 작성할 수 있다.
     console.log(backpackingMeals);
     // {breakfast: "미역국", lunch: "삼치구이와 보리밥", dinner: "스테이크 정식"}
 
-### 2-5. 비동기 자바스크립트
+### 2-5. 비동기(asynchronous) 자바스크립트
+
+#### Ajax 통신
+
+XMLHttpRequest 라는 객체를 통해 웹페이지 일부를 비동기적으로 통신할 수 있다.  
+그러나 요즘엔 fetch 함수나 axios 패키지로 비동기통신 많이한다.
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://learn.codeit.kr/api/members');
+    xhr.onload = function () {
+        console.log(xhr.response);
+    };
+    xhr.onerror = function () {
+        alert('Error!');
+    };
+    xhr.send();
+
+#### 프로미스
+
+Promise : 작업에 관한 '상태 정보'를 가지고 있는 객체  
+작업이 성공하면, 프로미스 객체는 그 성공 결과도 함께 가진다.  
+작업이 실패하면, 프로미스 객체는 작업 실패 이유도 함께 가진다.
+
+-   pending : 작업 진행중
+-   fulfiled : 작업 성공
+-   rejected : 작업 실패
+
+######
+
+    # randomuser.me API로부터 데이터 가져오기
+    console.log(fetch("https://api.randomuser.me/?nat=US&results=1));
+
+-   fetch함수는 Promise 객체를 리턴한다.
+-   콘솔 로그를 보면 대기 중인 프로미스(promise)를 볼 수 있다.
+-   프로미스는 자바스크립트에서 비동기적인 동작을 잘 처리할 수 있게 해준다.
+-   대기중인 프로미스는 데이터가 도착하기 전의 상태를 표현한다.
+-   .then()이라는 함수를 대기 중인 프로미스에 연쇄 호출 해야한다.
+-   then은 콜백 함수를 인수로 받으며, 바로 앞에 이는 연산(프로미스)이 성공하면 콜백이 호출된다.
+-   fetch로 데이터를 가져오면 then이 그 데이터로 다른 일을 하는 것이다.
+
+#### then 메소드
+
+    fetch("https://api.randomuser.me/?nat=US&results=1")
+        .then(res => console.log(res.json()));
+
+-   then은 프로미스가 정상적으로 완료되면(pending -> fulfiled) 콜백 함수를 한 번만 호출한다.
+-   이 콜백 함수가 반환하는 값은 그다음에 오는 then 함수의 콜백에 전달되는 인자가 된다. (promise chaining)
+-   then이 프로미스 객체를 리턴하는 경우 : 콜백이 리턴한 프로미스와 동일한 상태와 결과를 갖게 된다.
+-   then이 프로미스 객체가 아닌 것을 리턴하는 경우 : then 메소드가 리턴했던 프로미스 객체는 fulfiled가 되고, 콜백의 리턴값을 작업 성공 결과로 갖게된다.  
+    (.json()과 .text()는 프로미스 객체를 리턴하는 메소드이다.)
+
+######
+
+    fetch("https://api.randomuser.me/?nat=US&results=1")
+        .then(res => res.json())
+        .then(json => json.results)
+        .then(console.log)
+        .catch(console.error); // fetch가 성공하지 못한 경우 콜백
+
+#### reject
+
+.then에 두개의 콜백이 들어 있는 경우,  
+첫번째 콜백은 프로미스 객체가 fulfiled 되었을 때 실행되고,  
+두번째 콜백은 프로미스 상태가 rejected 되었을 때 실행된다.
+
+    fetch('https://jsonplaceholder.typicode.com/users')
+        .then((response) => response.text(), (error) => { console.log(error); })
+        .then((result) => { console.log(result); });
+
+#### catch 메소드
+
+프로미스 객체가 rejected 상태가 되면 실행할 콜백함수 넣는 메소드이다.
+catch 메소드는 마지막에 써야한다. catch 다음에 있는 then 메소드에서 에러가 발생하면 처리할 수 없기 때문이다.
+
+    fetch('https://jsonplaceholder.typicode.com/users')
+        .then((response) => response.text())
+        .then((result) => { console.log(result); })
+        .catch((error) => { console.log(error); });
+
+#### finally 메소드
+
+프로미스 상태에 상관없이 항상 실행하고 싶은 코드가 있을때 사용한다.
+
+    fetch('https://jsonplaceholder.typicode.com/users')
+        .then((response) => response.text())
+        .then((result) => { console.log(result); })
+        .catch((error) => {
+        console.log(error);
+        throw new Error('from catch method');
+        })
+        .finally(() => { console.log('exit'); } );
+
+#### 프로미스 만들기
+
+    const getPeople = count =>
+        new Promise((resolves, rejects) => {
+            const api = `https://api.randomuser.me/?nat=US&results=${count}`;
+            // AJAX : 웹페이지 일부를 비동기 통신하는 것 XMLHttpRequest로 구현
+            const request = new XMLHttpRequest();
+            request.open("GET", api);
+            request.onload= () =>
+                requnest.status === 200
+                    ? resolves(JSON.parse(request.response).results)
+                    : reject(Error(request.statusText));
+            request.onerorr = err => rejects(err);
+            request.send();
+        });
+
+        getPeople(5)
+            .then(members => console.log(members))
+            .catch(error => console.erros(`getPeople failed: ${error.message}`));
+
+    # 이미 상태가 결정된 프로미스 객체 만들기
+    const p = Promise.resolve('success');           // fulfiled 상태의 Promise 객체 만들기
+    const p2 = Promise.reject(new Error('fail'));   // rejected 상태의 Promise 객체 만들기
+
+#### 프로미스와 all, race 메소드
+
+all 메소드 : 배열 안에 있는 모든 Promise 객체가 fulfilled 상태가 될 때까지 기다린 fulfilled 상태가 된다.
+
+        const p1 = fetch('https://learn.codeit.kr/api/members/1').then((res) => res.json());
+        const p2 = fetch('https://learn.codeit.kr/api/members/2').then((res) => res.json());
+        const p3 = fetch('https://learn.codeit.kr/api/members/3').then((res) => res.json());
+        Promise
+            .all([p1, p2, p3])
+            .then((results) => {
+                console.log(results); // Array : [p1, p2, p3]
+            });
+
+race 메소드 : race 메소드 내 배열 중 가장 먼저 fulfilled 상태 또는 rejected 상태가 된 Promise 객체와 같은 상태가 된다.
+
+        const p1 = new Promise((resolve, reject) => {
+            setTimeout(() => resolve('Success'), 1000);
+        });
+        const p2 = new Promise((resolve, reject) => {
+            setTimeout(() => reject(new Error('fail')), 2000);
+        });
+        const p3 = new Promise((resolve, reject) => {
+            setTimeout(() => reject(new Error('fail2')), 4000);
+        });
+        Promise
+            .race([p1, p2, p3])
+            .then((result) => {
+            console.log(result); // hello 출력
+            })
+            .catch((value) => {
+            console.log(value);
+            });
+
+#### async/await
+
+비동기 함수를 실행하는 다른 방법
+
+    const getFakePerson = async () => {
+        try {
+            let res = await fetch("https://api.randomuser.me/?nat=US&results=1");
+            let { results } = res.json();
+            console.log(results);
+        } catch(error) {
+            console.error(error);
+        }
+    };
+
+    getFakePerson();
 
 ### 2-6. 클래스
 
