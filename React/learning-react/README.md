@@ -231,13 +231,139 @@ function 키워드 없이 함수 표현식을 작성할 수 있다.
     };
     lordify(regularPerson); // 켄터베리의 지민
 
-######
-
 #### 배열 구조 분해
 
-#### 객체 리터럴 개선
+배열을 구조분해해서 값을 뽑아낼 수도 있다.
+
+    const [firstAnimal] = ["캥거루", "웜뱃", "코알라"];
+    console.log(firstAnimal);   // 캥거루
+
+    # 리스트 매칭 : 불필요한 값 콤마(,)를 활용해 생략
+    const [,,thirdAnimal] = ["캥거루", "웜뱃", "코알라"];
+    console.log(thirdAnimal);   // 코알라
+
+#### 객체 리터럴 개선(object literal enhancement)
+
+객체 리터럴 개선은 구조 분해의 반대라 할 수 있다.  
+객체 리터럴 개선을 사용하면 현재 영역에 있는 변수를 객체의 필드로 묶을 수 있다.
+
+    const name = "무등산";
+    const elevation = 1187;
+    const funHike = {name, elevation}
+
+    console.log(funHike);   //  {name: "무등산", elevation: 1187}
+
+    # 객체 리터럴 개선과 재구축을 통해 객체 메서드를 만드는 것도 가능하다.
+    # 이때 객체 메서드는 객체의 key값에 접근하기 위해 this를 사용한다
+    const name = "무등산";
+    const elevation = 1187;
+    const print = function() {
+        console.log(`${this.name}의 높이는 ${this.elevation}m 입니다.`)
+    }
+    const funHike = {name, elevation, print};
+
+    funHike.print();    // 무등산의 높이는 1187m 입니다.
+
+######
+
+    # 객체 메서드를 정의할 때는 function 키워드를 사용하지 않아도 된다.
+    // 옛날 방식
+    var skier = {
+        name: name,
+        sound: sound,
+        powderYell: function() {
+            var yell = this.sound.toUpperCase();
+            console.log(`${yell} ${yell}!!!`);
+        },
+        speed: function(mph) {
+            this.speed = mph;
+            console.log('속력(mph):', mph);
+        }
+    }
+
+    // 새로운 방식
+    var skier = {
+        name: name,
+        sound: sound,
+        powderYell() {
+            var yell = this.sound.toUpperCase();
+            console.log(`${yell} ${yell}!!!`);
+        },
+        speed(mph) {
+            this.speed = mph;
+            console.log('속력(mph):', mph);
+        }
+    }
 
 #### 스프레드 연산자(spread operator)
+
+3개의 점(...)으로 이뤄진 연산자로 몇가지 역할을 담당한다.
+
+    # (1) 배열 내용을 조합할 수 있다.
+    const peaks = ["대청봉", "중청봉", "소청봉"];
+    const canyons = ["천불동계곡". "가야동계곡"];
+    const seoraksan = [...peaks, ...cayons];
+
+######
+
+    # (2) 원본을 변형시키지 않고 마지막 변수 접근할 수 있다.
+    // 위에서 정의한 peaks배열의 마지막 원소를 변수에 담고 싶은 경우,
+    // 아래처럼하면 reverse메소드는 inplase 적용되어 원본 배열을 변형시킨다.
+    const peaks = ["대청봉", "중청봉", "소청봉"];
+    const [last] = peaks.reverse();
+
+    // 스프레드를 사용하면 복사본을 만들어서 뒤집을 수 있다.
+    const peaks = ["대청봉", "중청봉", "소청봉"];
+    const [last] = [...pekas].reverse();
+
+######
+
+    # (3) 배열의 나머지 원소들을 얼을 수 있다.
+    const lakes = ["경포호", "화진포", "송지호", "청초호",];
+    const [ first, ...rest ] = lakes;
+
+    console.log(rest.join(","));    // 화진포, 송지호, 청초호
+
+######
+
+    # (4) 세 점(...) 구문을 사용해 함수의 인자를 배열로 모을 수 있다.
+    // 함수 파라미터 정의에서 스프레드 연산자가 쓰인 경우 레스트 파라미터(rest parameters)라고 한다.
+    function directions (...args) {
+        let [start, ...remaining] = args;
+        let [finish, ...stops] = remaining.reverse();
+
+        console.log(`${ args.length } 도시를 운행합니다.`);
+        console.log(`${start}에서 출발합니다.`);
+        console.log(`목적지는 ${finish}입니다.`);
+        console.log(`중간에 ${stops.length} 군데를 들립니다.`)
+    }
+
+    directions(
+        "서울",
+        "수원",
+        "천안",
+        "대전",
+        "대구",
+        "부산",
+    );
+
+######
+
+    # (5) 스프레드 연산자를 객체에도 사용할 수 있다.
+    const morning = {
+        breakfast: "미역국",
+        lunch: "삼치구이와 보리밥"
+    };
+
+    const dinner = "스테이크 정식";
+
+    const backpackingMeals = {
+        ...morning,
+        dinner
+    };
+
+    console.log(backpackingMeals);
+    // {breakfast: "미역국", lunch: "삼치구이와 보리밥", dinner: "스테이크 정식"}
 
 ### 2-5. 비동기 자바스크립트
 
