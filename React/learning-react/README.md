@@ -743,16 +743,142 @@ Array.concat은 그 객체를 원래의 배열을 복사한 새로운 배열 뒤
 
 함수형 프로그래밍은 함수를 사용해 원본을 변경한 복사본을 만들고 순수 함수를 통해 데이터를 변경한다.
 
-    # (예제1) 고등학교 명단이 들어 있는 배열
+Array.join : 배열의 모든 원소를 인자로 받아서 구분자로 연결한 문자열 반환 (inplace=flase)
+
     const schools = ["Yorktown", "Washington & Lee", "Wakefield"];
+    console.log( schools.join(",") ); // "Yorktown, Washington & Lee, Wakefield"
 
-    // Array.join : 배열의 모든 원소를 인자로 받아서 구분자로 연결한 문자열 반환 (inplace=flase)
-    console.log( schools.join(",") );   // "Yorktown, Washington & Lee, Wakefield"
+Array.filter : 인자로 술어(boolean반환 하는 함수)를 받아 새로운 배열을 구성한다.
 
-    // Array.filter : 인자로 받은 조건문 결과가 true인 것만으로 배열 구성
-    // 배열에서 원소를 제거해야한다면 Array.pop이나 Array.slice보다 Array.filter 사용 권장
     const wSchools = schools.filter(school => school[0] === 'W');
     console.log( wSchools );            // ["Washington & Lee", "Wakefield"]
+    // 배열에서 원소를 제거해야한다면 Array.pop이나 Array.slice보다 Array.filter( !== ) 사용 권장
+
+Array.map : 인자로 변환 함수를 받아 모든 원소에 적용해 반환받은 값으로 새로운 배열을 구성한다.
+
+    const highSchools = schools.map(school => `${school} High School`);
+    console.log(highSchools.join("\n"));    // Yorktown High School
+                                            // Washington & Lee High School
+                                            // Wakefield High School
+
+map 함수는 객체, 값, 배열, 다름 함수등 모든 자바스크립트 타입으로 이뤄진 배열을 만들 수 있다.
+
+    const highSchools = schools.map(school => ({name: school}));
+    console.log( highSchools );     // [
+                                    //  { name : "Yorktown" },
+                                    //  { name : "Washington & Lee" },
+                                    //  { name : "Wakefield" }
+                                    // ]
+
+배열의 원소중 하나만 변경하는 순수 함수가 필요할 때도 map을 사용할 수 있다.
+
+    let schools = [
+        { name: "Yorktown" },
+        { name: "Stratford" },
+        { name: "Washington & Lee" },
+        { name: "Wakefield" }
+    ];
+
+    const editName = (oldName, name, arr) =>
+        arr.map(item => (item.name === oldName ? { ...item, name} : item)); // {...item, name}은 객체의 속성들을 복사하고 새로운 값으로 객체를 생성하는 방법이다. 원래는 {...item, name: name}인데 key값과 value 값이 같아서 한번만 쓴 것이다.
+
+    let updatedSchools = editName("Stratford", "HB Woodlawn", schools);
+
+    console.log( updatedSchools[1] ); // { name: "HB Woodlawn" }
+    console.log( schools[1] ); // { name: "Stratford" }
+
+map은 각 원소의 인덱스를 변환함수의 두번째 인자로 넘겨준다.  
+(map 메소드의 콜백 함수 매개 변수(현재값, 현재 인덱스, 원본배열))
+
+    const editNth = (n, name, arr) =>
+        arr.map((item, i) => (i ===n ? {...item, name} : item))
+
+객체를 배열로 변환하고 싶을 때는 Array.map과 Object.keys를 함께 사용하면 된다.  
+Object.keys는 어떤 객체의 키로 이뤄진 배열을 반환하는 메서드다.
+
+    const schools = {
+        "Yorktown" : 10,
+        "Washington & Lee" : 2,
+        "Wakefield" : 5
+    };
+
+    const schoolArray = Obejct.key(schools).map(key => ({
+        name: key,
+        wins: schools[key]
+    })
+    );
+
+    console.log(schoolArray);   // [ { name: 'Yorktown', wins: 10 }
+                                //   { name: 'Washington & Lee', wins: 2 }
+                                //   { name: 'Wakefield', wins: 5 } ]
+
+reduce와 reduceRight 함수를 사용하면 객체를 수, 문자열, 불린 값, 객체, 심지어 함수와 같은 값으로 변환할 수 있다. (reduce(callback, initialValue)는 배열을 하나의 값으로 축하는 역할을 한다.)  
+reduceRight도 기본적인 매커니즘은 동일하지만 배열의 맨 마지막 원소부터 축약을 시작한다는 점이 다르다.
+
+    const ages = [21, 18, 42, 40, 64, 63, 34];
+
+    const maxAge = ages.reduce((max, age) => {
+        if (age > max) {
+            return age;
+        } else {
+            return max;
+        }
+    }, 0);  // 초기값 : 0
+
+    // 짧게 쓰기
+    const max = ages.reduce((max, age) => (value > max ? value : max), 0);
+
+배열을 객체로 변환해야할 때가 있다. 다음 예제는 reduce를 사용해 값이 들어 있는 배열을 해시로 변환한다.  
+(reduce 메소드의 콜백 함수 매개변수(이전누산값or초기값, 현재 배열의 요소의 값, 현배 배열 요소의 인덱스, 원본 배열))
+
+    const colors = [
+        {
+            id: 'xekare',
+            title: "과격한 빨강",
+            rating: 3
+        },
+        {
+            id : 'jbwsof',
+            title: "큰 파랑",
+            rating: 2
+        },
+        {
+            id : 'prigbj',
+            title: "회색곰 회색",
+            rating: 5
+        },
+        {
+            id : 'ryhbhsl',
+            title: "바나나",
+            rating: 1
+        },
+    ];
+
+    const hashColors = colors.reduce(
+        (hash, {id, title, rating}) => {    // {id, title, rating} 이 부분은 구조분해
+            hash[id] = {title, rating};
+            return hash;
+        }, {});
+
+    console.log(hashColors);    // { 'xekare': { title: '과격한 빨강', rating: 3 },
+                                //   'jbwsof': { title: '큰 파랑', rating: 2},
+                                //   'prigbj': { title: '회색곰 회색', rating: 5},
+                                //   'ryhbhsl': { title: '바나나', rating: 1} }
+
+reduce를 사용해 같은 값이 여럿 들어 있는 배열을 서로 다른 값이 한 번씩만 들어 있는 배열로 바꿀 수 있다.
+
+    const colors = ["red", "red", "green", "blue", "green"];
+
+    const distinctColors = colors.reduce(
+        (unique, color) =>
+        unique.indexOf(color) !== -1 ? unique : [...unique, color], // indexOf는 배열을 처음부터 순회하면서 일치하는 요소를 찾는다. 일치하는 요소르 찾으면 해당 요소의 인덱스를 반환한다. 일치하는 요소가 없거나 검색 범위를 벗어난 경우 -1을 반환한다.
+        []
+    );
+
+    console.log(distinctColors);    // ["red", "green", "blue"]
+
+map과 reduce는 함수형 프로그래머가 주로 사용하는 무기이며, 자바스크립트도 예외가 아니다.  
+한 데이터 집합에서 다른 데이터 집합을 만들어내는 능력은 꼭 필요한 기술이며 프로그래밍 패러다임과 관계없이 유용하다.
 
 #### 고차 함수
 
