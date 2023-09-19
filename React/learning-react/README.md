@@ -882,6 +882,46 @@ map과 reduce는 함수형 프로그래머가 주로 사용하는 무기이며, 
 
 #### 고차 함수
 
+고차한수는 다른 함수를 조작할 수 있다. 또 다른 함수를 인자로 받을 수 있거나 함수를 반환할 수 있다.
+
+    const invokeIf = (condition, fnTrue, fnFalse) =>
+        (condition) ? fnTrue() : fnFalse();
+
+    const showWelcome = () ->
+        console.log("Welcome!!!");
+
+    const showUnautorized = () =>
+        console.log("Unauthorized!!!");
+
+    invokeIf(true, showWelcome, showUnautorized);   // "Welcome"
+    invokeIf(false, showWelcome, showUnautorized);  // "Unauthorized"
+
+다른 함수를 반환하는 고차 함수는 자바스크립트에서 비동기적인 실행 맥락을 처리할 때 유용하다.
+
+**커링(Currying)**은 고차 함수 사용법과 관련한 함수형 프로그래밍 기법이다.  
+어떤 연산을 수행할 때 필요한 값 중 일부를 저장하고 나중에 나머지 값을 전달받는 기법이다.
+
+    // 외부함수 : 외부함수 userLogs는 userName이라는 매개변수를 받아서 내부함수를 반환, 이함수가 반환하는 내부함수는 또 다른 매개변수인 message를 받아서 사용자 로그 메세지 출력
+    // 내부함수 : 외부함수에서 받은 userName과 내부함수에서 받은 message로 콘솔 출력
+    const userLogs = userName => message =>
+        console.log(`$(userName) -> ${message}`);
+
+    const log = userLogs("grandpa23");  // 외부 함수(고차함수) 호출
+
+    log("attempted to load 20 fake mebmers");   // 내부 함수 호출
+    // userLogs를 호출해 만들어지는 log함수를 호출할 때마다 메시지 맨 앞에 grandpa23이 덧붙여진다.
+
+    getFakePerson(20).then(
+        members => log(`successfully loaded ${members.length} members`),
+        error => log("encountered an error loading members")
+    );
+
+    // grandpa23 -> attempted to load 20 fake members
+    // grandpa23 -> successfully loaded 20 members
+
+    // grandpa23 -> attempted to load 20 fake members
+    // grandpa23 -> encountered an error loading members
+
 #### 재귀
 
 #### 합성
