@@ -924,7 +924,63 @@ map과 reduce는 함수형 프로그래머가 주로 사용하는 무기이며, 
 
 #### 재귀
 
+재귀는 자기 자신을 호출하는 함수를 만드는 기법이다.  
+루프는 모두 재귀로 바꿀 수 있고, 일부 루프는 재귀로 표현하는 쪽이 더 쉽다.
+
+    // 10부터 0까지 거꾸로 세는 경우
+    const countdown = (value, fn) => {
+        fn(value);
+        return (value>0) ? countdown(value-1, fn) : value
+    };
+
+    countdown(10, value => console.log(value));
+
 #### 합성
+
+함수형 프로그램은 로직을 구체적인 작업을 담당하는 여러 작은 순수 함수로 나눈다.  
+그 과정에서 언젠가는 모든 작은 함수를 한데 합칠 필요가 있다.  
+합성의 경우 여러 다른 구현과 패턴과 기법이 있다.
+
+**체이닝**은 가장 낯익는 방법으로 (.)을 사용해서 연쇄호출 하는 것이다.
+
+    const template = "hh:mm:ss tt";
+    const clockTime = template.replace("hh", "03")
+        .replace("mm", "33)
+        .replace("ss", "33")
+        .replace("tt", "PM");
+    console.log(clockTime);     // "03:33:33 PM"
+
+여기서 **both 사용자 함수**는 서로 다른 두 함수에 값을 흘려 넣는 함수다.  
+civilianHours의 출력은 appendAMPM의 입력이 된다.  
+따라서 날짜 값을 이 두 함수를 사용해 처리하는 대신 both를 사용하면 한 함수로 처리할 수 있다.  
+하지만 이런 구문은 이해하기 어렵고 유지보수나 대규모 확장이 어렵다.
+
+    const both = date => appendAMPM(civilianHours(date))
+
+여기서 **compose 사용자 함수**는 함수를 더 큰 함수로 조합해준다.  
+또한 원하는 위치에 언제든지 함수를 추가할 수 있으므로 더 쉽게 확장할 수 있다.
+
+    const both = compose(
+        civilianHours,
+        appendAMPM
+    );
+
+    both(new Date());
+
+    const compose = (...fns) => (arg) =>    // 몇 개인지 모를 함수를 받으니까 스프레드 연산자 ...fns 사용, compose는 인자로 받은 함수를 배열로 저장
+        fns.reduce((composed, f) => f(composed), arg);  // 함수 배열 fns의 모든 함수를 순차적으로 실행하고 결과를 누적
+    // 결과적으로 both는 civilianHours 함수를 먼저 실행하고 그 결과를 appendAMPM 함수에 전달하여 두 함수를 조합한다.
+
+compose 함수는 여러 함수를 인자로 받아서 한 함수의 결과로 내놓는다.  
+이 구현은 스프레드 연산자를 사용해 인자로 받은 함수들을 fns라는 배열로 만든다.  
+그후 compose는 arg라는 인자를 받는 함수를 반환한다.  
+이렇게 반환된 화살표 함수에 나중에 누군가 인자를 전달해 호출하면,  
+fns 배열의 reduce가 호출되면서 arg로 받은 값이 전달된다.  
+arg값은 reduce의 초기 값이 되고,  
+각 이터레이션 마다 배열의 각 원소와 이전 값을 변환 함수를 사용해 축약한 값을 전달한다.  
+이때 reduce의 변환 하무는 이전 이터레이션의 결과값인 composed와 f를 인자로 받아서  
+f에 composed를 적용해 반환한다.  
+마지막 함수가 호출되면 최종 결과를 반환한다.
 
 ## 4. 리액트 작동원리
 
