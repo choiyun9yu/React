@@ -378,11 +378,10 @@ useEffect를 사용하면 처음 렌더링하고 난 다음에 비동기로 콜�
 
 렌더링에 필요한 만큼만 데이터를 받아오고 추가 데이터는 더보기 버튼이나 필요할 때 받아오는 것
 
--   오프셋 기반 페이지네이션 : 오프셋;상쇄하다;지금까지 받아온 데이터 개수를 기억한다. 지금 n개 까지 받았으니 m개 더 보내줘 이미 받아온 데이터가 추가되거나 삭제되면 데이터를 받아오는데 중복이나 누락이 발생한다. 그러나 서버에 부담이 적다. (데이터가 자주 안바뀔 때 유리)
+-   오프셋 기반 페이지네이션 : 오프셋;상쇄하다, 지금까지 받아온 데이터 개수를 기억한다. 지금 n개 까지 받았으니 m개 더 보내줘 이미 받아온 데이터가 추가되거나 삭제되면 데이터를 받아오는데 중복이나 누락이 발생한다. 그러나 서버에 부담이 적다. (데이터가 자주 안바뀔 때 유리)
 
--   커서 기반 페이지네이션 : 커서;특정데이터를 가리키는 값;지금 까지 받은 데이터를 표시한 책갈피
-    다음 받아올 데이터의 커서값을 함께 전달해준다. 데이터의 중복이나 누락없이 가져올 수 있다.
-    // 그러나 서버에 부담이 있다. (데이터가 자주 바뀔 때 유리)
+-   커서 기반 페이지네이션 : 커서;특정데이터를 가리키는 값, 지금 까지 받은 데이터를 표시한 책갈피, 다음 받아올 데이터의 커서값을 함께 전달해준다. 데이터의 중복이나 누락없이 가져올 수 있다.  
+    그러나 서버에 부담이 있다. (데이터가 자주 바뀔 때 유리)
 
 ######
 
@@ -435,68 +434,74 @@ useEffect의 디펜던시 리스트에 search를 추구하는 것을 잊지말�
 
 #### onChange
 
-// 리액트에서는 인풋의 값을 주로 state로 관리한다. 두 값을 동일하게 만드는게 핵심이다. <- 제어 컴포넌트
-// HTML에서는 사용자가 input에 입력할 때마다 onInput이라는 이벤트 발생, onChange 이벤트는 사용자 입력이 끝났을 때 발생
-// react에서 onChange는 HTML과 다르게 동작한다. -> onInput처럼 사용자가 값을 입력할 때마다 이벤트 발생
+-   리액트에서는 인풋의 값을 주로 state로 관리한다. 두 값을 동일하게 만드는게 핵심이다. <- 제어 컴포넌트
+-   HTML에서는 사용자가 input에 입력할 때마다 onInput이라는 이벤트 발생, onChange 이벤트는 사용자 입력이 끝났을 때 발생
+-   react에서 onChange는 HTML과 다르게 동작한다. -> onInput처럼 사용자가 값을 입력할 때마다 이벤트 발생
 
 #### onSubmit
 
-// input 태그에 입력했으면 이제 전송도 할 수 있어야 한다.
-// type="submit"으로 지정한 버튼 태그를 클릭하면 form 태그에서 onSubmit 이벤트가 발생한다.
-// form 태그에는 onSubmit prop으로 handleSubmit을 내려준다.
-// HTML 폼 태그의 기본 동작은 입력 버튼을 눌렀을 때 입력 폼 내용을 GET 리퀘스트 보내는 것
-// 그래서 기본 동작을 막아줘야한다. (e.preventDefault())
+-   input 태그에 입력했으면 이제 전송도 할 수 있어야 한다.
+-   type="submit"으로 지정한 버튼 태그를 클릭하면 form 태그에서 onSubmit 이벤트가 발생한다.
+-   form 태그에는 onSubmit prop으로 handleSubmit을 내려준다.
+-   HTML 폼 태그의 기본 동작은 입력 버튼을 눌렀을 때 입력 폼 내용을 GET 리퀘스트 보내는 것
+-   그래서 기본 동작을 막아줘야한다. (e.preventDefault())
 
 #### 하나의 State로 폼 구현하기
 
-// input {태그의 name 속성을 활용하는 것이 핵심이다. (이벤트 객체에서 name 값을 가져올 수 있다는 점을 활용)
-// -예시-
-// const { name, value } = e.target;
-// setValues((prevValues) => ({
-// ...prevValues,
-// [name]: value, // 대괄호 표기법으로 name의 값으로 key 설정, value로 value 설정
-// }));
+-   input {태그의 name 속성을 활용하는 것이 핵심이다. (이벤트 객체에서 name 값을 가져올 수 있다는 점을 활용)
+
+          const { name, value } = e.target;
+          setValues((prevValues) => ({
+          ...prevValues,
+          [name]: value, // 대괄호 표기법으로 name의 값으로 key 설정, value로 value 설정
+          }));
 
 #### 지우기 버튼 (인풋은 제어, 파일은 비제어 권장)
 
-// 제어 컴포넌트 : 리액트를 통해 input 값을 지정하고 제어 (사용자가 소문자로 입력해도 이벤트 핸들러와 value 값으로 대문자로 바꿀 수 있음)
-// - 지우기 버튼 예제 -
-// import { useState } from "react";
-// function MyComponent({ value, onChange }) {
-// const [value, setValue] = useState("");
-// return <input value={value} />;
-// }
-// function App() {
-// const [value, setValue] = useState("");
-// // 지우기 함수
-// const handleClear = () => setValue("");
-// return (
-// // onChange에 곧바로 setValue 할당함에 주의
-// <div>
-// <MyComponent value={value} onChange={setValue} />
-// <button onClick={handleClear}>지우기</button>
-// </div>
-// );
-// }
+-   제어 컴포넌트 : 리액트를 통해 input 값을 지정하고 제어 (사용자가 소문자로 입력해도 이벤트 핸들러와 value 값으로 대문자로 바꿀 수 있음)
+
+        import { useState } from "react";
+
+        function MyComponent({ value, onChange }) {
+            const [value, setValue] = useState("");
+            return <input value={value} />;
+        }
+
+        function App() {
+           const [value, setValue] = useState("");
+
+            // 지우기 함수
+            const handleClear = () => setValue("");
+
+            return (
+                // onChange에 곧바로 setValue 할당함에 주의
+                <div>
+                    <MyComponent value={value} onChange={setValue} />
+                    <button onClick={handleClear}>지우기</button>
+                </div>
+                );
+        }
 
 #### 파일 인풋 : 반드시 비제어 인풋으로 만들어야 한다.
 
-// 비제어 컴포넌트 : value prop을 지정하지 않는 컴포넌트 -> 사용자가 input이 리액트에서 실제 이용하는 값과 다를지라도 입력한 그대로 보임
-// 파일은 여러개 선택할 수 있으니까 유사배열 형태이다.
-// 유사배열에 담긴 객체를 사용하면 네트워크로 파일을 전송하거나 이미지 미리보기를 만들 수 있다.
+-   비제어 컴포넌트 : value prop을 지정하지 않는 컴포넌트 -> 사용자가 input이 리액트에서 실제 이용하는 값과 다를지라도 입력한 그대로 보임
+-   파일은 여러개 선택할 수 있으니까 유사배열 형태이다.
+-   유사배열에 담긴 객체를 사용하면 네트워크로 파일을 전송하거나 이미지 미리보기를 만들 수 있다.
 
-#### ref로 DOM 노드 가져오기
+#### useRef로 DOM 노드 가져오기
 
-// ref : 원하는 시점에 실제 DOM 노드에 접근하고 싶을 때 사용할 수 있는 prop
-// (1) ref 객체 만들기 const inputRef = useRef();
-// (2) ref 라는 prop으로 내려주기 ref={inputRef}
-// ref prop으로 속성을 넣어두면 나중에 이 태그 선택할 수 있다.
-// (3) useEffect 함수를 써서 처음 렌더링 됬을 때만 inputRef를 콘솔로 출력
-// (4) ref를 쓰면 실제 DOM 노드를 직접 참조할 수 있다.
-// !주의 DOM 노드는 렌더링이 끝나야 생김, ref 객체의 current 값도 화면에 컴포넌트가 렌더링 됐을 때만 존재
-// 조건부 렌더링으로 컴포넌트가 사라지거나 하는 경우에는 이값이 없을 수 있다.
-// 그래서 항상 inputRef.curruent 값이 존재하는지 조건문으로 확인하고 사용하는 것 추천
-// ref의 current 속성은 DOM 엘리먼트 객체를 가리킨다
+-   ref : 원하는 시점에 실제 DOM 노드에 접근하고 싶을 때 사용할 수 있는 prop
+
+          (1) ref 객체 만들기 const inputRef = useRef();
+          (2) ref 라는 prop으로 내려주기 ref={inputRef}
+              ref prop으로 속성을 넣어두면 나중에 이 태그 선택할 수 있다.
+          (3) useEffect 함수를 써서 처음 렌더링 됬을 때만 inputRef를 콘솔로 출력
+          (4) ref를 쓰면 실제 DOM 노드를 직접 참조할 수 있다.
+
+-   !주의 DOM 노드는 렌더링이 끝나야 생김, ref 객체의 current 값도 화면에 컴포넌트가 렌더링 됐을 때만 존재
+-   조건부 렌더링으로 컴포넌트가 사라지거나 하는 경우에는 이값이 없을 수 있다.
+-   그래서 항상 inputRef.curruent 값이 존재하는지 조건문으로 확인하고 사용하는 것 추천
+-   ref의 current 속성은 DOM 엘리먼트 객체를 가리킨다
 
 #### 파일 인풋 초기화
 

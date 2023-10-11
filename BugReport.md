@@ -55,9 +55,11 @@ React에서 컴포넌트를 렌더링할 때 고유한 키를 제공하지 않�
 
 -   속성 명의 (-)하이픈을 제거하고 카멜케이스로 작성
 
-## react-dom.development.js:86 Warning: validateDOMNesting(...): <th> cannot appear as a child of <div>.
+## react-dom.development.js:86 Warning: validateDOMNesting(...):
 
 > 원인: React에서 HTML요소가 올바른 DOM 중첩 구조를 가지지 않을 때 발생,  
 > 이 경고는 DOM 요소가 예상한 요소의 부모 노드로 사용되지 않을 때 발생
 
 #### 해법
+
+-   부모 태그와 자식 태그를 올바르게 사용하면 해결
