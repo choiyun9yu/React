@@ -570,21 +570,20 @@ useEffect의 디펜던시 리스트에 search를 추구하는 것을 잊지말�
 
 // useCallback() : 함수를 디펜던시 리스트에 추가해야할 때 사용, 함수를 매번 새로 생성하는 것이 아니라 디펜던시 리스트가 변경될 때만 생성
 
-### 4-5. 전역 데이터 다루기
+### 4-5. useContext; 전역 데이터 다루기
 
-#### Context : Props와 State만으로 다루기 힘들 때 사용, 상황에 대한 정보,
+#### Context : Props와 State만으로 다루기 힘들 때 사용, 상황에 대한 정보에 많이 사용
 
-// 전역 데이터를 다룰 때 Props와 State만을 사용하면 Props를 여러번 여러곳으로 내려줘야한다는 문제 발생 <- 프롭 드릴링
-// 데이터 공유 범위를 정해야한다. <Context.Provider />라는 컴포넌트로 범위를 정해줄 수 있다.
-// Provider의 자손 컴포넌트에서는 Props를 거치지 않고 자유롭게 데이터를 사용할 수 있다.
+-   프롭 드릴링: 전역 데이터를 다룰 때 Props와 State만을 사용하면 Props를 여러번 여러곳으로 내려줘야한다는 문제
+-   데이터 공유 범위를 정해야한다. <Context.Provider />라는 컴포넌트로 범위를 정해줄 수 있다.
+-   Provider의 자손 컴포넌트에서는 Props를 거치지 않고 자유롭게 데이터를 사용할 수 있다.
 
 #### Context 사용하기
 
-// createContext라는 함수로 Context를 만든다.
-// Context객체에서 Provider라는 컴포넌트로 컨텍스트 범위를 지정하고, 공유할 데이터를 value= 프롭으로 내려준다.
-// 사용할 곳에서 useContext()를 사용해서 그 값을 리턴으로 받아온다.
-
-#### Context 값에 State 사용하기
+-   React.createContext라는 함수로 Context를 만든다.
+-   Provider라는 컴포넌트로 컨텍스트 범위를 지정하고, 공유할 데이터를 provider의 {{value=프롭}} 으로 내려준다.
+-   사용할 곳에서 useContext()를 사용해서 그 값을 리턴으로 받아온다.
+-   필요에 따라 사용자가 직접 Provider를 정의할 수 있다.
 
 ## VScode Tip
 
