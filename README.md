@@ -230,7 +230,7 @@ index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 �
 
     import React, { createContext, useContext, useState } from 'react';
 
-    // 사용자 정보를 포함하는 컨텍스트 생성
+    // 사용자 정보를 포함하는 컨텍스트 생성 : createContext()
     export const UserContext = createContext();
 
     // 컨텍스트의 Provider 컴포넌트 생성
@@ -251,7 +251,7 @@ index.html 파일이 실행되고 나서 실행되는 리액트 코드들 중 �
 
     // 컨텍스트를 사용할 컴포넌트 생성
     export const UserInfo = () => {
-        // UserContext에서 사용자 정보 읽기
+        // 소비자 컴포넌트에서 컨텍스트 사용하기 : useContext()
         const user = useContext(UserContext)
 
         return (
