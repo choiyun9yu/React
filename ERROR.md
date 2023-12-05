@@ -1,4 +1,13 @@
-# BugReport
+# ERROR
+
+## Error: ENOSPC: System limit for number of file watchers reached, 
+
+> 원인: 시스템 파일의 와쳐가 limit에 달해서
+
+#### 해법
+
+    % echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
 
 ## 요청이 하나씩 밀리는 경우
 
