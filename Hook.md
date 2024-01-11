@@ -84,4 +84,27 @@
 
     export default MyComponent;
 
+### 5-3. 이전 값 저장 
+- useRef를 사용하여 이전 값(previous value)을 저장할 수 있다.
+- 이전 값은 리렌더링 사이에서 유지되기 때문에 이전 값과 현재 값의 비교에 유용하다.
+######
+    import React, { useEffect, useRef } from 'react';
+    
+    function MyComponent({ value }) {
+      const prevValueRef = useRef();
+      
+      useEffect(() => {
+        // 현재 값(value)과 이전 값(prevValueRef.current) 비교
+        if (value !== prevValueRef.current) {
+          console.log('Value changed!');
+        }
+        
+        // 현재 값을 이전 값으로 업데이트
+        prevValueRef.current = value;
+      }, [value]);
+      
+      return <div>{value}</div>;
+    }
+
+
 ## 6. useMemo
