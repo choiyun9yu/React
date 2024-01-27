@@ -1,5 +1,5 @@
 import './App.css';
-import 'tailwindcss/tailwind.css';
+import 'Library/TailwindCSS/tailwind.css';
 
 function App() {
     return (
