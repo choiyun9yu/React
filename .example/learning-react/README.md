@@ -954,14 +954,145 @@
       <head>
         <meta charset="utf-8">
         <title> 순수 리액트 예제 </title>
+      </head>
+      <body>
+        <!-- 타겟 컨테이너 -->
+        <div id="root"></div>
+        
+        <!-- React와 ReactDOM 라이브러리(개발 버전) -->
+        <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <scropt src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+      
+        <script>
+          // 순수 리액트와 자바스크립트 코드
+        </script>
+      </body>
+    </head>
 
 ### 4-2. 리액트 엘리먼트 
+![img.png](img.png)
+- HTML 은 브라우저가 문서 객체 모델(Document Object Model)인 DOM 을 구성하기 위해 따라야하는 절차이다.
+- HTML 문서를 이루는 엘리먼트는 브라우저가 HTML 문서를 읽어들이면 DOM 엘리먼트가 되고, 이 DOM이 사용자 인터페이스를 화면에 표시한다.
+######
+- HTML 에서 엘리먼트는 가계도를 닮은 계층 구조 안에서 서로 관계를 맺는다.
+- 전통적으로 웹 사이트는 독립적인 HTML 페이지들로 만들어 졌다.  
+  - 사용자가 페이지 사이를 내비게이션 함에 따라 브라우저는 매번 다른 HTML 문서를 요청해서 로딩할 수 있었다.
+- AJAX 라는 기술에 의해 SPA 이 가능하게 되었다. 자바스크립트에 의해 UI 를 갱신 할 수 있게 된 것이다.
+  - SPA 에서 처음에 브라우저는 HTML 문서를 하나 적재한다. 
+  - 자바스크립트는 사용자가 애플리케이션과 상호작용하는 것에 맞춰 표시중이던 인터페이스를 없애고 새로운 UI 를 만든다.
+  - 사용자는 사이트를 내비게이션 하지만 실제로는 같은 페이지 안에 계속 머문다.
+######
+- DOM API 는 브라우저의 DOM 을 변경하기 위해 자바스크립트가 사용할 수 있는 객체 모음이다.  
+  (document.createElement 나 document.appendChild 등이 있다.)
+- 리액트는 브라우저 DOM을 갱신해주기 위해 만들어진 라이브러리다. 
+  - 리액트가 모든 처리를 대신 해주기 때문에 더 이상 SPA 를 더 효율적으로 만들기 위해 여러 복잡한 내용을 신경쓸 필요가 없다.
+  - 리액트에서는 DOM API 를 직접 조작하지 않는다.
+  - 대신 리액트에게 어떤 UI 를 생성할지 지시하면, 리액트가 우리 명령에 맞춰 엘리멘트 렌더링을 조절해준다.
+######
+- 브라우저 DOM 이 DOM 엘리먼트로 이뤄지는 것 처럼, 가상 DOM 은 리액트 엘리먼트로 이뤄진다.
+  - 리액트 엘리먼트는 개념상 HTML 엘리먼트와 비슷하지만 실제로는 자바스크립트 객체이다.
+  - 리액트 엘리먼트는 실제 DOM API 를 직접 다루는 것보다 가상 DOM을 다루는 것이 훨씬 빠르다.  
+    (우리가 가상 DOM 을 변경하면 리액트는 DOM API를 통해 그 변경 사항을 가장 효율적으로 렌더링 해준다.)
+######
+    // 예제 React.createEelement 를 사용해서 h1 태그를 표현하는 리액트 엘리먼트를 만들 수 있다.  
+    React.createElement("h1", { id: "recipe-0" }, "구운 연어")
+######
+    <h1 id=recipe-0">구운 연어</h1>
+- 첫 번째 인자는 만들려는 엘리먼트의 타입을 정의한다. 
+- 두 번째 인자는 엘리먼트의 프로퍼티를 표현한다. (id, className 등 태그 프로퍼티)
+- 세 번째 인자는 만들려는 엘리먼트를 여는 태그와 닫는 태그 사이에 들어가야할 자식 노드들을 표현한다.
+- 렌더링 과정에서 리액트는 이 엘리먼트를 실제 DOM 엘리먼트로 변환한다.
+- 리액트 엘리먼트는 단지 리액트에게 DOM 엘리먼트를 구성하는 방법을 알려주는 자바스크립트 리터럴에 불과하다.
+######
+    {
+      $$typeof" Symbol(React.element),
+      "type": h1",
+      "key": null,
+      "ref": null.
+      "props": {id: "recipe-0", children: "구운 연어"},
+      "_owner": null,
+      "_store": {}
+    }
+- 리액트 엘리먼트는 이렇게 생겼다. 그 안에는 리액트가 사용하는 _owner, _store, $$typeof 같은 필드가 있다.
+- type: 만들려는 HTML 이나 SVG 엘리먼트 타입을 지정 한다.
+- props: DOM 엘리먼트를 만들기 위해 필요한 데이터나 자식 엘리먼트들을 표현한다.
+- key: 나중에 설명
+- ref: 나중에 설명 
 
 ### 4-3. React DOM
+- ReactDOM 에는 리액트 엘리먼트를 브라우저에 렌더링하는 데 필요한 모든 도구가 들어 있다.
+- 리액트 엘리먼트와 그 모든 자식 엘리먼트를 함께 렌더링하기 위해 ReactDOM.render를 사용한다.
+  - 이 함수의 첫 번째 안자는 렌더링할 리액트 엘리먼트 이다.
+  - 두 번째 인자는 렌더링이 일어날 대상 DOM 노드 이다.
+  - dish 자리에 배열을 넣어서 여러 리액트 엘리먼트를 렌더링할 수도 있다.
+######
+    var dish = React.createElement("h1", null, "구운 연어");
+    ReactDOM.render(dish, document.getElementById('root'));
+######
+    <body>
+      <div id="root">
+        <h1>구운 연어</h1>
+      </div>
+    </body>
+- 리액트는 props.children 을 사용해 자식 엘리먼트들을 렌더링 한다.
+- 위에서 h1 엘리먼트의 유일한 자식으로 텍스트 엘리먼트를 렌더링 했기 때문에 props.children 이 "구운 연어"로 설정 됐다.
+- 텍스트가 아닌 다른 리액트 엘리먼트들을 자식으로 렌더링할 수도 있고 그렇게하면 엘리먼트 트리가 생긴다.
+- createElement에서 네 번째 이후 추가된 인자는 다른 자식 엘리먼트로 취급된다.
+######
+    const list = React.createElement(
+      "ul",                                                   // 첫 번째 인자 
+      null,                                                   // 두 번째 인자 
+      React.createElement("li", null "연어 900 그램"),          // 세 번째 인자 
+      React.createElement("li", null "신선한 로즈마리 5 가지"),   // 네 번째 인자 
+      React.createElement("li", null "올리브 오일 2 테이블 스푼"),
+      React.createElement("li", null "작은 레몬 2 조각"),
+      React.createElement("li", null "코셔 소금 1 티 스푼"),
+      React.createElement("li", null "다진 마늘 4쪽"),
+    )
+
+#### 데이터를 가지고 엘리먼트 만들기 
+- 리액트의 가장 큰 장점은 UI 엘리먼트와 데이터를 분리할 수 있다는 것이다.
+- 리액트는 컴포넌트 트리를 더 편하게 구성하기 위한 자바스크립트 로직을 얼마든지 추가할 수 있다.  
+  (예를 들어 배열에 재료를 저장해두고 그 배열을 리액트 엘리먼트로 map 할 수 있다.)
+######
+    React.createElement(
+      "ul",                                 
+      null,                                 
+      React.createElement("li", null "연어 900 그램"),          
+      React.createElement("li", null "신선한 로즈마리 5 가지"),  
+      React.createElement("li", null "올리브 오일 2 테이블 스푼"),
+      React.createElement("li", null "작은 레몬 2 조각"),
+      React.createElement("li", null "코셔 소금 1 티 스푼"),
+      React.createElement("li", null "다진 마늘 4쪽"),
+    )
+######
+    const items = [
+      "연어 900 그램",
+      "신선한 로즈마리 5 가지",
+      "올리브 오일 2 테이블 스푼",
+      "작은 레몬 2 조각",
+      "코셔 소금 1 티 스푼",
+      "다진 마늘 4 쪽" 
+    ];
+
+    React.createElement(
+      "ul",
+      {className: "ingredients" },
+      items.map(ingredient => React.createElement("li", { key:i }, ingredient)
+    )
+- **배열을 이터레이션해서 자식 엘리먼트들을 만드는 경우 각 자식 엘리먼트에 key 프로퍼티를 넣지 않으면 경고를 출력한다.**
 
 ### 4-4. 리액트 컴포넌트 
-
-### 4-5. 
+- 사용한 기술, 내용, 크기와 관계없이 모든 사용자 인터페이스는 여러 부분으로 이뤄진다.  
+  (버튼, 리스트, 제목 등이 이런 부품이다.)
+- 리액트에서 이런 각 부분을 컴포넌트라고 부른다. 
+- 컴포넌트를 사용하면 서로 다른 데이터집합에 대해 같은 DOM 구조를 재사용할 수 있다.
+- **리액트로 만들고 싶은 사용자 인터페이스에 대해 생각할 때는 엘리먼트를 재사용 가능한 조각으로 나눌 수 있는지 고려해야한다.**  
+  (재사용 가능성 -> 확장성)
+#### 리액트 컴포넌트의 역사
+- createClass (사라짐)
+- 클래스 컴포넌트 (곧 사라질 듯)
+- 함수 컴포넌트 
 
 <br>
 
