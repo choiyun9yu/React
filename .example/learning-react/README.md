@@ -1190,6 +1190,194 @@
 - 일관성: 웹팩이 JSX나 자바스크립트를 컴파일해주기 때문에 프로젝트에서 아직 표준화되지 않은 미래의 문법을 사용할 수 있다.  
   바벨은 다양한 ESNext 문법을 지원하므로 부라우저가 여러분이 작성한 코드를 지원하지 않을까 염려할 필요가 없다. 따라서 웹팩(그리고 바벨)을 사용하면 개발에 계속 최신 자바스크립트 문법을 활용할 수 있다.
 
+### 5-5. 프로젝트 설정하기
+- 이 프로젝트는 다음과 같은 단계를 거친다
+  - 프로젝트를 생성한다.
+  - 조리법 앱을 컴포넌트로 나눠서 서로 다른 파일에 넣는다.
+  - 바벨을 사용하는 웹팩 빌드를 설정한다.
+- create-react-app
+  - 모든 설정이 미리 정의된 create-react-app 이란 도구가 있다. 
+  - 하지만 도구를 사용해 이 모든 설정 과정을 추상화 하기 전에 각 단계를 좀 더 자세히 살펴볼 것이다.
+
+#### 프로젝트 생성하기
+- 리액트 프로젝트를 처음 설정하는 법을 보여주기 위해, recipes-app이라는 새로운 폴더를 만들고 진행한다.  
+
+      % mkdir recipes-app
+      cd recipes-app
+
+- 다음으로 npm을 사용해 프로젝트와 package.json 파일을 만든다. 
+- 이때 -y 플래그를 사용해 모든 디폴트 값을 사용한다. 
+- 그리고 webpack, webpack-cli, react, react-dom 패키지를 설치한다.
+- npm 5 를 사용한다면 --save 플래그를 지정하지 않아도 된다. 
+
+      % npm init -y
+      % npm install react react-dom serve
+
+- 다음으로는 각 컴포넌트를 담기 위해 폴도 구조를 만든다.  
+  (리액트 프로젝트에서 파일과 폴더를 구성하는 방법이 딱 하나 정해져 있지는 않다.)
+    
+      recipes-app
+      ├── node_modules          // npm install 명령으로 자동 추가 됨
+      ├── package.json          // npm init 명령으로 자동 추가 됨 
+      ├── package-lock.json     // npm init 명령으로 자동 추가 됨
+      ├── index.html
+      └── src 
+          ├── index.js
+          ├── data
+          │   └── recipes.json
+          └── components    
+              ├── Recipes.js
+              ├── Instructions.js
+              └── ingredients.js
+
+#### 컴포넌트를 모듈로 나누기
+- 조리법 제목을 표시하고, 재료들의 ul을 만들고, 조리 절차의 각 단계를 p 엘리먼트로 만들어서 표시하는 컴포넌트를 만들어보자.
+- JSX 를 사용하는 파일마다 맨 위에 react를 임포트 하는 문장이 필요하다.
+
+      // ./src/components/Recipes.js
+    
+      import React from "react";
+
+      export default function Recipe({ name, ingredients, steps }) {
+        return (
+          <section id="baked-salmon">
+            <h1>{name}</h1>
+            <ul className="ingredients">
+              {ingredients.map(()ingredient, i) => (
+                <li key={i}>{ingredient.name}</li>
+              ))}
+            </ul>
+            <section className="instructions">
+              <h2>조리 절차</h2>
+                {steps.map((step, i) -> (
+                  <p key={i}>{step}</p>
+                ))}
+            </section>
+          </section>
+        );
+      }
+- 그런데 Recipe 컴포넌트는 상당히 많은 일을 한다. 더 작고 담당하는 기능이 더 좁은 상태가 없는 여러 함수 컴포넌트로 분리한 다음  
+  그런 컴포넌트들을 합성하는 방식으로 처리하면 더 함수적인 접근 방식이 될 것이다.
+
+      // ./scr/components/Intructions.js
+
+      import React from "react";
+      export default function Instructions({ title, steps }) {
+        return (
+          <section className="instructions">
+            <h2>{title}</h2>
+            {steps.map((s, i) => (
+              <p key={i}>{s}</p>
+            ))}
+          </section>
+        );
+      }
+
+
+      // ./src/components/Ingredient.js
+      
+      import React from "react"; 
+
+      export default function Ingredient({ amount, measurement, name}) {
+        return (
+          <li>
+            {amount} {measurement} {name}
+          </li>  
+        );
+      }
+
+    
+      // ./src/compoments/ingredientsList.js
+  
+      import React from "react";
+      import Ingredient from "./Ingredient";
+
+      export default function IngredientsList({ list }) {
+        return (
+          <ul className="ingredients">
+            {list.map((ingredient, i) => (      
+              <Ingredient key={i} {...ingredient} />
+            ))}
+          </ul>
+        );
+      }
+
+      
+      // ./src/components/Recipe.js
+  
+      import React from "react";
+      import IngredientsList from "./IngredientsList";
+      import Instructions from "./Instructions";
+
+      function Recipe({ name, ingredients, steps }) {
+        return (
+          <section id={name.toLowerCase().replace(/ /g, "-")}>
+            <h1>{name}</h1>
+            <IngredientsList list={ingredients} />
+            <Instructions title="조리절차" steps={steps} />
+          </section>
+        );
+      }   
+
+- 위와 유사한 방식으로 Recipe 컴포넌트를 Menu 컴포넌트와 합쳐준다.
+
+      // ./src/conponents/Menu.js
+
+      import React from "react";
+      import Recipe from "./Recipe";
+
+      function Menu({ recipes }) {
+        return (
+          <article>    
+            <header>
+              <h1>맛있는 조리법</h1>
+            </header>
+            <div classname="recipes">
+              {recieps.map((recipe, i) => (
+                <Recipe key={i} {...recipe} />
+              ))}
+            </div>
+          </article>
+        );
+      }
+      export default Menu;
+
+- Menu 컴포넌트를 렌더링할 때도 여전히 ReactDOM 을 사용해야 한다.
+- 프로젝트의 주 파일은 여전히 index.js이다. 이 파일이 DOM 에 컴포넌트를 렌더링 한다.
+- 맨 앞의 네 문장은 이 앱이 작동하는데 필요한 모듈을 임포트한다.
+- react 와 react-dom 을 script 태그에서 임포트하는 대신 여기서 그 둘을 임포트해서   
+  웹팩이 번들에 그 두 라이브러리를 추가하도록 만든 것이다.
+
+      // ./src/index.js
+
+      import React from "react";
+      import { render } from "react-dom";
+      import Menu from "./components/Menu";
+      import data from "./data/recipes.json";
+
+      render(<Menu recipes={data} />, document.getElementsById("root"));
+
+- 코드를 여러 모듈로 분리 했으므로, 이제는 웹팩으로 빌드 프로세스를 만들어서 모든 구성 요소를 한 파일에 넣게 만들 것이다.
+- 방금 모든 요소를 여러 부분으로 나눴는데 왜 다시 전체를 한 부분으로 묶는 도구를 사용하는지 의문을 가질 수 있다.
+- 프로젝트를 여러 파일로 나누면 여러 팀원들이 서로 겹치는 일 없이 각자 요소를 따로 처리할 수 있기 때문에 관리가 쉬워진다.
+- 그리고 각 파일을 분리해두면 각 파일을 더 쉽게 테스트할 수 있다.
+
+#### 웹팩 빌드 만들기 
+- 웹팩으로 정적인 빌드 프로세스를 만들려면 몇몇 모듈을 설치해야 한다. 
+  
+      npm installl --save-dev webpack webpack-cli
+
+- 모듈화한 조리법 앱이 작동하게 만들려면 소스 코드를 어떻게 한 번들 파일로 만들 수 있는지 웹팩에게 알려줘야 한다.
+- 웹팩 버전 4.0 부터는 프로젝트를 번들하기 위해 설정 파일을 만들 필요가 없어졌다.
+- 설정 파일이 없으면 웹팩이 코드를 패키징하기 위한 디폴트 방식을 사용한다.
+- 하지만 설정 파일을 사용하려면 설정을 원하는대로 커스텀화 할 수 있다.
+
+#### 번들 로딩하기 
+
+#### 소스 맵
+
+#### create-react-app
+
 ####
 
 <br>
