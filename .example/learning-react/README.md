@@ -1510,13 +1510,175 @@
 <br>
 
 ## 6. 상태관리
-
+- 데이터는 리액트 컴포넌트가 살아 숨쉬게 하는 생명력과 같다. 
+- 사용자 인터페이스는 콘텐츠 생산자가 콘텐츠를 만들어내기 위해 사용하는 도구이다.
+- 콘텐츠 생산자에게 최선의 도구를 만들어내기 위해서는 데이터를 효율적으로 조작하고 변경하는 방법을 알아야한다.
+######
+- 5장 에서는 컴포넌트 트리를 만들었다. 컴포넌트 트리는 프로퍼티를 통해 데이터가 흘러갈 수 있는 컴포넌트 계층 구조를 뜻한다.
+- 프로퍼티는 전체 그림에서 절반에 불과하다. 그리고 나머지 절반은 **상태**이다.
+- 리액트 애플리케이션의 상태는 데이터에 의해 조종되며 변경될 수 있다.
+######
+- 리액트 애플리케이션을 사용할 때는 상태와 프로퍼티의 관계에 기반해 컴포넌트들을 부드럽게 합성하고 서로 엮는다.
+- 컴포넌트 트리 상태가 바뀌면 프로퍼티도 바뀐다. 
+- 새로운 데이터는 컴포넌트 트리를 타고 흐르고, 콘텐츠에 새로 반영되도록 특정 말단이나 가지가 다시 렌더링 된다.
 
 ### 6-1. 별점 컴포넌트 만들기
+- react-icons 에서 리액트 컴포넌트 형대로 된 수백가지 SVG 아이콘을 제공한다.
+
+      % npm i react-icons
+
+- react-icons 에서 별 다섯 개 랜더링하는 StarRating 컴포넌트를 만든다.
+- 앞의 세 별은 빨간색으로 채워지고, 뒤의 두 별을 회색으로 채워진다.
+- 별을 먼저 렌더링하는 이유는 앞으로 우리가 만들어나갈 컴포넌트에 대한 길잡이를 제공하기 위해서다.
+       
+      import React from "react";
+      import { FaStar } from "react-icons/fa";
+    
+      export default function StartRating() {
+        return [
+            <FaStar color="red" />,
+            <FaStar color="red" />,
+            <FaStar color="red" />,
+            <FaStar color="gray" />,
+            <FaStar color="gray" />
+          ]}
+
+- 선택된 프로퍼티에 따라 자동으로 별을 만들어내는 컴포넌트를 하나 만든다.
+- Star 컴포넌트는 별 하나를 렌더링한다. 이때 selected 프로퍼티에 따라 적절한 색으로 별 안쪽을 채워 넣는다.
+- selected 프로퍼티가 컴포넌트에 전달되지 않으면 별이 선택되지 않았다고 가정하고, 디폴트로 회색으로 별 내부를 칠한다.
+
+      const Star = ({ selected = false }) => (
+        <FaStar color={selected ? "red" : "grey"} />
+      );
+- 별의 갯수를 유동적으로 설정하게 할 수 있게 할 수 있다.
+
+      const createArray = length => [...Array(length)];
+
+      export default function StartRating({ totalStarts = 5 }) {
+        return createArray(totalStarts).map((n, i) => <Star key={i} />);
+      }
+
+- 이제 StarRating 컴포넌트를 클릭할 수 있게 만들어야 한다. 사용자는 컴포넌트를 클릭해서 rating 을 바꿀 수 있다.
+- rating 은 변경이 될 수 있는 값이기 때문에, 리액트 상태에 이 값을 저장하고 변경해야 한다.
+- 상태를 리액트 함수 컴포넌트에 넣을 때는 훅스(Hooks)라고 부르는 리액트 기능을 사용한다.
+- 훅스에는 컴포넌트 트리와 별도로 재사용 가능한 코드 로직이 들어 있다.
+- 훅스를 사용하면 우리가 만든 컴포넌트에 기능을 끼워 넣을 수 있다.
+- 리액트는 몇가지 훅스를 기본 제공하므로, 즉시 이런 훅을 사용할 수 있다.
 
 ### 6-2. useState 훅 
+- useState 훅은 상태를 리액트 컴포넌트에 추가하고 싶을 때 사용한다. 
+- 이 훅은 react 패키지에 들어 있어서 react 패키지를 임포트 하기만 하면 사용할 수 있다.
+- 아래와 같이 하면 컴포넌트와 상태를 서로 엮을 수 있다. 
+
+      import React, { useState } from "react";
+      import { FaStar } from "react-icons/fa";
+
+      export default function StartRating({ totalStarts = 5 }) = {
+        const [ selectedStarts ] = useState(3);  // 초기값 3으로 설정 
+      
+        return (
+            <>
+              {createArray(totalStarts).map((n, i) -> )
+                <Start key={i} selected={selectedStarts > i} /> 
+              ))}
+              <p>
+                { selectedStarts } / { totalStarts }
+              </p>
+            <>
+          )
+        }      
+
+- 사용자로부터 다른 점수를 얻기 위해서는 사용자가 아무 별이나 클릭할 수 있게 해야 한다.
+- 이 말은 onClick 핸들러를 FaStar 컴포넌트에 추가해서 별을 클릭할 수 있게 만들어야 한다는 뜻이다.
+- star 를 변경해서 onSelect 라는 프로퍼티를 추가한다.
+- 이 프로퍼티가 함수라는 점에서 유의하자. 사용자가 FaStar 컴포넌트를 클릭하면 이 함수가 호출될 것이다.
+- 이 함수는 부모 컴포넌트에게 별이 틀릭됐음을 통지한다. 이 함수의 디폴트 값은 f => f  이다. 
+- 이 함수는 인자로 받은 값을 그대로 돌려주는 일 외에 아무것도 하지 않는 가짜 함수일 뿐이다.
+- 하지만 onSelect 프로퍼티 값은 반드시 함수여야 하므로, onSelect에 함수를 지정하지 않고  
+  FaStart 컴포넌트를 클릭하면 오류가 발생한다.
+
+      const Start = ({ selected = false, onSelect = f => f}) => (
+        <FaStart color={selected ? "red" : "grey" } onClick={ onSelect }
+      )
+
+- StarRating 컴포넌트의 상태를 바꾸려면 selectStarts 의 값을 바꾸는 함수가 필요하다.
+- useState 훅이 반환하는 배열의 두 번째 원소는 상태 값을 변경할 때 쓸 수 있는 함수이다.
+
+      export default function StartRating({ totalStarts = 5 }) = {
+        const [ selectedStarts, setSelectedStarts ] = useState(3);  // 초기값 3으로 설정 
+      
+        return (
+            <>
+              {createArray(totalStarts).map((n, i) -> )
+                <Start 
+                  key={i} 
+                  selected={selectedStarts > i} /> 
+                  onSelect={() => setSelectedStarts(i + 1)}
+                ))}
+                <p>
+                  { selectedStarts } / { totalStarts }
+                </p>
+            </>
+        )
+      }   
+- 사용자가 Star 를 클릭할 때마다 StartRating 컴포넌트가 다시 렌더링 된다.
+  - 사용자가 Star 를 클릭하면 해당 Star 의 onSelect 프로퍼티가 호출된다.
+  - onSelect 프로퍼티는 setSelectedStars 함수를 호출해서 방금 선택한 별의 개수를 전송한다.
+  - map 함수의 i 변수를 사용해 개수를 쉽게 계산할 수 있다.
+######
+- 리액트 개발자 도구는 어떤 컴포넌트에 어떤 훅이 걸려있는지 보여준다.
+- StarRating 컴포넌트를 브라우저에서 렌더링할 때는, 개발자 도구에서 해당 컴포넌트를 선택해 디버깅 정보를 살펴볼 수 있다.
 
 ### 6-3. 재사용성을 높이기 위한 리팩터링 
+- 이제 Start 컴포넌트를 프로덕션에 넣어도 된다.
+- 그러나 이 컴포넌트를 npm에 올려서 세상 누구나 사용자로부터 평점을 받을 때 이 컴포넌트를 활용하게 하고 싶다면,  
+  몇 가지 용례를 더 생각해 봐야 한다.
+#### style 프로퍼티
+- tyle 프로퍼티를 사용하면 CSS 스타일을 엘리먼트에 추가할 수 있다.
+- 모든 리액트 엘리먼트는 스타일 프로퍼티를 제공한다. 대부분의 컴포넌트도 스타일 프로퍼티를 제공한다.
+
+      export default function App() {
+        return <StarRating sytle={{ backgroundColor: "lightblue" }} />;
+      }
+- 모든 리액트 엘리먼트는 스타일 프로퍼티를 제공한다. 대부분의 컴포넌트도 스타일 프로퍼티를 제공한다.
+- 이전의 코드에서 프래그먼트를 <div> 엘리먼트로 바꾸고 스타일을 적용해보자.
+
+      export default function StartRating({ style = {}, totalStarts = 5 }) = {
+        const [ selectedStarts, setSelectedStarts ] = useState(3);  // 초기값 3으로 설정 
+      
+        return (
+            <div sytle={{ padding: "5px", ...style }}>
+              {createArray(totalStarts).map((n, i) -> )
+                <Start 
+                  key={i} 
+                  selected={selectedStarts > i} /> 
+                  onSelect={() => setSelectedStarts(i + 1)}
+                ))}
+                <p>
+                  { selectedStarts } / { totalStarts }
+                </p>
+            </div>
+        )
+      }   
+
+##### 일반적인 프로퍼티 
+- 복제되는 컴포넌트에 디폴트 값처럼 일반적으로 적용될 프로퍼티를 구현할 수 있다.
+- 이 예제에서는 double-click 메서드를 전체 StarRating 컴포넌트에 대해 설정하려고 시도한다.
+- double click 메서드를 다른 프로퍼티와 함께 컴포넌트 전체를 둘러싸는 div 에게 전달할 수 있다.
+
+      export defualt function App() {
+        return (  
+          <StarRating          
+            style={{ backgroundColor: "lightblue" }}
+            onDoubleClick={e => alert("double click")}
+          />
+        );
+      }
+- 첫 단계는 사용자가 StarRating 에 추가할 수 있는 모든 프로퍼티를 수집한다.
+- 스프레드 연산자 ...props 를 통해 이런 프로퍼티를 모은다. 
+- 
+
+
 
 ### 6-4. 컴포넌트 트리 안의 상태 
 
