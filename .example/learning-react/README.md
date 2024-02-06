@@ -1676,15 +1676,189 @@
       }
 - 첫 단계는 사용자가 StarRating 에 추가할 수 있는 모든 프로퍼티를 수집한다.
 - 스프레드 연산자 ...props 를 통해 이런 프로퍼티를 모은다. 
-- 
+- 다음으로 이 모든 프로퍼티를 {...props} 를 사용해 div 엘리먼트에게 내려보낸다. 
 
-
+      export default function StarRating({ style = {}, totalStars = 5, ...props }) {
+        const [selectedStars, setSelectedStars] = useState(0);
+        return(
+          <div style={{ padding: 5, ...style }} {...props}>            
+            ...
+          </div>
+        );
+      }
+- 다음 2가지 가정이 있을 때 이렇게 작성할 수 있다.
+- 첫째, 사용자가 div 엘리먼트가 지원하는 프로퍼티만 추가할 것이라는 가정이다.
+- 둘째, 사용자가 컴포넌트에 악의적으로 나쁜 프로퍼티를 추가하지 않는다는 가정이다.
+- 하지만 우리가 만든 모든 컴포넌트에 대해 이런 가정을 똑같이 적용할 수 없다. 
+- 실제로 구체적인 필요에 따라 이런 수준의 지원을 컴포넌트에 추가하는 편이 낫다.
 
 ### 6-4. 컴포넌트 트리 안의 상태 
+- 모든 컴포넌트에 상태를 넣는 것은 좋은 생각이 아니다.
+- 상태 데이터가 너무 많은 컴포넌트에 분산되면 버그를 추적하거나 애플리케이션의 기능을 변경하기 어려워진다. 
+- 이런 일이 어려워지는 이유는 컴포넌트 트리에서 어느 부분에 상태가 존재하는지 제대로 알기 어려워지기 때문이다.
+- 애플리케이션의 상태나 어떤 특성의 상태를 한곳에서 관리할 수 있으면 상태를 이해하기 더 쉬워진다.
+- 상태를 한곳에서 관리하는 몇가지 방법이 있다.
+  - props: 상태를 컴포넌트 트리에 저장하고, 자식 컴포넌트에게 프롭으로 전달할 수 있다.
+  - context provider: 콘텍스트 프로바이더를 만들어 프롭드릴링 없이 다이렉트로 전달할 수 있다.
+
+#### 상태를 컴포넌트 트리의 아래로 내려보내기
+- 이번 이터레이션(iteration) 에서는 상태를 색 관리자 앱의 루트인 App 컴포넌트에 저장한다.  
+  그리고 색을 자식 컴포넌트로 내려보내서 렌더링 한다. 
+- App 컴포넌트는 우리 앱에서 상태를 저장할 유일한 컴포넌트이고 최상위에 있다.
+
+      // App 컴포넌트 
+      import React, { useState } from "react";
+      import colorData from "./color-data.json";
+      import ColorList from "./ColorList.js";
+
+      export default function App() {
+        const [colors] = usState(colorData);
+        return <ColorList colors={colors} />
+      }
+
+
+      // ColorList 컴포넌트 
+      import React from "react";
+      import Color from "./Color";
+    
+      export default function ColorList({ colors = [] }) {
+        if(!colors.length) return <div> 표시할 색이 없습니다.</div>;
+        return (
+          <div>
+            {
+              colors.map(color => <Color key={color.id} {...color} />)
+            }
+          </div>
+        );
+      }
+
+
+      // Color 컴포넌트 
+      export default function Color({ title, color, rating }) {
+        return (
+          <section>
+            <h1>{ title }</h1>
+            <div> </div>
+            <StarRating selectedStars={rating} />
+          </section>
+        );
+      }
+
+    
+      // StarRating 컴포넌트 
+      export default function StartRating({ totalStarts = 5, selectedStars = 0 }) {
+        return (
+          <>
+            {createArray(totalStarts).map((n, i) => (
+              <Star
+                key={i}
+                selected={selectedStarts > i}
+              />
+            ))}
+            <p>
+              {selectedStarts} / {totalStars}
+            </p>
+          </>
+        );
+      }
+
+#### 상호작용을 컴포넌트 트리 위쪽으로 전달하기
+- 지금까지는 컴포넌트 트리 아래쪽으로 내려보냄으로써 colors 배열을 렌더링 했다. 
+- 리액트에서는 자식 컴포넌트에서 벌어진 상호작용을 수집해서 트리 위로 올릴 수도 있다.
+- 예를 들어 각 색의 이름 옆에 상태로부터 해당 색을 제거하는 삭제 버튼을 붙일 수 있다.
+- 삭제할 색의 id 정보를 알아야 하기 때문에 id 프로퍼티를 추가해야한다.
+
+      // Color 컴포넌트       
+      import { FaTrash } from "react-icons/fa";
+
+      export default function Color({ id, title, color, rating, onRemove = f => f }) {
+        return (
+          <section>
+            <hi>{title}</h1>
+            <button onClick={() => onRemove(id)}>
+              <FaTrash />
+            </button>
+            <div style={{ height: 50, backgroundColor: color }} />
+            <StarRating selectedStars={rating} />    
+          </section>
+        );
+      }
+
+- **이런 방식의 장점은 Color 컴포넌트를 순수 컴포넌트로 유지할 수 있다는 것**이다.
+- **순수 컴포넌트에는 상태가 없기 때문에 앱의 여러 부분이나 다른 애플리케이션에서 자유롭게 재사용할 수 있다**.
+- Color 컴포넌트는 사용자가 삭제 버튼을 누를 때 벌어지는 일에 대해 신경쓰지 않는다.   
+  신경쓰는 것은 이벤트가 발생했다는 사실과 제거될 색에 대한 정보를 부모 컴포넌트에 전달하는 것이다.
+  - 이렇게 이벤트와 정보를 전달하고 나면, 이벤트를 처리할 책임은 이제 부모 컴포넌트의 몫이 된다.
+
+        // ColorList 컴포넌트 
+        export default function ColorList({ colors = [], onRemoveColor = f => f }) {
+          if (!colors.length) return <div>No Colors Listed. (Add a Color) </div>;
+
+          return (
+            <div> 
+              colors.map(color => (
+                <Color key={color.id} {...color} onRemove={onRemoveColor} />
+              )
+            </div>
+          );
+        }
+
+- 상태와 엮여 있는 컴포넌트는 App 컴포넌트 이다. 따라서 여기서 id 를 사용해 상태에서 색을 제거한다.
+
+      // App 컴포넌트 
+      export default function App() {
+        const [colors, setColors] = useState(colorData);
+        return (
+          <ColorList
+            colors={colors}
+            onRemoveColor={id => {
+              const newCOlors = colors.filter(color => color.id !== id);
+              setColors(newColors);
+            }}
+          />
+        );
+      }
+
+
+      // StarRating 컴포넌트 
+      export default function StarRating({
+        totalStars = 5,
+        selectedStars = 0,
+        onRate = f => f
+      }) {
+        return (      
+          <>
+            {createArray(totalStars).map((n, i) => (
+              <Star
+                key={i}
+                selected={selectedStars > i}
+                onSelecte={() => onRate(i +1)}
+              />
+            ))}
+          </>
+        );
+      }
+
 
 ### 6-5. 폼 만들기
 
+#### 참조 사용하기 (useRef)
+
+#### 제어가 되는 컴포넌트 
+
+#### 커스텀 훅 만들기 
+
+#### 색을 상태에 추가하기 
+
 ### 6-6. 리액트 콘텍스트
+
+#### 콘텍스트에 색 넣기 
+
+#### useContext를 통해 색 얻기 
+
+#### 상태가 있는 콘텍스트 프로바이더 
+
+#### 콘텍스트와 커스텀 훅
 
 <br>
 
