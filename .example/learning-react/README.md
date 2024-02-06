@@ -1784,26 +1784,32 @@
         );
       }
 
+  > onRemoveColor = f => f 는 입력된 함수 프로퍼티를 그대로 반환하는 익명의 함수이다.  
+  > 매개 변수가 전달되지 않으면 기본적으로 아무 동작도 하지 않는 함수를 사용하겠다는 것을 나타낸다.  
+  > 이렇게 하면 함수가 전달되지 않거나 undefined 일 때 코드가 오류를 발생시키지 않고 정상적으로 실행될 수 있다. 
+
 - **이런 방식의 장점은 Color 컴포넌트를 순수 컴포넌트로 유지할 수 있다는 것**이다.
 - **순수 컴포넌트에는 상태가 없기 때문에 앱의 여러 부분이나 다른 애플리케이션에서 자유롭게 재사용할 수 있다**.
 - Color 컴포넌트는 사용자가 삭제 버튼을 누를 때 벌어지는 일에 대해 신경쓰지 않는다.   
   신경쓰는 것은 이벤트가 발생했다는 사실과 제거될 색에 대한 정보를 부모 컴포넌트에 전달하는 것이다.
-  - 이렇게 이벤트와 정보를 전달하고 나면, 이벤트를 처리할 책임은 이제 부모 컴포넌트의 몫이 된다.
+- 이렇게 이벤트와 정보를 전달하고 나면, 이벤트를 처리할 책임은 이제 부모 컴포넌트의 몫이 된다.
 
-        // ColorList 컴포넌트 
-        export default function ColorList({ colors = [], onRemoveColor = f => f }) {
-          if (!colors.length) return <div>No Colors Listed. (Add a Color) </div>;
+      // ColorList 컴포넌트 
+      export default function ColorList({ colors = [], onRemoveColor = f => f }) {
+        if (!colors.length) return <div>No Colors Listed. (Add a Color) </div>;
 
-          return (
-            <div> 
-              colors.map(color => (
-                <Color key={color.id} {...color} onRemove={onRemoveColor} />
-              )
-            </div>
-          );
-        }
+        return (
+          <div> 
+            colors.map(color => (
+              <Color key={color.id} {...color} onRemove={onRemoveColor} />
+            )
+          </div>
+        );
+      }
 
+- ColorList 컴포넌트도 상태에 접근할 수 없다. color 를 제거하는 대신, ColorList 도 이벤트를 부모에게 전달한다.
 - 상태와 엮여 있는 컴포넌트는 App 컴포넌트 이다. 따라서 여기서 id 를 사용해 상태에서 색을 제거한다.
+- 예제에서는 filter 메소드를 사용하여 인자로 받은 id 와 같지 않은 것들만 남겼다.
 
       // App 컴포넌트 
       export default function App() {
@@ -1812,37 +1818,39 @@
           <ColorList
             colors={colors}
             onRemoveColor={id => {
-              const newCOlors = colors.filter(color => color.id !== id);
+              const newColors = colors.filter(color => color.id !== id);
               setColors(newColors);
             }}
           />
         );
       }
 
-
-      // StarRating 컴포넌트 
-      export default function StarRating({
-        totalStars = 5,
-        selectedStars = 0,
-        onRate = f => f
-      }) {
-        return (      
-          <>
-            {createArray(totalStars).map((n, i) => (
-              <Star
-                key={i}
-                selected={selectedStars > i}
-                onSelecte={() => onRate(i +1)}
-              />
-            ))}
-          </>
-        );
-      }
-
+- **colors 배열의 상태를 바꾸면 App 컴포넌트가 새로운 색 목록에 맞춰 다시 렌더링 된다.**
+- 이 새로운 목록은 ColorList 컴포넌트에 전달되며, 그에 따라 ColorList컴포넌트도 다시 렌더링 된다.
+- ColorList 는 전달받은 색에 맞춰 Color 컴포넌트를 다시 렌더링 한다.
 
 ### 6-5. 폼 만들기
+- DOM에서 사용할 수 있는 HTML 폼 엘리먼트 모두는 리액트 엘리먼트로도 제공된다.
+
+      // JSX 를 활용한 폼 태그 예시
+      <form>
+        <input type="text" placeholder="color title..." required />
+        <input type="color" required />  
+        <button>ADD</button>
+      </form>
 
 #### 참조 사용하기 (useRef)
+- 리액트에서 폼 컴포넌트를 만들어야할 때는 몇 가지 패턴을 사용할 수 있다. 
+- 이런 패턴 중에는 참조라는 리액트 기능을 사용해 직접 DOM 에 접근하는 방법이 포함된다.
+- **리액트에서 참조는 컴포넌트의 생명주기 값을 저장하는 객체**다.
+- 리액트는 참조를 제공할 때 쓸 수 있는 useRef 훅을 제공한다.
+
+      import React, { useRef } from "react";
+
+      export default function AddColorForm({ onNewColor = f => f }) { 
+        
+      }
+
 
 #### 제어가 되는 컴포넌트 
 
