@@ -1842,45 +1842,727 @@
 #### 참조 사용하기 (useRef)
 - 리액트에서 폼 컴포넌트를 만들어야할 때는 몇 가지 패턴을 사용할 수 있다. 
 - 이런 패턴 중에는 참조라는 리액트 기능을 사용해 직접 DOM 에 접근하는 방법이 포함된다.
-- **리액트에서 참조는 컴포넌트의 생명주기 값을 저장하는 객체**다.
+- **리액트에서 참조는 컴포넌트의 생명주기 값을 저장하는 객체**이다.
 - 리액트는 참조를 제공할 때 쓸 수 있는 useRef 훅을 제공한다.
+######
+- 컴포넌트를 만들 때 useRef 훅을 사용해 2가지 참조를 만든다.
+- txtTitle 참조는 색의 이름을 수집하기 위해 폼에 추가한 텍스트 입력에 대한 참조에 쓰인다. 
+- hexColor 참조는 HTML 색 입력의 16진 색 값에 접근하기 위한 참조에 쓰인다.
+- ref 프로퍼티를 사용하면 이런 ㅊ마조의 값을 직접 JSX 에서 설정할 수 있다.
 
       import React, { useRef } from "react";
-
+  
       export default function AddColorForm({ onNewColor = f => f }) { 
-        
+        const txtTitle = useRef();
+        const hexColor = useRef();
+  
+        const submit = e => { ... };
+  
+        return ( ... );
       }
+
+- 여기서 JSX의 입력 엘리먼트에 ref 속성을 추가해서 txtTitle 과 hexColor 참조의 값을 설정한다.   
+- 이렇게 하면 DOM 엘리먼트를 직접 참조하는 참조 객체에 대한 current 필드를 생성한다. 
+- 이 필드를 사용해 DOM 엘리먼트에 접근할 수 있고, DOM 엘리먼트에 접근할 수 있으므로 엘리먼트의 값을 얻을 수 있다.
+
+        return (
+          <form onSubmit={submit}>
+            <input ref={txtTitle} type="text" placeholder="color title..." reauired />
+            <input ref={hexColor} type="color" required />            
+            <button>ADD</button>
+          </form>
+        );
+
+- 사용자가 ADD 버튼을 클릭해 폼을 제출하면 submit 함수를 호출한다.
+- HTML 폼을 제출할 때 디폴트 동작은 현재 URL로 폼 엘리머느테 저장된 값이 본문에 들어 있는 POST 요청을 보내는 것이다.
+- 이런 디폴트 동작을 원치 않는 경우 submit 함수의 첫번째 코드는 e.preventDefault() 로 제출을 막을 수 있다.
+- 다음으로 참조를 통해 폼 엘리먼트들의 현재 값을 얻어온다.
+- 이 값을 onNewColor 함수 프로퍼티를 통해 컴포넌트의 부모에게 전달한다. 
+- 마지막으로 두 입렵의 value 속성 값을 재설정해서 데이터를 지우고 다른 색을 폼이 입력 받을 수 있게 준비한다.
+
+      const submit = e => {
+        e.preventDefault();  
+        const title = txtTitle.current.value;
+        const title = hexColor.current.value;
+        onNewColor(title, color);
+        txtTitle.current.value = "";
+        hexColor.current.value = "";
+      };
+
+- 참조를 사용하면 미묘하게 패러다임이 바뀐다. DOM 노드의 value 값을 직접 ""로 설정함으로써 DOM 노드의 속성을 변경했다.
+- 이런 코드는 명령형 코드다. AddColorForm 은 이제 DOM 을 통해 폼 값을 저장하기 때문에 제어되지 않는 컴포너트가 된다.
 
 
 #### 제어가 되는 컴포넌트 
+- 제어가 되는 컴포넌트에서는 폼 값을 DOM이 아니라 리액트로 관리한다.
+- 제어가 되는 컴포넌트를 쓸 때는 참조를 사용할 필요도 없고, 명령형 코드를 작성할 필요도 없다.   
+  제어가 되는 컴포넌트를 사용하면 튼튼한 폼 컴증 기능 등을 추가하여 훨씬 더 쉬워진다.
+- 먼저 useRef 를 사용하는 대신 useState의 값을 리액트 상태를 통해 저장한다.
+
+      import React, { useState } from "react";
+    
+      export default function AddColorForm({ onNewColor = f => f }) {
+        const [title, setTitle] = useState("");    
+        const [color, setColor] = useState(#000000");
+
+        const submit = e => { ... };
+
+        return ( ... );
+      }
+
+- 이제 컴포넌트가 title 과 color 의 값을 제어하므로 form 의 input 엘리먼트 안에 있는 value 속성을 설정하면 더이상 폼 안에서는 이 값을 변경할 수 없다.
+- 현 시점에서 이 값을 변경할 수 있는 유일한 방법은 사용자가 input 엘리먼트에 문자를 입력할 때마다 상태 변수를 변경하는 것 뿐이다.
+- 이 제어가 되는 컴포넌트는 이제 title 과 color 폼 상태를 사용해 두 input 엘리먼트의 value를 제어한다.
+- 두 엘리먼트에서 onChange 이벤트가 발생하면 event 인자를 보고 새로운 값을 알 수 있다.
+- event.target 에는 DOM 엘리먼트에 대한 참조가 들어가 있다.
+- 따라서 event.target.value 를 통해 엘리먼트의 현재 value를 알 수 있다.
+- title이 바뀌면 setTilte 을 호출해 상태의 title 값을 바꾼다.
+- 이 상태 값을 바꾸면 컴포넌트가 다시 렌더링 되기 때문에 input 엘리먼트가 다시 새로운 title 값을 표시할 수 있다.
+
+      <form onSubmit={submit}>
+        <input
+          value={title}
+          onChange={event => setTitle(event.target.value)}
+          type="text"
+          placeholder="color title..."
+          required
+        />
+        <input
+          value={color}
+          onChange={event => setColor(event.target.value)}
+          type="color"
+          placeholder="color title..."
+          required
+        />      
+        <button>ADD</button>
+      </form>
+
+- 폼을 제출할 때는 onNewColor 함수의 프로퍼티를 호출하면서 그냥 title 과 color 의 상태값을 넘기면 된다.
+- 새로운 색을 부모 컴포넌트에 전달한 다음에는 setTitle, setColor 함수를 사용해 입력 값을 재설정할 수 있다.
+- 리액트가 폼의 상태를 모두 제어하기 때문에 이런 컴포넌트를 제어가 되는 컴포넌트라고 부른다.
+- 여기서 제어가 되는 컴포넌트가 아주 여러 번 다시 렌더링 된다. 하지만 리액트는이런 부하를 처리할 수 있도록 설계되었다.  
+  다만 **여러번 재 렌더링되니까 이 컴포넌트 안에는 오랜 시간이 걸리는 비용이 많이 드는 처리를 추가하지 않는 것이 좋다.**
+
+      const submit = e => {
+        e.preventDefault();
+        onNewColor(title, color);
+        setTitle("");
+        setColor("");
+      };
 
 #### 커스텀 훅 만들기 
+- input 엘리먼트가 많이 들어 있는 큰 폼을 만든다면 아래 코드를 넣고 싶을 수 있다.
+- 프로퍼티를 모든 폼 입력에 대해 빠르게 복사해 넣으면서 이름만 적절히 바꾸면 빠르게 컴포넌트를 완성할 수 있을 것 같아 보인다.
+
+      value={title}
+      onChange={event => setTItle(event.target.value)}
+
+- 하지만 코드를 복사해 붙여 넣으면 함수에서 추상화 할 수 있는 중복이 발상한다는 것이다.
+- 제어가 되는 폼 컴포넌트를 만들 때 필요한 세부 사항을 커스텀 훅으로 묶을 수 있다.
+- 제어가 되는 폼 입력을 만들 때 필요한 중복을 추상화해 없애 주는 우리만의 useInput 훅을 만들 수 있다.
+
+      import { useState } from "react";
+      
+      export const useInput = initialValue => {
+        const [value, setValue] = useState(initialValue);
+        return [
+          { value, onChange: e => setValue(e.target.value) },
+          () => setValue(initialValue)
+        ];
+      };
+- 위 훅은 커스텀 훅이다. 훅 안에서는 여전히 useState 훅을 사용해 상태 value를 만든다.
 
 #### 색을 상태에 추가하기 
+- 제어가 되는 폼 컴포넌트나 제어가 되지 않는 폼 컴포넌트 모두 title 과  color 의 값을 onNewColor 함수를 통해 부모 컴포넌트에 전달한다.
+- 부모는 제어가 되는 폼 컴포넌트나 제어가 되지 않는 폼 컴포넌트 중 어떤 것을 사용했는지에 대해 관심이 없다. 단지 새로운 색의 값을 알고 싶을 뿐이다.
+- 이제 제어가 되는 폼을 껏든 그렇지 않든 관계없이 AddColorForm 을 App 에 추가해보자.
+
+      import React, { useState } from "react";
+      import colorData from "./color-data.json";
+      import ColorList from "./ColorList.js";
+      import AddColorForm from "./AddColorForm";
+      import { v4 } from "uuid";
+
+      export default function App() {
+        const [colors, setColors] = useState(colorData);
+        return (
+          <>
+            <AddColorForm
+              onNewColor={(title, color) => {
+                const newColors = [
+                  ...colors,  
+                  {
+                    id: v4(),
+                    rating: 0,    
+                    title,
+                    color
+                  }
+                ];
+                setColors(newColors);
+              }}
+            />
+            <ColorList ... />
+        );
+      }
+- 새 색이 추가되면 onNewColor 프로퍼티가 호출된다. 새 color 에 대한 title 과 hexadecimal 값이 onNewColor 의 인자로 전달된다.
+- 이 인자를 사용해 새색의 배열을 새로 만든다. 새 색이 들어 있는 색 배열이 생기면 setColors 를 호출해서 색 배열을 상태에 저장한다.
+- 이제 새 배열이 UI 를 갱신할 때 쓰인다. 그에 따라 새로운 색을 리스트의 맨 밑에서 볼 수 있다.
 
 ### 6-6. 리액트 콘텍스트
+- 트리 루트의 한 위치에 상태를 저장하는 패턴은 리액트의 초기 버전이 더 성공할 수 있는 이유 였다.  
+  상태를 프롭을 통해 컴포넌트 트리의 위아래로 전달할 수 있다는 사실은 리액트 개발자들에게 필수 통과 의례 같은 것이다.
+- 하지만 리액트가 진화하고 컴포넌트 트리가 커짐에 따라 상태를 한 군데 유지한다는 원칙을 따르는 것이 점점 비현실적이게 되었다.  
+  복잡한 애플리케이션에서 수많은 개발자가 상태를 한 위치에 유지하기 어렵다. (버그가 발생하기 쉽다.)
+- 상태 데이터를 그 데이터가 필요한 컴포넌트에 도달할 때까지 프롭 형태로 모든 중간 컴포넌트를 거쳐서 전달하는 과정은 비효율적이다.  
+- 리액트 콘텍스트와 콘텍스트 프로바이더를 사용하면 더 효율적으로 전달할 수 있다.
 
 #### 콘텍스트에 색 넣기 
+- 리액트에서 콘텍스트를 사용하려면 먼저 콘텍스트 프로바이더에 데이터를 넣고 프로바이더를 컴포넌트 트리에 추가해야 한다.
+- 리액트에는 새로운 컨텍스트를 말들 때 사용하는 createContext 라는 함수가 있다. 
+- 만들어진 콘텍스트 객체에는 콘텍스트 Provider 와 콘텍스트  Consumer 라는 2가지 컴포넌트가 들어 있다.
+
+      import React, { createContext } from "react";
+      import colors from "./color-data";
+      import { render } from "react-dom";
+      import App from "./App";
+
+      export const ColorContext = createContext();
+
+      render(
+        <ColorContext.Provider value={{ colors }}>
+          <App />
+        </ColorContext.Provider>,
+        document.getElementBtId("root")
+      );
+
+- ColorContext 에는 ColorContext.Provider 와 ColorContext.Consumer 라는 2가지 컴포넌트가 들어 있다.
+- 색을 상태에 넣기 위해서는 Provider 를 사용해야한다. Provider 의 value 를 설정하면 콘텍스트에 데이터를 추가할 수 있다.
+- 전체 App 컴포넌트를 프로바이더로 감쌋기 때문에 컴포넌트 트리 안의 모든 컴포넌트에서 colors 배열을 볼 수 있다.
+- 여기서 ColorContext 를 export 해야 colors 데이터가 필요한 컴포넌트에서 ColorContext.Consumer 를 사용할 수 있다.
+- 그리고 이제 App 컴포넌트는 단지 AddColorForm 과 ColorList 를 렌더링만 하고 더 이상 데이터에 대해 신경쓰지 안흔다.
+
+      import React from "react";
+      import ColorList from "./ColorList.js";
+      import AddColorForm from "./AddColorFrom";
+
+      export default function App() {
+        return (
+          <>
+            <AddColorForm />
+            <ColorList />
+          </>
+        );
+      }
 
 #### useContext를 통해 색 얻기 
+- 훅스를 추가하면 콘텍스트를 편하게 다를 수 있다. useContext 훅을 사용해 콘텍스트에서 값을 얻을 수 있다.
+- useContext 는 콘텍스트 Consumer 로부터 필요한 값을 얻는다. 
+- 이제 ColorList 컴포넌트는 프로퍼티에서 colors 배열을 얻을 필요가 없다.
+
+      import React, { useContext } from "react";
+      import { ColorContext } from "./";
+      import Color from "./Color";
+
+      export default function ColorList() {
+        const { colors } = useContext(ColorContext);
+        if (!colors.length) return <div>No Colors Listed. (Add a Color)</div>
+        return (
+          <div className="color-list">
+            {
+              colors.map(color => <Color key={color.id} {...color} />)
+            }
+          </div>
+        );
+      }
+- 콘텍스트에서 colors 를 가져오기 때문에, ColorList 컴포넌트를 변경해서 colors=[] 프로퍼티를 없앴다.
+- 값을 가져오기 위해서는 콘텍스트 인스턴스를 useContext 훅에게 제공해야 한다.
 
 #### 상태가 있는 콘텍스트 프로바이더 
+- 콘텍스트 Provider 는 객체를 콘텍스트에 넣을 수 있다. 하지만 콘텍스트 Provider 자체로는 콘텍스트 상에 들어있는 값을 변경할 수 없다.
+- 부모 컴포넌트의 도움을 받아야 값을 변경할 수 있다. 이때 사용하는 트릭은 콘텍스트 Provider 를 렌더링하는 상태가 있는 컴포넌트를 만드는 것이다. 
+- 상태가 있는 컴포넌트의 상태가 변경되면 컴포넌트가 새로운 컨텍스트 데이터를 가지고 콘텍스트 Provider 를 다시 렌더링 한다.  
+  콘텍스트 Provider 의 자식도 새 데이터에 맞춰 다시 렌더링 된다.
+- 콘텍스트 Provider 를 렌더링하는 상태가 있는 컴포넌트는 우리가 만드는 커스텀 프로바이더 이다.
+- 이 말은 Provider 와 함께 App 을 감싸야 할 때 이 컴포넌트를 사용해야 한다는 뜻이다. 
+
+      import React, { createContext, useState } from "react";
+      import colorData from "./color-data.json";
+
+      const ColorContext = createContext();
+
+      export default function ColorProvider ({ children }) {
+        const [colors, setColors] = useState(colorData);
+        return(
+          <ColorContext.Provider value={{ colors, setColors }}>
+            {children}
+          </ColorContext.Provider>
+        );
+      }
+- ColorProvider 는 ColorContext.Provider 를 렌더링하는 컴포넌트다.
+- 이 컴포넌트 안에서는 useState 훅을 사용해 colors 라는 상태 변수를 만든다. colors 의 초기 데이터는 color-data.json 에서 가져온다.
+- 다음으로 ColorProvider 는 상태에서 얻은 colors 를 ColorContext.Provider 의 value 프로퍼티를 통해 컨텍스트에 설정한다.
+- ColorProvider 안에서 렌더링 되는 모든 자식 컴포넌트를 ColorContext.Provider 가 감싸기 때문에 모든 자식이 콘텍스트로부터 colors 를 얻을 수 있다.
+- 콘텍스트에 setColors 함수가 추가되어 콘텍스트 Consumer 가 colors 값을 바꿀 수 있게 해준다.
+- setColors 가 호출될 때마다 colors 배열이 변경된다. 이로 인해 ColorsProvider 가 다시 렌더링되고 UI 도 새 colors 배열의 값에 맞춰 갱신된다.
+######
+- setColors 를 콘텍스트에 추가하는 것이 가장 좋은 선택지가 아닐 수 있다. 콘텍스트에 setColors 를 추가하면 나중이 이 함수를 사용하면서 실수할 여지가 있다.
+- colors 배열의 값을 바꿀 수 있는 방법은 사용자가 색을 추가하거나, 색을 제거하거나, 색에 평점을 메기는 3가지 경우 뿐이다.
+- 각각의 경우에 대한 함수를 콘텍스트에 추가하는 편이 더 낫다. 이렇게 하면 setColors 함수를 Consumer 에게 노출하지 않아도 된다.
+
+      export default fucntion ColorProvider ({ children }) {
+        const [colors, setColors] = useState(colorData);
+
+        const addColor = (title, color) => 
+          setColors([
+            ...colors,
+            {
+              id: v4(),
+              rating: 0,
+              title,
+              color
+            }
+          ]);
+            
+        const rateColor = (id, rating) =>
+          setColors(
+            colors.map(color => (color.id === id ? { ...color, rating } : color))
+          );
+
+        const removeColor = id => setColors(colors.filter(color => color.id !== id));
+
+        return (
+          <ColorContext.Provider value={{ colors, addColor, removeColor, rateColor }}>          
+            {children}
+          </ColorContext.Provider>
+        );
+      }
 
 #### 콘텍스트와 커스텀 훅
+- 소스 코드를 더 멋지게 변경할 수 있는 방법이 한 가지 더 있다. 훅스를 도입하면 콘텍스트를 Consumer 컴포넌트에게 노출시킬 필요가 전혀 없어진다.
+- 콘텍스트를 커스텀 훅으로 감싸면 이런 문제를 더 손 쉽게 해결할 수 있다. 
+- ColorContext 인스턴스를 노출하는 대신, 콘텍스트에서 색 을 반환해주는 useColor 훅을 만들 수 있다.
+
+      import React, { createContext, useState, usetContext } from "react";
+      import colorData from "./color-data.json";
+      import { v4 } from "uuid";
+
+      const ColorContext = createContext();
+      export const useColors = () => useContext(ColorContext);
+
+- 이런 간단한 변경이 앱의 아키텍처에 큰 영향을 끼친다. 상태에 들어 있는 색을 처리하고 렌더링하는데 필요한 모든 기능을 한 자바스크립트 모듈로 감쌌다.
+- 이 모듈이 작동할 수 있는 이유는 콘텍스트를 useContext 훅을 통해 반환하기 때문이다. 
+- useContext 훅은 파일 안에서만 지역적으로 ColorContext 에 접근할 수 있다.  
+  (이 모듈의 이름을 color-hooks.js로 바꾸고 커뮤니티에서 사용할 수 있게 널리 배포해도 된다.)
+- 이 훅을 현재의 색관리 앱에서 돌아갈 수 있게 하려면 먼저 App 컴포넌트를 ColorProvider 로 감싸야한다. index.js 파일에서 이런 일을 할 수 있다. 
+
+      import React from "react";
+      import { ColorProvider } from "./color-hooks.js";
+      import { render } from "react-dom";
+      import App from "./App";
+
+      render(
+        <ColorProvider>
+          <App />
+        </ColorProvider>,
+        document.getElementById("root")
+      );
+
+- 이제  App 의 자식 컴포넌트는 useColors 훅으로부터 colors 를 얻을 수 있다.
+- ColorList 컴포넌트는 화면에 색을 표시하기 위해 colors 배열에 접근해야한다.
+
+      import React from "react";
+      import Color from "./Color";
+      import { useColors } from "./color-hooks";
+
+      export default function ColorList() {
+        const { colors } = useColors();
+        return ( ... );
+      }
+
+- 이 컴포넌트에 있던 콘텍스트에 대한 참조를 완전히 없앴다. 이 컴포넌트에 필요한 모든 정보는 훅을 통해 공급된다.
+- Color 컴포넌트는 훅을 사용해 색을 제거하고 색의 평점을 메기는 함수를 직접 얻을 수 있다.
+
+      import React from "react";
+      import StarRating from "./StarRating";
+      import { useColors } from "./color-hooks";
+
+      export default function Color ({ id, title, color, rating }) {
+        const { rateColor, removeColor } = useColors();
+        return (
+          <section>          
+            <h1></h1>
+            <button onClick={() => removeColor(id)}>X</button>
+            <div style={{ height: 50, backgroundColor: color }} />
+            <StarRating
+              selectedStars={rating}
+              onRate={rating => rateColor(id, rating)}
+            />
+          </section>
+        );
+      }
+
+- 이제 Color 컴포넌트는 더 이상 함수 프롭을 통해 부모에게 이벤트를 전달하지 않아도 된다.
+- Color 컴포넌트는 콘텍스트에서 rateColor 와 removeColor 함수를 직접 얻을 수 있다. useColors 훅을 사용하려면 이런 함수를 쉽게 얻을 수 있다.
+- 하지만 아직 끝나지 않았다 AddColorFrom 도 useColor 훅으로부터 이익을 얻을 수 있다.
+
+      import React from "react";
+      import { useInput } from "./hooks";
+      import { useColors } from  "./color-hooks";
+
+      export default function AddColorForm() {
+        const [titleProps, resetTitle]
+        const [colorPorps, resetColor]
+        const { addColor } = useColors();
+      
+        const submit = e => {
+          e.preventDefault();
+          addColor(titleProps.value, colorProps.value);
+          resestTitle();
+          resetColor();
+        };
+
+        return ( ... );
+      }
+
+- AddColorForm 컴포넌트는 addColor 함수를 통해 색을 직접 추가할 수 있다.
+- 색이 추가되거나 색에 평점이 메겨지거나, 색이 제거되면 콘텍스트의 colors 값 상태가 바뀐다.
+- 이렇게 상태가 바뀌면 ColorProvider 의 자식들은 새 콘텍스트 데이터를 가지고 다시 렌더링된다.
+- 이 모든 과정은 간단한 훅을 통해 벌어진다.
 
 <br>
 
 ## 7. HOOK
+- 렌더링은 리액트 애플리케이션의 심장 박동과도 같다. 프롭 또는 상태가 바뀌면 컴포넌트 트리가 다시 렌더링되고, 최신 데이터를 사용자 인터페이스에 반영한다.
+- 지금까지는 useState 가 컴포넌트를 재렌더링해야만 하는 순간을 기술했다. 하지만 더 많은 일을 할 수 있다.
+- 렌더링이 일어나야 하는 원인과 시점을 정하는 여러 규칙을 정의하는 훅스가 더 존재한다. 
+- 렌더링 성능을 개선하는 훅스도 있다. 언제나 도움이 될 수 있는 훅스를 항상 찾을 수 있다. 
 
 ### 7-1. useEffect
+- 컴포넌트는 단순히 사용자 인터페이스를 렌더링하는 함수일 뿐이다. 렌더링은 앱이 처음 적재될 때 일어나고, 프롭이나 상태가 변경될 때 일어난다.
+- 하지만 렌더링이 끝난 다음에 무언가를 하고 싶으면 어떻게 할까? 이런 경우 useEffect 를 사용하면 된다.
+- Checkbox 라는 간단한 컴포넌트를 생각해보자. 사용자는 박스를 체크하거나 체크를 해제할 수 있다.  
+  하지만 박스가 체크된 다음에 사용자에게 알림창을 띄워야 한다면 어떻게 해야할 까? 스레드를 블록해주는 alret 을 사용해보자.
+
+      import React, { useState } from "react";
+
+      function Checkbox() {
+        const [checked, setChecked] = useState(false);
+
+        alert(`checked: ${checked.toString()}');
+
+        return (
+          <>
+            <input
+              type="checkbox"
+              value={checked}  
+              onChange={() => setChecked(checked => !cheched)}
+            />
+            {checked ? "cheched" : "not checked"}
+          </>
+        );
+      }
+
+- 이 코드에서는 alert 을 렌더러 직전에 삽입해서 렌더러를 블록한다. 사용자가 알림 창의 OK 버튼을 클릭하기 전에는 컴포넌트가 렌덜이 되지 않는다.
+- alert 이 블러킹 함수이기 때문에 OK 를 누르기 전에는 체크박스의 다음 상태가 렌더링된 모습을 볼 수 없다. 하지만 이런 동작은 우리가 원하는 목표가 아니다.
+- 이런 경우 useEffect 를 사용해야한다. useEffect 함수 안에 alert 을 넣는 다는 것은 이 함수가 렌더링 한 직후 부수 효과로 alert 을 실행한다는 뜻이다.
+
+      function Checbokx {
+        const [checked, setChecked] = useState(false);
+
+        useEffect(() => {
+          alert(`checked: ${checked.toString()}`);
+        });
+
+        return (
+          <>        
+            <input
+              type="checkbox"
+              value={checked}                
+              onChange={() => setChecked(checked => !checked)}
+            />
+            {checked ? "checked" : "not checked"}
+          </>
+        );
+      }
+
+- 렌더러가 부수 효과로 무언가를 수행하게 하고 싶을 때 useEffect 를 사용한다. 부수 효과를 함수가 반환하는 값에 속하지 않는 어떤 것이라고 생각하자.
+- alert, console.log, 브라우저나 네이티브 API 와의 상호작용은 렌더링에 속하지 않는다. 이들은 컴포넌트 함수의 반환값에 포함되지 않는다.
+- 리액트 앱에서 렌더링은 이런 이벤트들에게도 영향을 끼친다. useEffect를 사용하면 렌더링이 끝나기를 기다렸다가 alert이나 console.log 등에 값을 제공할 수 있다.
+
+      useEffect(() => {
+        console.log(checked ? "Yes, checked" : "No, not checked")
+      });
+
+- 비슷하게 렌더링 된 checked 값을 검사해서 localStorage 의 값을 설정할 수도 있다.
+
+      useEffect(() => {
+        localStorage.setItem("checkbox-value", checked);
+      })
+
+- useEffect 를 사용해 DOM 에 추가된 특정 텍스트 입력에 초점을 맞츨 수 있다.  
+  리액트는 출력을 렌더링한 다음에 useEffect 를 호출해서 엘리먼트로 초점을 이동시킨다.
+- 렌더링이 이뤄지고 나면 txtInputRef에 값이 설저된다. useEffect 안에서 이 값에 접근해 포커스를 적용할 수 있다.
+- 렌더링이 이뤄질 때마다 useEffect 는 렌더링된 프롭, 상태, 참조 등의 최종 값에 접근할 수 있다.  
+  (useEffect 를 렌더링이 끝난 다음에 발생하는 함수라고 생각해도 좋다.)
+
+      useEffect(() => {
+        txtInputRef.current.focus();
+      })
+
+#### 의존 관계 배열
+- useEffect 는 useState 나 아직 언급하지 않은 useReducer 등의 다른 상태가 있는 훅스와 함께 작동한다.  
+  리액트는 상태가 바뀌면 컴포넌트 트리를 다시 렌더링한다. useEffect 는 이런 렌더링이 끝난 다음에 호출된다.
+
+      import React, { useState, useEffect } from "react";
+      import "./App.css";
+
+      function App() {
+        const [val, set] = useState("");
+        const [phrase, setPhrase] = useState("example phrase");
+
+        const createPhrase = () => {
+          setPhrase(val);
+          set("");
+        };
+
+        useEffect(() => {
+          console.log(``typing "${val}");
+        });
+
+        useEffect(() => {
+          console.log(``saed phrase: "${phrase}");
+        });
+
+        return (
+          <>
+            <label>Favorite phrase:</label>
+            <input
+              value={val}
+              placeholder={phrase}
+              onChange={e => set(e.target.value)}
+            />
+            <button></button>
+          </>
+        );
+      }
+- 이렇게 하면 쓸데없이 useEffect 가 많이 호출된다. 렌더링이 끝날 때마다 두 useEffect 가 모두 호출된다.
+- 이 문제를 해결하기 위해 의존 관계 배열을 사용한다. 의존 관계 배열은 이펙트가 호출되는 시점을 제어한다.
+- 의존 관계 배열을 추가하면 의존 배열에 속한 요소가 바뀔 때만 호출된다.
+    
+      useEffect(() => {
+        console.log(`typing "${val}"`);
+      }, [val]);
+
+      useEffect(() => {
+        console.log(`saved phrase: "${phrase}"`);
+      }, [phrase]);
+
+- 의존 관계 배열도 배열이기 때문에 여러 값을 검사하도록 여러 요소를 가질 수 있다. val 또는 phrase 이 변경되었을 때 효과를 실행한다.
+
+      useEffect(() => {
+        console.log("either val or phrase has changed");
+      }, [val, phrase]);
+
+- 의존 관계 배열을 빈 배열로 할 수 있다. 이런 경우 렌더링 직후 이펙트가 단 한 번만 호출된다.
+
+      useEffect(() => {
+        console.log("either val or phrase has changed");
+      }, []);
+
+- 의존 관계가 없다는 말은 변경에 반응하지 않는다는 뜻이므로 최초 렌더링시에만 호출되는 효과는 초기화에 아주 유용하게 쓰일 수 있다.
+
+      useEffect(() => {
+        welcomeChime.play();
+      }, []);
+
+- **useEffect 가 return 을 반환하면 컴포넌트가 트리에서 제거될 때 호출되는 정리 함수가 호출된다**.
+
+      useEffect(() => {
+        welcomeChime.play();
+        return () => goodbyeChime.play();
+      })
+
+- 이 말은 useEffect 를 컴포넌트 생성과 제거에 따른 설정과 정리에 사용할 수 있다는 뜻이다.
+- 빈 배열은 최초 렌더링시 환영한다는 벨소리가 한 번만 플레이된다는 뜻이다. 그 후에 컴포넌트가 트리에서 제거될 때 이별의 벨소리를 울리는 함수를 반환한다.
+######
+- 첫 번째 렌더링시 뉴스 피드를 구독할 수도 있다. 그 후 정리 함수에서 뉴스 피드 구독을 취소할 수 있다.
+- 구체적으로 말하자면, 첫 번째 렌더링 시 posts 라는 상태 변수를 만들고 이 변수의 상태를 변경하는 setPosts 라는 함수를 만들 수 있다.
+- 그 후 addPosts 라는 함수를 만들어서 최신 뉴스를 얻어서 배열에 추가한다.
+- 그 후 useEffect 를 사용해 뉴스 피드를 구독하고, 벨을 울린다. 그리고 정리 함수를 반환한다. 이 함수는 이별의 벨소리를 울리고 뉴스 구독을 취소한다.
+
+      const [posts, setPosts] = useState([]);
+      const addPost = post => setPosts(allPosts => [post, ...allPosts]);
+
+      useEffect(() => {
+        newFeed.subscribe(addPost);
+        welcomeChime.play();
+        return () => {
+          newsFeed.unsubscribe(addPost);
+          goodbyeChime.play();
+        };
+      }, []);
+
+- 위 코드의 뉴스 피드 이벤트와 벨소리 관련 이벤트에 대해 서로 다른 useEffect를 사용할 수도 있다. 기능을 여러 useEffect 로 나눠 담는 것이 좋다. 
+
+      useEffect(() => {
+        newFeed.subscribe(addPost);
+        return () => newFeed.unsubscribe(addPost);
+      }, []);
+
+      useEffect(() => {
+        welcomeChime.play();
+        return () => goodbyeChime.play();
+      }, []);
+  
+- 위의 기능을 더 개선해 뉴스 피드를 구독하면서 뉴스를 그독할 때와 뉴스를 구독을 취소할 때, 그리고 새로운 뉴스가 도착할 때 서로 다른 소리를 낼 수 있다.
+- 이 경우 커스텀 훅을 도입할 수 있다. 
+
+      const useJazzyNews = () => {
+        const [posts, setPosts] = useState([]);
+        const addPost = post => setPosts(allPosts => [post, ...allPosts]);
+
+        useEffect(() => {
+          newsFeed.subscribe(addPost);
+          return () => newFeed.unsubscribe(addPost);
+        }, []);
+
+        useEffect(() => {
+          welcomeChime.play();
+          return () => goodbyeChime.play();
+        }, []);
+
+        return posts;
+      }
+
+- 이 커스텀 훅에는 뉴스 피드를 처리하는 모든 기능이 들어 있다. 이 말은 이 기능을 다른 컴포넌트와 쉽게 공유할 수 있다는 뜻이다. 
+- NewsFeed 라는 새 컴포넌트에서 이 커스텀 훅을 사용할 것이다.
+
+      function NewsFeed({ url }) {
+        const posts = useJazzyNews();
+
+        return (
+          <>
+            <h1>{posts.length} articles</h1>
+            {posts.map(post => (
+              <Post key={post.id} {...post} />
+            ))}
+          </>
+        );
+      }
+
+#### 의존 관계 깊이 검사하기
+- 지금까지 배열에 추가한 의존 관계는 문자열뿐이었다. 문자열, 수 등의 자바스크립트 기본 타입은 비교가능하다.
+
+      if ("gnar" === "gnar") {
+        console.log("gnarly!");
+      }
+
+- 하지만 객체, 배열, 함수 등을 비교하려고 하면 비교 방법이 달라진다. 길이나 원소가 모두 같더라도 서로 다른 배열 인스턴스는 다르다고 인식한다.
+
+      if ([1, 2, 3] !== [1, 2, 3]) {
+        console.log("but they are the same");
+      }
+
+- 배열의 값을 저장하는 변수를 만들고 비교하면 같은 결과를 얻을 수 있다.
+- 자바 스크립트에서 배열, 객체, 함수는 서로 같은 인스턴스 일 때만 서로 같다고 인식한다.
+
+      const array = [1, 2, 3];
+      if (array === array) {
+        console.log("because it's the exact same instance");
+      }
+
+- 그렇다면 이 사실이 useEffect 의존 관계 배열과 어떤 관계가 있을까? 
+- 컴포넌트가 최초로 렌더링될 때 keydown 이벤트를 리슨한다. 키가 눌리면 forceRender 를 호출해서 컴포넌트를 강제로 렌더링한다.
+- 이전에 한 것처럼 정리 함수를 반환하는데 이 함수는 keydown 이벤트를 리슨하는 일을 중단한다. 
+- 이 훅을 컴포넌트에 추가함으로써 단지 키를 누르기만 하면 컴포넌트를 다시 렌더링 할 수 있다.
+
+        const useAnyKeyToRender = () => {
+          const [, forceRender] = useState();
+
+          useEffect(() => {
+            window.addEventListener("keydown", "forceRender");
+            return () => window.removeEventListener("keydown", forceRender);
+          }, []);
+        }
+
+- 커스텀 훅을 만들고 나면 App 컴포넌트에서 이 훅을 사용할 수 있다.
+
+      function App() {
+        useAnyKeyToRender();
+
+        useEffect(() => {
+          console.log("fresh render)
+        })
+
+        return <h1>Open the console</h1>;
+      }
+
+- 키를 누를 때마다 App 컴포넌트가 렌더링 된다. useEffect는 App 이 렌더링될 때마다 "freshrender" 를 콘솔에 출력한다.
+- useEffect 를 변경해서 word 값을 참조하게 하면 word 가 변경되면 App 컴포넌트를 다시 렌더링 한다.
+
+      const word = "gnar";
+      useEffect(() => {
+        console.log("fresh render");
+      }, [word])
+
+- 한 단어 대신 단어로 이루어진 배열을 사용하면 어떻게 될까?
+
+      const words = ["sick", "powder", "day"];
+      useEffect(() => {
+        console.log("fresh render")
+      }, [words]);
+
+- words 라는 변수는 배열을 가리킨다. 렌더링이 이뤄질 때마다 새로운 배열이 선언되기 때문에, 자바스크립트는 words 가 변경됐다고 가정하고 매번 호출된다.
+- 배열이 매번 새로 생성된 인스턴스 이기 때문에, 이 인스턴스는 매번 새로운 렌더링을 발생시키는 변경을 등록하게 된다.
+- words 를 App 영역 밖에서 정의하면 이 문제가 해결된다.
+
+      const words = ["sick", "powder", "day"];
+
+      function App() {
+        useAnyKeyToRender();
+
+        useEffect(() => {
+          console.log("fresh render");
+        }, [words]);
+
+        return <h1>component</h1>;
+      }
+
+- 이 경우 의존 관계 배열은 함수 밖에 선언된 words 라는 한 인스턴스를 가리킨다. words가 항상 최초 렌더링 될때와 똑같은 인스턴스를 가리키기 때문에 최초 한번을 제외하면  
+  "fresh render" 효과가 호출되지 않는다. 그러나 항상 함수 영역 밖에 변수를 정의하는 해법을 사용할 수 있는 것은 아니다.
+- 때로는 의존 관계 배열에 전달할 값으로 함수 영역 안의 변수가 필요할 수 있다 예를 들어 children 과 같은 리액트 프로퍼티를 위해 words 배열을 만들어야 할 수도 있다.
+
+      function WordCount({ children = "" }) {
+        useAnyKeytoRender();
+
+        const words = children.split(" " );
+
+        usEffect(() => {
+          console.log("fresh render");
+        }, [words]);
+
+        return (
+          <>
+            <p>{children}</p>
+            <p>
+              <strong>{words.length} - words</strong>
+            </p>
+          </>
+        );
+      }
+
+      function App() {
+        return <WordCount>You are not going to believe this but ... </WordCount>
+      }
+
+- App 컴포넌트에는 WordCount 컴포넌트의 자식인 단어가 몇가지 들어 있다. 
+- WordCount 컴포넌트는 children 을 프로퍼티로 받는다. 그 후 컴포넌트의 words 를 우리가 . split을 호출해 만든 단어의 배열과 같게 설정한다.
 
 ### 7-2. useLayoutEffect
 
 ### 7-3. useReducer
 
-### 7-4. useRef
-
-### 7-5. useMemo
+### 7-4. useMemo
 
 <br>
 
