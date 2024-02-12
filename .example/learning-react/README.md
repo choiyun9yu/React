@@ -2555,14 +2555,40 @@
         return <WordCount>You are not going to believe this but ... </WordCount>
       }
 
-- App 컴포넌트에는 WordCount 컴포넌트의 자식인 단어가 몇가지 들어 있다. 
-- WordCount 컴포넌트는 children 을 프로퍼티로 받는다. 그 후 컴포넌트의 words 를 우리가 . split을 호출해 만든 단어의 배열과 같게 설정한다.
+- App 컴포넌트에는 WordCount 컴포넌트의 자식으로 단어들이 들어 있다. 
+- WordCount 컴포넌트는 children 을 프로퍼티로 그 단어들을 받는다. 
+- 그 후 컴포넌트의 words 를 split 을 호출해 문자 배열로 분할하고 개수를 센다.
 
-### 7-2. useLayoutEffect
+### 7-2. useMemo
+- 그러나 words 가 변경될 때만 컴포넌트를 다시 렌더링하고 싶지만 키를 누를 때마다 재렌더링 되는 것을 알 수 있다.
+- 리엑트에는 이런 추가적인 렌더링을 피할 수 있는 방법으로 useMemo 라는 훅을 제공한다.
+- **useMemo 는 메모화된(memoized) 값을 계산하는 함수를 호출한다.** 컴퓨터 과학에서 메모라이즈는 주로 성능 향상을 위해 사용되는 기법이다.
+- 메모화된 함수는 함수 호출 결과를 저장하고 캐시한다. 그 후 함수에 같은 입력이 들어오면 캐시된 값을 반환한다.
+- 리액트에서 useMemo 를 사용하면 캐시된 값과 계산한 값을 비교해서 실제 값이 변경됐는지 검사해준다.
+- useMemo 는 우리가 useMemo 에 전달한 함수를 사용해 메모화할 값을 계산함으로써 작동한다.
+- useMemo 는 의존 관계가 바뀐 경우에만 이 값을 재 계산한다.
 
-### 7-3. useReducer
+      import React, { useEffect, useMemo } from "react";
 
-### 7-4. useMemo
+      const words = useMemo(() => {
+        const words = children.split(" ");
+        return words;
+      }, []);
+
+      useEffect(() => {
+        console.log("fressh render");
+      }, [words]);
+
+- useMemo 는 자신에게 전달된 함수를 호출해서 받은 값을 가지고 words 를 설정한다.
+- useEffect 와 마찬가지로 useMemo 도 의존 관계 배열에 의존한다.
+
+
+
+### 7-3. useLayoutEffect
+
+
+### 7-4. useReducer
+
 
 <br>
 
