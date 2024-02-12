@@ -28,9 +28,11 @@
 ## 4. useContext
 
 ## 5. useRef
-- useRef 는 주로 DOM 요소에 접근하거나 컴포넌트의 상태를 유지하는 데 사용된다.
+- useRef 는  DOM 요소에 접근하거나 컴포넌트의 상태를 유지하는 데 사용된다.
+- Form 태그의 인풋 데이터를 읽는 용도로도 사용된다.
 - 함수형 컴포넌트에서 가변적인 값을 만들고 유지할 때 유용하다. useRef 를 사용하면   
   컴포넌트가 리렌더링될 때마다 값이 초기화되지 않고 이전 값이 유지되기 때문이다. 
+
 ### 5-1. DOM 요소에 접근
     import React, { useRef, useEffect } from 'react';
 
@@ -57,7 +59,9 @@
     
     export default MyComponent;
 
-### 5-2. 컴포넌트의 상태 유지
+### 5-2. form 태그 입력 값 읽기 
+
+### 5-3. 컴포넌트의 상태 유지
 - 상태를 직접 변경하는 것이 아니라 current 속성을 통해 값을 유지
 ######
     import React, { useRef, useEffect } from 'react';
@@ -84,7 +88,7 @@
 
     export default MyComponent;
 
-### 5-3. 이전 값 저장 
+### 5-4. 이전 값 저장 
 - useRef를 사용하여 이전 값(previous value)을 저장할 수 있다.
 - 이전 값은 리렌더링 사이에서 유지되기 때문에 이전 값과 현재 값의 비교에 유용하다.
 ######
@@ -108,3 +112,35 @@
 
 
 ## 6. useMemo
+- useMemo 훅은 성능 최적화를 위해 사용되는 훅 중 하나이다. 
+- 이 훅은 이전에 계산된 값을 기억하고, 이 값이 변경되지 않는 한 다시 계산하지 않도록 한다.
+- useMemo 는 2가지 인자를 받는다.
+  - 첫 번째 매개 변수는 값을 계산하는 함수이다.
+  - 두 번째 매개 변수는 의존성 배열이다.  
+    (이 배열에 나열된 값들이 변경되지 않는 한, useMemo 는 캐시된 값을 유지하고 반환 한다.)
+
+### 6-1. 사용 예시
+
+    function expensiveCalculation(a, b) {
+      // 매우 비용이 많이 드는 계산 
+      return a + b;
+    }
+
+- 이 함수를 react 컴포넌트에서 사용한다고 가정하고 이 함수는 a 와 b 라는 props 에 의존적이다.
+- 그럼 useMemo 를 사용하여 이 함수를 최적화 할 수 있다.
+######
+    import React, { useMemo } from 'react';
+
+    function MyComponent({ a, b }) {
+      const result = useMemo(() => {
+        return expensiveCalculation(a,b);
+      }, [a, b]);
+
+      return <div>{result}</div>;
+    }
+
+- 위 코드에서 useMemo 를 사용하여 expensivCalculation 함수의 결과를 기억한다.
+- a 와 b 가 변경되지 않는 한 expensivCalculation 함수는 다시 실행되지 않고 이전에 계산된 결과를 재사용 한다.
+- 이는 불필요한 계산을 피하고 성능을 향상시키는데 도움이 된다.
+- 그러나 useMemo 는 항상 사용해야 하는 것은 아니다. 성능 최적화를 위해 너무 과도하게 사용하는 것은 오히려 코드를 복잡하게 만들 수 있다.
+- 따라서 실제 성능 문제가 발생했을 때만 사용하는 것이 좋다.
