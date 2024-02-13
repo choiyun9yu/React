@@ -2581,13 +2581,30 @@
 
 - useMemo 는 자신에게 전달된 함수를 호출해서 받은 값을 가지고 words 를 설정한다.
 - useEffect 와 마찬가지로 useMemo 도 의존 관계 배열에 의존한다.
+- useMemo 에 의존 관계 배열을 전달하지 않으면 렌더링이 일어날 때마다 값을 재계산 한다.
+- 의존 관계 배열이 콜백 함수가 호출되어야 하는 때를 결정하는 것이다.
+
+      function WordCount({ children =  "" }) {
+        useAnyKeyToRender();
+        const words = useMemo(() => children.split(" "), [children]);
+
+        useEffect(() => {
+          console.log("fresh render");
+        }, [words]);
+
+        return (...);
+      }
+
+- words 배열은 children 프로퍼티에 의존한다. children이 바뀌면 그에 맞춰 words 의 값도 재계산해야한다.
+- 이 코드에서 useMemo 는 컴포넌트가 최초로 렌더링 될 때와 children 프로퍼티가 바뀔 때 words 를 재계산 한다.
+
+### 7-3. useCallback
+- useCallback 도 useMemo 와 비슷하게 사용할 수 있다. 하지만 useCallback 은 값 대신 함수를 메모화한다.
+
+### 7-4. useLayoutEffect
 
 
-
-### 7-3. useLayoutEffect
-
-
-### 7-4. useReducer
+### 7-5. useReducer
 
 
 <br>
