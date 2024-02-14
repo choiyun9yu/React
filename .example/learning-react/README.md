@@ -2599,13 +2599,143 @@
 - 이 코드에서 useMemo 는 컴포넌트가 최초로 렌더링 될 때와 children 프로퍼티가 바뀔 때 words 를 재계산 한다.
 
 ### 7-3. useCallback
-- useCallback 도 useMemo 와 비슷하게 사용할 수 있다. 하지만 useCallback 은 값 대신 함수를 메모화한다.
+- useCallback 도 useMemo 와 비슷하게 사용할 수 있다. 하지만 useCallback 은 값 대신 함수를 메모라이즈 한다.
+
+      const fn = () => {
+        console.log("hello");
+        console.log("world");
+      };
+
+      useEffect(() => {
+        console.log("fresh render");
+        fn();
+      }, [fn]);
+- 위 예제에서 fn은 "hello"를 로그에 찍고 "world"를 다시 직는 함수이다. 이 함수는 useEffect 의존 관계에 포함된다.
+- 하지만 words 와 마찬가지로 자바스크립트는 렌더링이 새로 될 때마다 이 함수가 서로 다른 함수라고 가정한다.  
+  그에 따라 렌더링이 이뤄질 때마다 fn 이 바뀌었따고 인식하여 useEffect 를 실행한다.
+- 이런 문제는 의존성 배열에 들어가는 fn 함수를 useCallback으로 감싸므로 해결할 수 있다.
+
+      const fn = useCallback(() => {
+          console.log("hello");
+          console.log("world");
+      }, [])
+
+      useEffect(() => {
+        console.log("fresh render");
+        fn();
+      }, [fn]);
+- useMemo 나 useEffect와 마찬가지로 useCallback 도 두 번째 배열로 의존성 배열을 받는다.  
+  여기서는 의존성 배열이 비어 있기 대문에 메모화된 콜백을 단 한 번만 만든다.
+
+#### useJazzyNews 커스텀 훅 개선 
+- useMemo 와 useCallback 을 바탕으로 위에서 만든 커스텀 훅을 개선해보자.
+- 새로운 포스트가 들어올 때마다 newPostChime.play() 를 호출할 것이다.
+- 이 훅에서 posts 는 배열이다. 따라서 useMemo 를 사용해서 배열의 값을 메모화 해야한다.
+
+      const useJazzNEws = (() => {
+        const [_posts, setPosts] = useState([]);
+        const addPost = post => setPosts(allPosts => [post, ...allPosts]);
+        const posts = useMemo(() => _posts, [_posts]);
+
+        useEffect(() => {
+          newPostChime.play();
+        }, [posts]);
+
+        useEffect(() => {
+          news.Feed.subscribe(addPost);
+          return () => newFeed.unsubscribe(addPost);
+        }, []);        
+
+        useEffect(() => {
+          welcomeChime.play();
+          return () => goodbyeChime.play();
+        }, []);
+
+        return posts;
+      };
+- 이렇게 작성하면 새 포스트가 도착하여 posts 값이 바뀔 때마다 벨이 울린다.
 
 ### 7-4. useLayoutEffect
+- useEffect 의 효과가 발생하기 전에 항상 렌더링이 이뤄지다는 사실을 이해했다.
+- **렌더링이 먼저 일어나고 렌더링된 모든 값에 접근할 수 있는 상태에서 효과가 순서대로 발생한다.**
+- **그러나 useLayoutEffect 는 렌더링 사이클의 특정 순간에 호출된다.** 이벤트가 발생하는 순서는 다음과 같다.
+  1. 렌더링
+  2. useLayoutEffect 호출
+  3. 브라우저의 화면 그리기: 이 시점에 컴포넌트에 해당하는 엘리먼트 실제로 DOM 에 추가
+  4. useEffect 호출 
+- 몇 가지 간단한 콘솔 메시지를 추가해서 이런 이벤트를 관찰할 수 있다.
 
+      import React, { useEffect, useLayoutEffect } from "react";
+      
+      function App() {
+        useEffect(() => console.log("useEffect"));
+        useLayoutEffect(() => console.log("useLayoutEffect"));
+        return <div>ready</div>
+      }
+
+- useLayoutEffect 는 렌더링 다음에 호출되지만 브라우저가 변경 내역을 화면에 그리전에 호출된다.
+- 대부분의 경우 useEffect 로 원하는 작업을 수행하기에 충분하다.  
+  그러나 사용할 효과가 브라우저의 화면 그리기에 필수적인 경우에는 useLayoutEffect 를 사용한다.
+- 예를 들어, 창의 크기가 바뀐 경우 엘리먼트의 너비와 높이를 얻고 싶을 수 있다.
+- 창의 width 와 height 는 브라우저가 화면을 그리기 전에 여러분의 컴포넌트에 필요한 정보이다.
+- useLayoutEffect 를 사용해서 화면ㅇ르 그리기 전에 창의 width 와 height 를 계산한다.
+
+      function useWindowSize {
+        const [width, wetWidth] = useState(0);
+        const [height, setHeight] = useState(0);
+        
+        const resize = () => {
+          setWidth(window.innerWidth);
+          setHeight(window.innerHeight)
+        };
+
+        useLayoutEffect(() => {
+          window.addEventListener("resize", resize);
+          resize();
+          return () => window.removeEventListener("resize", resize);
+        }, []);
+
+        return [width, heigth];
+      };
+
+- useLayoutEffect 를 사용할 때 보여주는 다른 예제로는 마우스 위치를 추적하는 경우를 들 수 있다.
+
+      function useMousePosition {
+        const [x, setX] = useState(0);
+        const [y, setY] = useState(0);
+  
+        const setPosition = ({ x, y }) => {
+          setX(x);
+          setY(y);
+        };
+  
+        useLayoutEffect(() => {
+          window.addEventListener("mousemove", setPosition);
+          return () => window.removeEventListener("mousemove", setPosition);
+        }, []);
+
+        return [x, y];
+      }
 
 ### 7-5. useReducer
 
+
+### 7-6. 훅스의 규칙
+- 훅스를 사용할 때는 버그나 예기치 못한 동작을 방지하기 위해 염두해둬야하는 몇가지 규칙이 있다.
+- 리액트 프로젝트를 create-react-app 으로 생성하면 eslint-plugin-react-hooks 라는 ESLint 플러그인으로   
+  아래 규칙을 위반한 경우 경로를 볼 수 있다.
+
+#### 1) 훅스는 컴포넌트의 영역 안에서만 작동한다.
+- 리액트 컴포넌트 내부에서만 훅스를 호출해야한다. 커스텀 훅 역시 컴포넌트에 추가되어야 한다.
+- 훅스는 일반 자바스크립트가 아니라 리액트 패턴이다. 하지만 다른 라이브러리에서도 훅을 모델링하고 훅과 협력하는 경우도 있다.
+
+#### 2) 기능을 여러 훅으로 나누면 좋다.
+- 앞선 예제의 JazzyNews 컴포너트의 경우 구독과 관련된 모든 기능을 한 효과에 넣었다.
+- 이렇게 관련 기능을 한 효과에 몰아넣는 경우 코드를 읽기 쉽다. 그러나 효과를 분리하면 각 훅이 순서대로 호출되는 이점이 있다. 
+
+#### 3) 최상위 수준에서만 훅을 호출해야 한다.
+- 리액트 함수의 최상위 수준에서만 훅을 사용해야 한다. 조건문이나 반복문, 내포된 함수 안에서 훅을 사용해서는 안된다.
+- 조건문, 반복문 그리고 비동기적인 동작을 사용하고 싶으면 훅 안에 포함시키면 된다.
 
 <br>
 
