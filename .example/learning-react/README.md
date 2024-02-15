@@ -2718,7 +2718,163 @@
       }
 
 ### 7-5. useReducer
+- 리듀서의 간단한 정의는 현재 상태를 받아서 새 상태를 반환하는 것이다. 
+- 간단한 상태를 포함하는 Checkbox 컴포넌트는 checked 가 상태 값이며 setChecked 는 상태를 변경하는 함수이고 초기값은 flase 다.
 
+      function Checkbox() {
+        const [checked, setChecked] = useState(false);
+        
+        return (
+          <>
+            <input            
+              type="checkbox"
+              value={checked}
+              onChange={() => setChecked(checked => !checked)}
+            />
+            {checked ? "checked" : "not checked"}
+          </>
+        );
+      }
+- 위의 코드는 잘 작동하지만 한가지 위험한 부분이 있다. 
+
+      onChange={() => setChecked(checked => !checked)}
+- 여기서 checked 의 현재 값을 가지고 반대값인 !checked 를 반환하는 함수를 보낸다.
+- 이 코드는 필요보다 너무 복잡하다. 이런 식으로 checked 를 처리하는 대신 toggle 같은 함수를 제공할 수 있다.
+
+      function Checkbox() {
+        const [checked, setChecked] = useState(false)l;
+        
+        function toggle() {
+          setChecked(checked => !checked);
+        }
+        
+        return(
+          <>
+            <input type="checkbox" value={checked} onChange={toggle}/>
+            {checked ? "checked" : "not checked"}
+          </>
+        );
+      }
+- 이 코드가 더 낫다. onChange 는 예측 가능한 값인 toggle 로 설정된다.
+- 한 단계 더 나아가 Checkbox 컴포넌트를 사용할 때마다 좀 더 예측 가능한 결과를 내놓게 할 수도 있다.
+- toggle 함수 안의 **setChecked(checked => !checked)** 이 부분을 _리듀서(reducer)_ 라고 부를 것이다.
+- 리듀서 함수의 가장 간단한 정의는 현재 상태를 받아서 새 상태를 반환하는 함수라고 할 수 있다.  
+- checked 가 false 이면 true 를 반환해야한다. 이런 동작은 onChange 를 하드코딩 하는 대신,  
+  이 로직을 리듀서 함수로 추상화해서 항상 같은 결과를 내넣게 한다. 
+- 이제 컴포넌트에서 useState 를 사용하는 대신 useReducer 를 사용하자.
+
+      function Checkbox() {
+        const [checked, toggle] = useReducer(checked => !checked, false);
+
+        return (
+          <>
+            <input type="checkbox" value={checked} onChange={toggle}/>
+            {checked ? "checked" : "not checked"}
+          </>
+        );
+      }
+- 여기서 useReducer 는 리듀서 함수와 초기 상태 false 를 받는다.
+- 그 후 onChange 함수를 리듀서가 반환하는 두 번째 값인 toggle 로 설정한다. (이 함수는 리듀서 함수를 호출해준다.)
+
+#### Array.reduce
+- Array.reduce 는 함수와 초깃 값을 받고 한 값을 반환한다. (이는 함수가 모든 값을 단일 값으로 축약하는 함수여야 한다.)
+- 아래 코드는 numbers 배열의 각 값에 대해 최종적인 값이 남을 때까지 리듀서가 호출된다.
+
+      const numbers = [28, 34, 67, 68];
+      numbers.reduce((number, nextNumber) => number + nextNumber, 0); //197
+
+- Array.reduce 에 전달된 리듀서는 인자를 2개 받는다. 원하면 리듀서 함수에 여러 인자를 전달할 수도 있다.
+
+      function Numbers() {
+        const [number, setNumber] = useReducer(
+          (number, newNumber) => number + nuewNumber,
+           0
+          );
+
+        return <h1 onClick={() => setNumber(30)}>{number}</h1>        
+      }
+
+- 이렇게 하면 h1을 클릭할 때마다 전체 합계에서 30이 추가될 것이다.
+
+#### useReducer로 복잡한 상태 처리하기
+- useReducer 를 사용하면 상태가 더 복잡해질 때 상태 갱신을 더 예측 가능하게 처리하는데 도움이 된다.
+- 아래와 같은 사용자 데이터가 들어 있는 객체를 생각해보자.
+  
+      const firstUser = {
+        id: "0391-3233-3201",
+        firstName: "Bill",
+        lastname: "Wilson",        
+        city: "Missoula",
+        state: "Montana",
+        email: "bwilson@mtnwilsons.com",
+        admin: false
+      };
+
+- firstUser 를 초기 상태로 설정한 User 라는 컴포넌트가 있다. 이 컴포넌트는 적절한 데이터를 표시해준다.
+
+      function User() {
+        const [uset, setUser] = useState(firstUser);
+
+        return (
+          <>
+            <div>
+              <h1>
+                {user.firstName} {user.lastName} - {user.admin? "Admin" : "User"}
+              </h1>
+              <p>Email: {user.email}</p>
+              <p>
+                Location: {user.city}, {user.state}
+              </p>
+              <button>Make Admin</button>
+            </div>
+          </>
+        );
+      }
+
+- 상태를 관리할 때 자주 저지르는 실수는 상태를 덮어쓰는 것이다.
+- 아래 코드 처럼 하면 firstUser 의 상태를 덮어써서 방금 setUser 함수에 전달한 {admin:true} 로 변경한다.
+
+      <button
+        onClick={() => {
+          setUser({ admin: ture});
+        }}
+      >
+        Make Admin
+      </button>
+
+- 현재 값을 사용자와 분리하고, admin 값을 덮어쓰면 이런 일을 방지할 수 있다.
+
+      <button
+        onClick={() => {
+          setUser({ ...user, admin: ture});
+        }}
+      >
+        Make Admin
+      </button>
+
+- 위의 코드처럼 하면 초기 상태를 받아서 새로운 키/값 쌍을 넣는다. 모든 onClick에 대해 코드를 이런 식으로 바꿔야한다.
+- 그러나 리듀서를 쓰면 조금더 쉽게 관리할 수 있다.
+- 아래 처럼 작성하면 새 상태 값 newDetails 를 리듀서에게 보내면 프로퍼티가 객체에 추가되거나 기존 프로퍼티가 갱신된다.
+
+      function User() {
+        const [user, setUser] = useReducer(
+          (user, newDetails) => ({ ...user, ...newDetails }),
+           fristUser
+        );
+
+        return (
+          ...
+          <button
+            onClick={() => {
+              setUser({ admin: ture});
+            }}
+              >
+            Make Admin
+          </button>
+        );
+      }
+
+- 상태가 여러 하위 값으로 구성되거나 다음 상태가 이전 사앹에 의존적일 때 이런 패턴이 유용하다.
 
 ### 7-6. 훅스의 규칙
 - 훅스를 사용할 때는 버그나 예기치 못한 동작을 방지하기 위해 염두해둬야하는 몇가지 규칙이 있다.
@@ -2736,6 +2892,117 @@
 #### 3) 최상위 수준에서만 훅을 호출해야 한다.
 - 리액트 함수의 최상위 수준에서만 훅을 사용해야 한다. 조건문이나 반복문, 내포된 함수 안에서 훅을 사용해서는 안된다.
 - 조건문, 반복문 그리고 비동기적인 동작을 사용하고 싶으면 훅 안에 포함시키면 된다.
+
+### 7-7. 컴포넌트 성능 개선 
+- 리액트 애플리케이션에서는 컴포넌트가 일반적으로 아주 많이 렌더링 된다.
+- **불필요한 렌더링을 피하고 렌더링이 전파되는 데 걸리는 시간을 줄이는 등의 활동이 성능 개선에 포함된다.**
+- 리액트는 불필요한 렌더링을 방지할 때 도움이 되는 memo, useMemo, useCallback 등의 도구를 제공한다.
+- 이런 훅을 사용해 앞에서 다룬 것보다 더 좋게 성능을 개선하는 방법이 있다.
+
+#### memo 로 순수 컴포넌트 성능 개선 
+- 순수한 컴포넌트를 만들 때 memo 함수가 쓰인다. 인자가 같으면 순수 함수는 항상 같은 결과를 내놓는다. 순수 컴포넌트도 같은 방식이다.
+- 리액트에서 순수 컴포넌트는 같은 프로퍼티에 대해 항상 같은 출력으로 렌더링되는 컴포넌트를 말한다. Cat 이라는 컴포넌트를 만들어 보자.
+
+      const Cat = ({ name }) => {
+        console.log(`rendering ${name}`);
+        return <p>{name}</p>;
+      }
+
+- Cat 은 순수 컴포넌트이다. 출력은 항상 name 프로퍼티를 표시하는 <p> 엘리먼트이다. 
+- 따라서 프로퍼티로 제공되는 이름이 같으면 출력도 항상 같다.
+
+      function App() {
+        const [cats, setCats] = useState(["Biscuit", "Jungle", "Outlaw"]);
+
+        return (
+          <>
+            {cats.map((name, i) => )
+              <Cat ket={i} name={name} />
+            )}
+            <button onClick={() => setCats([...cats, prompt("Name a cat")])}>
+              Add a Cat
+            </button>
+          </>
+        );
+      }
+- 이 앱은 Cat 컴포넌트를 사용한다. 최초 렌더링 이후 콘솔은 다음과 같은 값을 출력한다.
+
+      rendering Biscuit
+      rendering Jungle
+      rendering Outlaw
+- Add a Cat 버튼을 클릭하면 모든 Cat 컴포넌트를 다시 렌더링한다는 메시지가 콘소렝 표시된다.
+
+      rendering Biscuit
+      rendering Jungle
+      rendering Outlaw
+      rendering Ripple
+- 고양이를 추가할 때마다 모든 Cat 컴포너트가 다시 렌더링 된다. 
+- 하지만 Cat 컴포넌트는 순수 컴포넌트이다. prop 이 같으면 출력에서 바뀌는 부분은 없다.
+- 따라서 다른 고양이를 추가히도 기존 고양이가 다시 렌더링되면 안된다. 프로퍼티가 바뀌지 않았는데 순수 컴포넌트를 다시 렌더링하고 싶지는 않다.
+- 이럴 때 memo 함수를 사용하면 프로퍼티가 변경될 때만 다시 렌더링되는 컴포넌트를 만들 수 있다.
+
+      import React, { useState, memo } from "react";
+
+      const Cat = ({ name }) => {
+        console.log(`rendering ${name}`)
+        return <p>{name}</p>
+      };
+
+      const PureCat = memo(Cat);
+
+- 여기서 PureCat 이라는 새 컴포넌트를 만들었다. PureCat 은 프로퍼티가 변경됐을 때만 Cat을 다시 렌더링하게 해준다.
+- 그리고 App 컴포넌트 안에서 Cat 을 PureCat 컴포넌트로 바꿀 수 있다.
+
+      cats.map((name, i) => <PureCat key={i} name={name} />);
+- 이제 새로운 Pancake 처럼 새 고양이 이름을 추가하면 콘솔에서 추가된 PureCat 컴포넌트만 렌더링 된다.
+      
+      rendering Pancake
+
+#### 컴포넌트에 함수가 포함된 경우 
+- Cat 컴포넌트에 함수 프로퍼티를 도입하면 어떻게 될까?
+  
+      const Cat = memo(({ name, meow = f => f }) => {
+        console.log(`rendering ${name}`);
+        return  <p onClick={() => meow(name)}>{name}</p>;
+      });
+- 이 프로퍼티를 사용하면 코양이를 클릭할 때마다 meow를 표시할 수 있다.
+
+      <PureCat key={i} name={name} meow={name => console.log(`${anme} has meowed`)} />;
+- 그러나 이렇게 코드를 바꾸고 나면 PureCat 이 예상과 다르게 작동한다. name 프로퍼티가 동일한데도 Cat 이 매번 다시 렌더링 된다.
+- 이유는 meow 프로퍼티 때문이다. 함수는 정의할 때마다 새로운 함수가 생긴다. 리액트 입장에서는 meow 가 변경되어 재렌더링 한다.  
+  (**useCallback 을 사용해 함수가 바뀌지 않았다는 것을 알려주는 방법도 있다!!**)
+- 그러나 다행히도 memo 함수는 컴포넌트를 다시 렌더링 해야하는 규칙을 좀 더 구체적으로 지정할 수 있게 해준다.
+
+      const RenderCatOnce = memo(Cat, () => true);
+      const AlwaysRenderCat = memo(Cat, () => false);
+
+- memo 함수에 전달되는 두 번째 인자는 술어(predicate)이다. 술어는 항상 true 난 false 를 반환하는 함수를 말한다.
+- 이 함수는 고양이를 렌더링할지 여부를 결정한다. 이 술어 함수가 false 를 반환하면 Cat 이 다시 렌더링 된다.  
+  반대로 술어 함수가 true 를 반환하면 Cat 이 다시 렌더링 되지 않는다. 
+- 이 함수가 어떤 값을 반환하더라도 Cat 은 최소한 한 번은 렌더링 된다.
+- 그래서 RenderCatOnce 는 단 한번만 렌더링되고 결코 다시 렌더링 되지 않는다.
+- 보통 술어함수는 실제 값을 검사해 true/false 를 반환한다.
+
+      const PureCat = memo(
+        Cat,
+        (preProps, nextProps) => preProps.name === nextProps.name)
+      );
+- 이 두 번째 인자를 사용해 프로퍼티를 비교해서 Cat을 다시 렌더링해야만 하는지 결정할 수 있다.
+- 술어는 이전 프로퍼티와 다음 프로퍼트를 인자로 받는다. 이 두 객체의 name 프로퍼티를 비교할 수 있다.
+- name 이 바뀌면 컴포넌트를 다시 렌더링한다. name 이 같으면 meow 프로퍼티 변경 여부와 관계없이 다시 렌더링 하지 않는다.
+
+### 7-8. shouldComponentUpdate 와 PureComponent
+- 방금 설명한 개념은 리액트에서 새로운 개념이 아니다. memo 함수는 리액트에서 흔히 발생하는 문제를 해결하는 새로운 해법이다.
+- 이전 버전의 리액트에서는 shouldComponentUpdate 라는 메서드가 있었다.  
+  컴포넌트 안에서 컴포넌트를 갱신해야하는 경우를 알려주기 위해 사용했다.
+- shouldComponentUpdate 는 컴포넌트를 다시 렌더링하기 위해 어떤 프롭이나 상태가 바뀌어야 하는지 묘사한다.
+- PureComponent 는 React.memo 와 같은 역할을 한다. 하지만 PureComponent 는 클래스 컴포넌트에만 사용할 수 있다.
+- 반면 React.memo 는 함수 컴포넌트에서만 사용할 수 있다.
+
+### 7-9. 언제 리팩터링 할까?
+- useMemo 또는 useCallback 이 과용되는 경향이 있다. 아무 데서나 사용하면 오히려 성능이 떨어진다.
+- 리액트는 빨리 작동하게 설계됐다. 리액트 설계는 컴포넌트가 많이 렌더링되도록 되어 있다.
+- 리액트는 빠르기 때문에 성능 최적화를 위한 다른 리팩터링은 개발 단계의 마지막에 이뤄져야만 한다.
 
 <br>
 
