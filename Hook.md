@@ -3,6 +3,13 @@
 
 ## 1. useState
 
+    const [value, setValue] = useState();
+
+    setValue(old =? {
+        console.log(old);    // 변경자의 매개변수 old는 해당 변수의 이전 값을 받는다.
+    })
+    
+
 ## 2. useEffect
 
 ## 3. useCallback
