@@ -210,6 +210,18 @@
         console.log(`켄터베리의 ${firstname}`);
     };
     lordify(regularPerson); // 켄터베리의 지민
+######
+    // 리액트에서 props 를 받을 때 구조분해를 사용하지 않는 경우
+    const Component1 = (props) => {
+        console.log(props.a)
+        console.log(props.b)
+    }
+    
+    // 구조분해를 사용한 경우 
+    const Copoment2 = ({a, b}) => {
+        console.log(a)
+        console.log(b)
+    }
 
 #### 배열 구조 분해
 - 배열을 구조분해해서 값을 뽑아낼 수도 있다.
