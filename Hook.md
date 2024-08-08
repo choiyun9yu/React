@@ -147,7 +147,7 @@
 <br>
 
 ## 4. useMemo
-- useMemo 훅은 성능 최적화를 위해 사용되는 훅 중 하나이다. 
+- useMemo 는 함수와 종석성 배열을 전달 받아 해당 함수의 결과가 변경되지 않는 한 메모이제이션해둔 값을 다시 사용한다.
 - 이 훅은 이전에 계산된 값을 기억하고, 이 값이 변경되지 않는 한 다시 계산하지 않도록 한다.
 - useMemo 는 2가지 인자를 받는다.
   - 첫 번째 매개 변수는 값을 계산하는 함수이다.
@@ -160,10 +160,10 @@
       // 매우 비용이 많이 드는 계산 
       return a + b;
     }
-
 - 이 함수를 react 컴포넌트에서 사용한다고 가정하고 이 함수는 a 와 b 라는 props 에 의존적이다.
 - 그럼 useMemo 를 사용하여 이 함수를 최적화 할 수 있다.
-######
+
+####
     import React, { useMemo } from 'react';
 
     function MyComponent({ a, b }) {
@@ -179,6 +179,10 @@
 - 이는 불필요한 계산을 피하고 성능을 향상시키는데 도움이 된다.
 - 그러나 useMemo 는 항상 사용해야 하는 것은 아니다. 성능 최적화를 위해 너무 과도하게 사용하는 것은 오히려 코드를 복잡하게 만들 수 있다.
 - 따라서 실제 성능 문제가 발생했을 때만 사용하는 것이 좋다.
+
+#### 정리
+- useCallback 훅이 함수 그 자체를 기억하는 것이라면, useMemo 는 함수 결과 값을 기억한다.
+- 그렇기 때문에 함수에 입력되는 매개 변수를 의존성 배열에 넣어 결과가 달라지는 경우 계산을 다시 한다.
 
 <br>
 
@@ -242,8 +246,155 @@
 <br>
 
 ## 6. useReducer
+- useReducere 는 현재 상태를 받아서 새 상태를 반환한다.
+- 아래 예제는 checked 가 상태 값이며, setChecked 는 상태를 변경하는 함수이고 초기 값은 false 이다.
 
+### 6-1. useReducer 사용 예시
+#### 예제 1
+    function Checkbox() {
+        const [checked, setChecked] = useState(false);
 
+        return (
+            <>
+              <input type="checkbox" value={checked}
+                onChange={() => setChecked(checked => !checked)}/>
+              {checked ? "checked" : "not chekced"}
+            </>
+        );    
+    }
+    
+#### 예제 2
+- 위 코드는 잘 작동하지만 너무 복잡하다. toogle 같은 함수로 쉽게 처리할 수 있다.
+####
+    function Checkbox() {
+        const [checked, setChecked] = useState(false);
+
+        function toggle() {
+            setChecked(checked => !checked)
+        }
+
+        return (
+          <>
+            <input type="checkbox" value={checked}
+              onChange={toggle}/>
+            {checked ? "checked" : "not chekced"}
+          </>
+        )
+    }
+
+#### 예제 3
+- 예제 1 보다 2 가 더 낫지만 아직 부족하다. 좀 더 예측 가능한 결과를 내놓게 할 수 있다.
+####
+    function Checkbox() {
+        const [checked, toggle] = useReducer(checked => !checked, false);
+
+        return (
+                  <>
+            <input type="checkbox" value={checked}
+              onChange={toggle}/>
+            {checked ? "checked" : "not chekced"}
+          </>
+        )
+    }
+- 여기서 useReducer 는 리듀서 함수와 초기 상태 false 를 받는다.
+
+### 6-2. Array.reduce
+- Array.reduce 는 함수와 초기 값을 받고 한 값을 반환한다.
+- 이때 함수는 반드시 모든 값을 단일 값으로 축약하는 함수여야 한다.
+- 아래 코드는 numbers 배열의 각 값에 대해 최종적인 값이 남을 때까지 리듀서가 호출된다.
+- reduce 의 세번째 인자는 최초 연산의 초기 값이다.
+####
+    const numbers = [28, 34, 67, 68];
+    numbers.reduce((number, nextNumber) => number + nextNumber, 0);  // 197
+    // 실제 연산이 일어나는 순서 ((((0 + 28) + 34) + 67) + 68)
+- Array.reduce 에 전달된 리듀서는 인자를 2개 받는다. 원하면 리듀서 함수에 여러 인자를 전달할 수도 있다.
+####
+    function Numbers() {
+        const [number, setNumber] = useReducere(
+            (number, newNumber) => number + newNumber,
+            0
+        );
+
+        return <h1 onClick={() => setNumber(30)}>{number}</h1>
+    }
+- 이렇게 하면 h1 을 클릭할 때마다 전체 합계에서 30이 추가된다.
+
+### 6-3. useReducer 로 복잡한 상태 처리하기
+- useReducer 를 사용하면 상태가 더 복잡해질 때 상태 갱신을 더 예측 가능하게 처리하는데 도움이 된다.
+- 아래와 같은 사용자 데이터가 들어 있는 객체를 생각해보자.
+####
+    const firstUser = {
+        id: "0391-3233-3201",
+        firstName: "Bill",
+        lastname: "Wilson",        
+        city: "Missoula",
+        state: "Montana",
+        email: "bwilson@mtnwilsons.com",
+        admin: false
+    };
+- firstUser 를 초기 상태로 설정한 User 라는 컴포넌트가 있다. 이 컴포넌트는 적절한 데이터를 표시해준다.
+####
+    function User() {
+        const [user, setUser] = useState(firstUser);
+
+        return (
+            <>
+                <div>
+                    <h1>
+                        {user.firstName} {user.lastName} - {user.admin? "Admin" : "User"}
+                    </h1>
+                    <p>Email: {user.email}</p>
+                    <p>
+                        Localtion: {user.city}, {user.state}
+                    </p>
+                    <button>Makee Admin</button>
+                </div>
+            </>
+        )
+    }
+- 상태를 관리할 때 자주 저지르는 실수는 상태를 덮어쓰는 것이다.
+- 아래 코드 처럼 하면 firstUser 의 상태를 덮어써서 방금 setUser 함수에 전달한 {admin:true} 로 변경한다.
+####
+    <button
+        onClick={() => {
+            setUser({ admin: ture});
+        }} 
+    >
+     Make Admin
+    </button>
+- 현재 값을 사용자와 분리하고, admin 값을 덮어쓰면 이런 일을 방지할 수 있다.
+#####
+    <button
+        onClick={() => {
+            setUser({...user, admin: true});
+        }}
+    >
+      Make Admin
+    </button>
+- 위 코드처럼 하면 초기 상태를 받아서 새로운 키/값 쌍을 넣는다. 모든 onClick 에 대해 코드를 이런 식으로 바꿔야한다.
+- 그러나 리듀서를 쓰면 조금 더 쉽게 관리할 수 있다.
+- 아래 처럼 작성하면 새 상태 값 newDetails 를 리듀서에게 보내면 프로퍼티가 객체에 추가되거나 기존 프로퍼티가 갱신된다.
+####
+    function User() {
+        const [user, setUser] = userReducer(
+            (user, newDetails) => ({ ...user, ...newDetails }),
+            firstUser
+        );
+
+        return (
+            ...
+            <button
+                onClick={() => {
+                    setUser( {admin: true });
+                }}
+            >
+              Make Admin
+            </button>
+        );
+    }
+- 상태가 여러 하위 값으로 구성되거나 다음 상태가 이전 상태에 의존적일 때 이런 패턴이 유용하다.
+
+<br>
 
 ## 7. useRef
 - useRef 는  DOM 요소에 접근하거나 컴포넌트의 상태를 유지하는 데 사용된다.
